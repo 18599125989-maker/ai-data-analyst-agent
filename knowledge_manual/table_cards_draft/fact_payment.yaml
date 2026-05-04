@@ -1,0 +1,332 @@
+table_name: fact_payment
+card_version: v0.1
+card_type: table_card
+domain:
+  id: E
+  name: 计费与订阅
+business_meaning: >-
+  付款流水。
+
+  数据字典将该表归入“计费与订阅”域。
+
+  数据字典行数说明为：~1.6k。
+
+  当前 card 仍为 draft，以上内容属于数据字典说明与待验证假设，不能视为验证通过结论。
+grain: >-
+  数据字典说明粒度：一行 = 一次付款尝试。**一张发票可能对应多条付款记录**（尝试、部分支付、重试）。
+
+  数据字典说明主键：`payment_id`。
+
+  当前 draft 只能把这些内容视为待验证假设；是否在当前 DuckDB 数据中成立，仍以后续 validation 脚本和人工复核为准。
+primary_key:
+- payment_id
+natural_key_candidate: []
+profile:
+  row_count: 1624
+  column_count: 6
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: auto_filled_pending_validation
+columns:
+  payment_id:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: >-
+      付款 ID（`PAY` 前缀）
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 1624
+      distinct_rate: 1.0
+      min: PAY004ec0740f72
+      max: PAYffb9f317d407
+      sample_values:
+      - PAY004ec0740f72
+      - PAY00527be5a1ae
+      - PAY006d9a1bcdda
+      - PAY00729a8c5c78
+      - PAY0077e6f124f1
+      is_possible_primary_key: true
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  invoice_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >-
+      关联发票
+
+      数据字典说明已补充，仍需人工复核。
+    references: fact_invoice.invoice_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 1248
+      distinct_rate: 0.7685
+      min: INV0015263020ea
+      max: INVff8576941c17
+      sample_values:
+      - INV0015263020ea
+      - INV00b27daab4d7
+      - INV00bf93de68fc
+      - INV00d9a8ad70c3
+      - INV00dbaccfcd52
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  method:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      支付方式。枚举：credit_card / bank_transfer / alipay / wechat_pay
+
+      枚举值集合来自数据字典说明，当前仅作为待验证假设。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 4
+      distinct_rate: 0.0025
+      min: alipay
+      max: wechat_pay
+      sample_values:
+      - alipay
+      - bank_transfer
+      - credit_card
+      - wechat_pay
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  amount:
+    type: double
+    semantic_type: metric
+    business_meaning: >-
+      本次付款金额（可能小于发票金额）
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 1624
+      distinct_rate: 1.0
+      min: '146.71'
+      max: '115599.75'
+      sample_values:
+      - '146.71'
+      - '157.13'
+      - '182.11'
+      - '193.39'
+      - '195.41'
+      is_possible_primary_key: true
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  status:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      枚举：success / failed / pending
+
+      枚举值集合来自数据字典说明，当前仅作为待验证假设。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3
+      distinct_rate: 0.0018
+      min: failed
+      max: success
+      sample_values:
+      - failed
+      - pending
+      - success
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  paid_at:
+    type: timestamp
+    semantic_type: event_time
+    business_meaning: >-
+      付款完成时间（失败/待处理为空）
+
+      空值、空字符串或混合类型语义来自数据字典说明，仍需结合实际数据分布复核。
+    references: null
+    profile:
+      null_rate: 0.258
+      distinct_count: 1205
+      distinct_rate: 0.742
+      min: '2025-04-03 04:39:06'
+      max: '2026-04-01 03:32:12'
+      sample_values:
+      - '2025-04-03 04:39:06'
+      - '2025-04-06 18:33:11'
+      - '2025-04-08 07:12:23'
+      - '2025-04-08 13:28:46'
+      - '2025-04-10 20:11:43'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+join_keys:
+- column: invoice_id
+  references: fact_invoice.invoice_id
+  relationship: pending_validation
+  join_condition: fact_payment.invoice_id = fact_invoice.invoice_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 invoice_id 表示关联发票。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - payment_id
+  - invoice_id
+  time_columns:
+  - paid_at
+  metric_columns:
+  - amount
+  dimension_columns:
+  - payment_id
+  - invoice_id
+  - method
+  - status
+  - paid_at
+  enum_columns:
+  - method
+  - status
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 fact_payment 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 按数据字典声明的枚举字段做结构分布分析
+- 基于数据字典说明的时间字段做趋势或窗口分析
+- 按数据字典口径区分金额、收入、付款、发票或预算类指标
+preferred_metrics:
+  entity_count:
+    expression: COUNT(DISTINCT payment_id)
+    meaning: 实体或记录数量
+    applicable_grain: 待验证
+    note: >-
+      当前为自动草稿，需要先验证主键或业务粒度后再确认统计口径。
+
+      对于复合键表，COUNT(*) 仅在 grain 成立时才可解释为记录数。
+  amount_sum:
+    expression: SUM(amount)
+    meaning: amount 的SUM指标
+    applicable_grain: 待验证
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+known_traps:
+- trap: >-
+    把数据字典声明的主键直接当作已验证事实。
+
+    当前仍是 draft。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`payment_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: 把付款金额与发票金额或实收收入当成完全相同口径。
+  consequence: 可能忽略支付状态、时间点和账期差异。
+  prevention: 按数据字典和业务问题分别处理 payment、invoice、actual_revenue。
+- trap: >-
+    将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+    当前仍是 draft。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 数据字典说明该表粒度为：一行 = 一次付款尝试。**一张发票可能对应多条付款记录**（尝试、部分支付、重试）。聚合前必须先验证这一粒度在当前数据中是否成立。
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: null
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent_recommendation: false
+  key_results: {}
+  interpretation:
+  - 当前为待验证 draft，尚未经过人工确认。
+  - 主键、自然键、JOIN 覆盖率、指标口径和 known_traps 均需要验证脚本和人工复核。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: >-
+    SELECT
+        paid_at AS time_key,
+        COUNT(*) AS row_count
+    FROM fact_payment
+
+    GROUP BY paid_at
+
+    ORDER BY paid_at;
+  enum_distribution: >-
+    SELECT
+        method,
+        COUNT(DISTINCT payment_id) AS entity_count
+    FROM fact_payment
+
+    GROUP BY method
+
+    ORDER BY entity_count DESC, method;
+  metric_trend: >-
+    SELECT
+        paid_at AS time_key,
+        ROUND(SUM(amount), 2) AS total_amount
+    FROM fact_payment
+
+    GROUP BY paid_at
+
+    ORDER BY paid_at;
+  join_coverage_sample: >-
+    SELECT
+        COUNT(*) AS row_count
+    FROM fact_payment base
+
+    LEFT JOIN fact_invoice ref
+        ON base.invoice_id = ref.invoice_id;
+prompt_summary: >-
+  fact_payment 是 付款流水。
+
+  数据字典声明 grain 为：一行 = 一次付款尝试。**一张发票可能对应多条付款记录**（尝试、部分支付、重试）。
+
+  数据字典主键说明为：`payment_id`。
+
+  常用 JOIN 假设包括：invoice_id -> fact_invoice.invoice_id。
+
+  当前 card 仍是 draft，数据字典中的主键、JOIN、口径和特殊说明都只能视为待验证假设。
+manual_review:
+  reviewer: null
+  review_status: pending_validation
+  review_notes:
+  - 当前为批量生成的 draft，需要结合 validation report 逐张人工复查。
+  - 主键、自然键、JOIN 覆盖率、字段口径和 known_traps 都不能直接视为最终结论。
+  checklist:
+  - confirmed: false
+    item: 数据字典声明主键为：`payment_id`。需要核对当前数据是否满足唯一性。
+  - confirmed: false
+    item: 数据字典声明粒度为：一行 = 一次付款尝试。**一张发票可能对应多条付款记录**（尝试、部分支付、重试）。需要验证实际 grain 是否成立。
+  - confirmed: false
+    item: 数据字典说明行数约为：~1.6k。需要与当前 profile 和 DuckDB 数据核对。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_payment.invoice_id -> fact_invoice.invoice_id。需要验证覆盖率与口径风险。
+status:
+  authoring_status: manual_draft
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent: false

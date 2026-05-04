@@ -1,0 +1,362 @@
+table_name: fact_user_activation
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: B
+  name: 用户
+
+business_meaning: >
+  用户激活里程碑事实表，记录用户何时达成某个关键激活动作。
+  该表适合分析用户激活路径、激活漏斗、不同里程碑的达成情况以及激活时间趋势。
+  当前验证显示该表可作为正式激活分析事实表使用。
+
+grain: >
+  一行代表一个用户达成一个激活里程碑的记录。
+  当前验证显示主键候选 user_id + milestone_type + reached_at 唯一：
+  row_count = 180072，distinct_primary_key_count = 180072，duplicate_primary_key_count = 0。
+  同一个 user_id 可以有多个 milestone_type。
+  该表适合分析用户激活路径、激活漏斗和激活时间趋势。
+
+primary_key:
+  - user_id
+  - milestone_type
+  - reached_at
+
+natural_key_candidate:
+  - user_id
+  - milestone_type
+  - reached_at
+
+natural_key_status:
+  is_unique: true
+  tested_key:
+    - user_id
+    - milestone_type
+    - reached_at
+  duplicated_group_count: 0
+  note: >
+    当前验证显示 user_id + milestone_type + reached_at 唯一，
+    可作为本表的复合主键和记录级唯一标识。
+
+profile:
+  row_count: 180072
+  column_count: 3
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/fact_user_activation_validation.md
+  profile_status: validated
+
+columns:
+  user_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      用户 ID。
+      用于将激活里程碑记录关联到正式用户维度，并进一步映射到租户、部门等组织属性。
+    references: dim_user.user_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 49773
+      distinct_rate: 0.2764
+      min: U000001
+      max: U050000
+      sample_values:
+        - U000001
+        - U000002
+        - U000003
+        - U000004
+        - U000005
+      is_possible_primary_key: false
+    notes:
+      - >
+        user_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        统计激活用户数时应使用 COUNT(DISTINCT user_id)。
+
+  milestone_type:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      激活里程碑类型，表示用户首次完成的关键激活动作类别。
+      适合用于激活漏斗、激活路径和里程碑分布分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 6
+      distinct_rate: 0.0
+      min: created_first_task
+      max: invited_first_user
+      sample_values:
+        - first_doc_create
+        - created_first_task
+        - invited_first_user
+        - first_login
+        - first_meeting_join
+        - first_msg_send
+      is_possible_primary_key: false
+    notes:
+      - >
+        milestone_type 无空值。
+      - >
+        milestone_type 是激活里程碑类型，不是数值指标。
+
+  reached_at:
+    type: timestamp
+    semantic_type: timestamp
+    business_meaning: >
+      用户达成该激活里程碑的时间。
+      适合用于日、周、月的激活趋势和时间窗口分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 179745
+      distinct_rate: 0.9982
+      min: "2024-04-06T00:15:13"
+      max: "2026-03-30T09:59:32"
+      sample_values:
+        - "2024-04-06 00:15:13"
+        - "2024-04-06 11:59:26"
+        - "2024-04-06 18:32:02"
+        - "2024-04-07 07:59:52"
+        - "2024-04-07 21:11:29"
+      is_possible_primary_key: false
+    notes:
+      - >
+        reached_at 是里程碑达成时间，适合做日/月激活趋势分析。
+      - >
+        当前验证时间范围为 2024-04-06T00:15:13 到 2026-03-30T09:59:32。
+
+join_keys:
+  - column: user_id
+    references: dim_user.user_id
+    relationship: many_to_one
+    join_condition: fact_user_activation.user_id = dim_user.user_id
+    purpose: 将用户激活记录关联到正式用户维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      user_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+derived_join_paths:
+  activation_to_tenant:
+    path:
+      - fact_user_activation.user_id = dim_user.user_id
+      - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: 将用户激活记录关联到企业租户维度
+    risk_level: low
+    validation_status: passed
+
+field_groups:
+  id_columns:
+    - user_id
+    - milestone_type
+    - reached_at
+  time_columns:
+    - reached_at
+  metric_columns: []
+  dimension_columns:
+    - user_id
+    - milestone_type
+  enum_columns:
+    - milestone_type
+  json_columns: []
+  text_columns: []
+
+recommended_use_cases:
+  - 分析不同激活里程碑的达成规模与分布。
+  - 计算用户激活漏斗和里程碑路径。
+  - 按日或按月分析激活趋势。
+  - 结合 dim_user 和 dim_tenant 分析不同企业或用户群体的激活表现。
+
+preferred_metrics:
+  activation_record_count:
+    expression: COUNT(DISTINCT (user_id, milestone_type, reached_at))
+    meaning: 激活里程碑记录数
+    applicable_grain: fact_user_activation 原子粒度
+    note: >
+      按事件或记录数统计时可使用复合主键去重。
+  activated_user_count:
+    expression: COUNT(DISTINCT user_id)
+    meaning: 达成激活里程碑的用户数
+    applicable_grain: 任意分析层级
+    note: >
+      按用户数统计时必须使用 COUNT(DISTINCT user_id)。
+  milestone_type_count:
+    expression: COUNT(DISTINCT milestone_type)
+    meaning: 激活里程碑类型数
+    applicable_grain: 任意分析层级
+    note: >
+      milestone_type 是分组维度，不是数值指标。
+
+known_traps:
+  - trap: >
+      JOIN dim_user 或 dim_tenant 后直接 COUNT(*) 当作激活用户数。
+    consequence: >
+      COUNT(*) 是激活里程碑记录数，不是用户数。
+    prevention: >
+      统计激活用户数使用 COUNT(DISTINCT user_id)。
+  - trap: >
+      把 milestone_type 当作数值指标。
+    consequence: >
+      milestone_type 是激活事件类型，不能 SUM 或 AVG。
+    prevention: >
+      milestone_type 只能用于分组、筛选或漏斗步骤划分。
+  - trap: >
+      认为一个用户只有一条激活记录。
+    consequence: >
+      同一个用户可能达成多个 milestone_type，直接 COUNT(*) 会高估用户数。
+    prevention: >
+      按用户统计时使用 COUNT(DISTINCT user_id)，按激活事件统计时才使用 COUNT(*) 或 COUNT(DISTINCT 主键)。
+  - trap: >
+      分析激活趋势时忘记使用 reached_at。
+    consequence: >
+      会把所有历史激活混在一起，无法得到时间趋势。
+    prevention: >
+      使用 reached_at 按日、周或月聚合。
+
+aggregation_notes:
+  - >
+    按用户数统计时使用 COUNT(DISTINCT user_id)。
+  - >
+    按事件或记录数统计时使用 COUNT(DISTINCT (user_id, milestone_type, reached_at)) 或 COUNT(*)。
+  - >
+    时间趋势分析应基于 reached_at，而不是仅按累计记录总数解释。
+
+agent_usage_policy:
+  count_users_with_distinct_user_id: true
+  milestone_type_is_enum_not_metric: true
+  use_reached_at_for_activation_trends: true
+  user_can_have_multiple_milestones: true
+  join_to_tenant_through_dim_user: true
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_user_activation_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 180072
+    column_count: 3
+    primary_key_unique: true
+    duplicate_primary_key_count: 0
+    user_id_fk_unmatched_count: 0
+    milestone_type_blank_or_null_count: 0
+    reached_at_min: "2024-04-06T00:15:13"
+    reached_at_max: "2026-03-30T09:59:32"
+  interpretation:
+    - >
+      主键候选唯一，用户激活里程碑记录粒度成立。
+    - >
+      user_id 全部可以关联到 dim_user.user_id。
+    - >
+      milestone_type 无空值，可用于激活漏斗和激活事件分组。
+    - >
+      reached_at 无空值，可用于激活时间趋势分析。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - user_id_fk_coverage
+  - user_id_fk_unmatched_examples
+  - milestone_type_distribution
+  - milestone_type_null_check
+  - reached_at_time_range_check
+  - sql_pattern_time_distribution
+  - sql_pattern_enum_distribution
+  - sql_pattern_join_coverage_sample
+
+sql_patterns:
+  activation_count_by_milestone_type: |
+    SELECT
+        milestone_type,
+        COUNT(DISTINCT (user_id, milestone_type, reached_at)) AS activation_record_count
+    FROM fact_user_activation
+    GROUP BY milestone_type
+    ORDER BY activation_record_count DESC, milestone_type;
+  activated_user_count_by_milestone_type: |
+    SELECT
+        milestone_type,
+        COUNT(DISTINCT user_id) AS activated_user_count
+    FROM fact_user_activation
+    GROUP BY milestone_type
+    ORDER BY activated_user_count DESC, milestone_type;
+  activation_trend_by_month: |
+    SELECT
+        STRFTIME(reached_at, '%Y-%m') AS month_key,
+        COUNT(DISTINCT user_id) AS activated_user_count,
+        COUNT(DISTINCT (user_id, milestone_type, reached_at)) AS activation_record_count
+    FROM fact_user_activation
+    GROUP BY STRFTIME(reached_at, '%Y-%m')
+    ORDER BY month_key;
+  activation_trend_by_day: |
+    SELECT
+        CAST(reached_at AS DATE) AS dt,
+        COUNT(DISTINCT user_id) AS activated_user_count,
+        COUNT(DISTINCT (user_id, milestone_type, reached_at)) AS activation_record_count
+    FROM fact_user_activation
+    GROUP BY CAST(reached_at AS DATE)
+    ORDER BY dt;
+  activation_by_tenant: |
+    SELECT
+        u.tenant_id,
+        COUNT(DISTINCT a.user_id) AS activated_user_count,
+        COUNT(DISTINCT (a.user_id, a.milestone_type, a.reached_at)) AS activation_record_count
+    FROM fact_user_activation a
+    JOIN dim_user u
+      ON a.user_id = u.user_id
+    GROUP BY u.tenant_id
+    ORDER BY activated_user_count DESC, u.tenant_id;
+  activation_funnel_by_tenant_profile: |
+    SELECT
+        t.country,
+        t.industry,
+        t.size_tier,
+        a.milestone_type,
+        COUNT(DISTINCT a.user_id) AS activated_user_count
+    FROM fact_user_activation a
+    JOIN dim_user u
+      ON a.user_id = u.user_id
+    JOIN dim_tenant t
+      ON u.tenant_id = t.tenant_id
+    GROUP BY t.country, t.industry, t.size_tier, a.milestone_type
+    ORDER BY activated_user_count DESC, t.country, t.industry, t.size_tier, a.milestone_type;
+
+prompt_summary: >
+  fact_user_activation 是用户激活里程碑事实表，一行代表一个用户达成一个 milestone_type 的记录。
+  当前验证显示主键候选 user_id + milestone_type + reached_at 唯一，user_id 到 dim_user 的关联覆盖率为 100%。
+  常用路径为 user_id -> dim_user -> dim_tenant。
+  关键指标包括激活记录数、激活用户数和里程碑类型数；其中用户数必须用 COUNT(DISTINCT user_id)。
+  关键陷阱是不要把 milestone_type 当成 metric，不要假设一个用户只有一条记录，并且激活趋势必须使用 reached_at。
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_user_activation_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        主键候选唯一已验证。
+    - confirmed: true
+      item: >
+        user_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        milestone_type 枚举正常且无空值。
+    - confirmed: true
+      item: >
+        reached_at 时间范围已验证。
+    - confirmed: true
+      item: >
+        统计用户数时应使用 COUNT(DISTINCT user_id)。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

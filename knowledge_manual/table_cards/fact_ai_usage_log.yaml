@@ -1,0 +1,806 @@
+table_name: fact_ai_usage_log
+card_version: v1.1
+card_type: table_card
+
+domain:
+  id: C
+  name: 产品使用
+
+business_meaning: >
+  AI 调用日志事实表，记录用户发生的一次 AI credits 操作，例如扣减、赠送或退款。
+  该表是分析 AI 使用量、AI credits 消耗、不同模型使用情况、AI 使用用户画像
+  和租户级 AI 使用强度的核心事实表。
+  由于该表出于隐私考虑只存储 user_id_hash，不直接存储明文 user_id，
+  因此如需关联用户、租户、部门、角色等维度，必须通过 dim_user_id_mapping 做 ID 映射。
+
+grain: >
+  一行 = 一次 AI credits 操作或 AI 使用日志。
+  log_id 唯一标识一条 AI 使用日志。
+  operation_type 表示本次 credits 是扣减、赠送还是退款。
+  当前验证显示 log_id 唯一，因此“一行 = 一次 AI 操作”的粒度成立。
+
+primary_key:
+  - log_id
+
+profile:
+  row_count: 248249
+  column_count: 7
+  source_profile_file: outputs/profiles/table_profile.json
+  validation_file: outputs/knowledge/validation/fact_ai_usage_log_validation.md
+  profile_status: validated
+
+columns:
+  log_id:
+    type: string
+    semantic_type: primary_key
+    business_meaning: >
+      AI 使用日志 ID，唯一标识一次 AI credits 操作。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: 248249
+      distinct_rate: 1.0
+      min: null
+      max: null
+      sample_values: []
+      is_possible_primary_key: true
+    notes:
+      - >
+        log_id 在 fact_ai_usage_log 中唯一。
+      - >
+        当前验证中 row_count = 248249，COUNT(DISTINCT log_id) = 248249。
+      - >
+        统计 AI 操作次数时，可使用 COUNT(DISTINCT log_id)。
+
+  user_id_hash:
+    type: string
+    semantic_type: hashed_foreign_key
+    business_meaning: >
+      哈希形式的用户 ID。
+      该字段不是 dim_user.user_id，不能直接与 dim_user 关联。
+      必须先通过 dim_user_id_mapping.user_id_hash 映射回明文 user_id。
+    references: dim_user_id_mapping.user_id_hash
+    profile:
+      null_rate: null
+      distinct_count: 15000
+      distinct_rate: null
+      min: null
+      max: null
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        user_id_hash 是隐私保护后的用户标识。
+      - >
+        当前验证显示所有 user_id_hash 都能映射到 dim_user_id_mapping。
+      - >
+        映射后的 user_id 也全部能关联到 dim_user.user_id。
+      - >
+        正确关联路径是 fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash，
+        然后 dim_user_id_mapping.user_id = dim_user.user_id。
+      - >
+        不要直接将 user_id_hash 与 dim_user.user_id JOIN。
+
+  operation_type:
+    type: string
+    semantic_type: dimension
+    business_meaning: >
+      AI credits 操作类型。
+      当前验证显示仅有 deduct、earn、refund 三种取值。
+      deduct 表示 credits 扣减，对应 AI 使用/消耗；
+      earn 表示获得 credits；
+      refund 表示 credits 退还。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: 3
+      distinct_rate: null
+      min: null
+      max: null
+      sample_values:
+        - deduct
+        - earn
+        - refund
+      is_possible_primary_key: false
+    notes:
+      - >
+        分析 AI 使用/消耗时，只统计 operation_type = 'deduct'。
+      - >
+        分析 credits 流水时，deduct 记为负，earn/refund 记为正。
+      - >
+        不区分 operation_type 时，SUM(credits_amount) 的业务含义不清晰。
+
+  credits_amount:
+    type: integer
+    semantic_type: metric
+    business_meaning: >
+      credits 数量，表示本次 AI 操作涉及的积分数量。
+      对 deduct 操作而言，代表消耗的 credits。
+      对 earn 或 refund 操作而言，代表获得或退还的 credits。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: null
+      distinct_rate: null
+      min: 1
+      max: 500
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        当前验证中 credits_amount 范围为 1 到 500。
+      - >
+        未发现负值，也未发现零值。
+      - >
+        分析 AI credits 消耗时，应过滤 operation_type = 'deduct' 后使用 SUM(credits_amount)。
+      - >
+        分析 credits 净变化时，应根据 operation_type 构造正负号。
+
+  model_name:
+    type: string
+    semantic_type: dimension
+    business_meaning: >
+      AI 模型名称。
+      当前验证显示共有五种模型：gpt-4o、claude-3.5、moonshot-v1、glm-4、doubao-pro。
+      可用于分析不同模型的调用次数和 credits 消耗。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: 5
+      distinct_rate: null
+      min: null
+      max: null
+      sample_values:
+        - gpt-4o
+        - claude-3.5
+        - moonshot-v1
+        - glm-4
+        - doubao-pro
+      is_possible_primary_key: false
+    notes:
+      - >
+        model_name 是低基数枚举维度，适合 GROUP BY。
+      - >
+        可用于模型使用分布、模型消耗排行、不同模型成本结构分析。
+
+  created_at:
+    type: string
+    semantic_type: unix_epoch_seconds
+    business_meaning: >
+      AI 操作发生时间。
+      该字段以 Unix epoch 秒形式存储为字符串，例如 "1758470400"。
+      它不是普通的 YYYY-MM-DD HH:MM:SS 时间戳。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: null
+      distinct_rate: null
+      min: "2025-04-01T03:00:00+11:00"
+      max: "2026-04-01T03:00:00+11:00"
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        created_at 是 Unix epoch 秒字符串。
+      - >
+        当前验证显示 created_at 全部可转换为 Unix timestamp。
+      - >
+        在 DuckDB 中可用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转为时间戳。
+      - >
+        做日、月趋势分析前，必须先转换时间。
+      - >
+        当前数据包含 2026-04，但该月份是截断月份，只有少量边界数据。
+      - >
+        做完整月份趋势分析时，应优先使用 2025-04 到 2026-03。
+
+  remark:
+    type: string
+    semantic_type: json_text
+    business_meaning: >
+      AI 操作备注字段，当前验证显示所有 remark 均非空且可以解析为 JSON。
+      典型结构包含 action、model、cause、session_id。
+      cause 中可能包含 input token、output token、cost 等文本信息。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: null
+      distinct_rate: null
+      min: null
+      max: null
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        remark 可解析为 JSON，但默认不作为主分析字段。
+      - >
+        第一版 Agent 应优先使用结构化字段 credits_amount、model_name、operation_type。
+      - >
+        只有用户明确询问 token、cost、session_id 时，才启用 JSON/text 解析 remark。
+      - >
+        cause 字段中的 input/output/cost 信息是文本嵌套，解析时需要额外规则。
+
+join_keys:
+  - column: user_id_hash
+    references: dim_user_id_mapping.user_id_hash
+    relationship: many_to_one
+    join_condition: fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash
+    purpose: 将 AI 日志中的哈希用户 ID 映射为明文 user_id。
+    risk_level: low
+    validation_status: passed
+    note: >
+      fact_ai_usage_log 不包含明文 user_id。
+      如需关联 dim_user、dim_tenant 或其他用户行为表，必须先 JOIN dim_user_id_mapping。
+      当前验证显示 user_id_hash 映射覆盖率为 100%。
+
+  - column: user_id_hash
+    references: dim_user.user_id
+    relationship: invalid_direct_join
+    join_condition: fact_ai_usage_log.user_id_hash = dim_user.user_id
+    purpose: 错误示例，提醒 Agent 不要直接这样 JOIN。
+    risk_level: high
+    validation_status: invalid_by_design
+    note: >
+      这是错误 JOIN 路径。
+      user_id_hash 不是明文 user_id，不能直接关联 dim_user.user_id。
+      正确路径是先关联 dim_user_id_mapping。
+
+derived_join_paths:
+  ai_log_to_user:
+    path:
+      - fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash
+      - dim_user_id_mapping.user_id = dim_user.user_id
+    purpose: >
+      将 AI 使用日志关联到用户维度。
+    risk_level: low
+    validation_status: passed
+
+  ai_log_to_tenant:
+    path:
+      - fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash
+      - dim_user_id_mapping.user_id = dim_user.user_id
+      - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: >
+      将 AI 使用日志关联到企业租户维度。
+    risk_level: low
+    validation_status: passed
+
+  ai_log_to_daily_usage:
+    path:
+      - fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash
+      - dim_user_id_mapping.user_id = fact_daily_usage.user_id
+    purpose: >
+      对比 AI 使用用户与日活、使用时长等行为指标。
+    risk_level: high
+    note: >
+      需要将 created_at 转为日期后再与 fact_daily_usage.dt 对齐。
+      不能只按 user_id JOIN 后直接聚合，否则会产生跨日期重复。
+
+field_groups:
+  id_columns:
+    - log_id
+    - user_id_hash
+
+  time_columns:
+    - created_at
+
+  metric_columns:
+    - credits_amount
+
+  dimension_columns:
+    - user_id_hash
+    - operation_type
+    - model_name
+
+  enum_columns:
+    - operation_type
+    - model_name
+
+  json_columns:
+    - remark
+
+  text_columns:
+    - remark
+
+recommended_use_cases:
+  - 按模型统计 AI 调用次数和 credits 消耗
+  - 按日或按月统计 AI credits 消耗趋势
+  - 分析不同租户的 AI credits 消耗排行
+  - 分析不同用户角色、部门、国家、行业下的 AI 使用差异
+  - 对比 AI 使用用户与非 AI 使用用户的活跃度
+  - 分析 deduct、earn、refund 三类操作的 credits 流水
+  - 在用户明确要求时，从 remark 中解析 session_id、token 或 cost 信息
+
+preferred_metrics:
+  ai_operation_count:
+    expression: COUNT(DISTINCT log_id)
+    meaning: AI 操作次数
+    applicable_grain: AI 日志记录级
+    note: >
+      所有 operation_type 都可计入操作次数。
+      如果只分析真实 AI 使用调用，建议过滤 operation_type = 'deduct'。
+
+  ai_deduct_count:
+    expression: COUNT(DISTINCT CASE WHEN operation_type = 'deduct' THEN log_id END)
+    meaning: AI 扣减操作次数
+    applicable_grain: AI 日志记录级
+    note: >
+      更接近真实 AI 使用调用次数。
+
+  credits_consumed:
+    expression: SUM(CASE WHEN operation_type = 'deduct' THEN credits_amount ELSE 0 END)
+    meaning: AI credits 消耗量
+    applicable_grain: AI 日志记录级
+    note: >
+      分析 AI 使用/消耗时优先使用该口径。
+
+  credits_earned:
+    expression: SUM(CASE WHEN operation_type = 'earn' THEN credits_amount ELSE 0 END)
+    meaning: AI credits 获得量
+    applicable_grain: AI 日志记录级
+    note: >
+      用于分析赠送或获得的 credits。
+
+  credits_refunded:
+    expression: SUM(CASE WHEN operation_type = 'refund' THEN credits_amount ELSE 0 END)
+    meaning: AI credits 退还量
+    applicable_grain: AI 日志记录级
+    note: >
+      用于分析退还 credits。
+
+  net_credits_change:
+    expression: >
+      SUM(
+        CASE
+          WHEN operation_type IN ('earn', 'refund') THEN credits_amount
+          WHEN operation_type = 'deduct' THEN -credits_amount
+          ELSE 0
+        END
+      )
+    meaning: credits 净变化
+    applicable_grain: AI 日志记录级
+    note: >
+      该指标用于 credits 流水变化，不等同于 AI 消耗量。
+      人工确认口径：deduct 记为负，earn/refund 记为正。
+
+agent_usage_policy:
+  can_use_for_ai_usage_analysis: true
+  ready_for_agent: true
+  use_log_id_as_physical_key: true
+  use_deduct_for_ai_consumption: true
+  net_credits_change_rule: >
+    deduct 记为负，earn/refund 记为正。
+  must_use_mapping_table_before_joining_user: true
+  must_not_direct_join_user_id_hash_to_dim_user: true
+  convert_created_at_from_unix_seconds: true
+  treat_2026_04_as_partial_month: true
+  use_complete_month_range_for_trends: "2025-04 to 2026-03"
+  do_not_parse_remark_by_default: true
+  parse_remark_only_when_user_asks_token_cost_or_session: true
+
+known_traps:
+  - trap: >
+      直接将 user_id_hash 与 dim_user.user_id JOIN。
+    consequence: >
+      user_id_hash 是哈希后的用户 ID，不等于明文 user_id。
+      直接 JOIN 会导致匹配失败或错误结果。
+    prevention: >
+      必须先 JOIN dim_user_id_mapping，再关联 dim_user。
+
+  - trap: >
+      忘记过滤 operation_type。
+    consequence: >
+      deduct、earn、refund 混在一起会导致 credits_amount 含义不清。
+    prevention: >
+      分析 AI 使用/消耗时过滤 operation_type = 'deduct'。
+      分析 credits 流水时用 CASE 表达不同操作的正负方向。
+
+  - trap: >
+      把 deduct、earn、refund 都当作消耗。
+    consequence: >
+      会高估 AI 使用消耗。
+    prevention: >
+      只有 deduct 代表 AI credits 消耗。
+      earn/refund 是 credits 增加或返还，不应计入消耗。
+
+  - trap: >
+      把 created_at 当作普通时间戳。
+    consequence: >
+      created_at 是 Unix epoch 秒字符串，直接 DATE_TRUNC 可能报错或结果错误。
+    prevention: >
+      使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换后再做日期或月份分析。
+
+  - trap: >
+      将 2026-04 当作完整月份参与趋势比较。
+    consequence: >
+      当前数据中 2026-04 只有少量边界数据，直接与完整月份比较会低估该月 AI 使用。
+    prevention: >
+      完整月度趋势优先使用 2025-04 到 2026-03。
+      如果展示 2026-04，必须注明它是截断月份。
+
+  - trap: >
+      和 fact_daily_usage 直接按 user_id JOIN，不加日期条件。
+    consequence: >
+      会产生用户级多对多膨胀，导致 AI 使用与日活指标重复计算。
+    prevention: >
+      先将 AI 日志 created_at 转为日期，再与 fact_daily_usage.dt 对齐。
+
+  - trap: >
+      默认解析 remark 中的 cost 或 token。
+    consequence: >
+      remark 虽然是 JSON，但 cost/token 信息嵌在 cause 文本中。
+      默认解析可能增加复杂度并引入不稳定规则。
+    prevention: >
+      第一版默认使用 credits_amount。
+      只有用户明确询问 token、cost、session_id 时，再解析 remark。
+
+aggregation_notes:
+  - >
+    分析 AI 使用/消耗时，过滤 operation_type = 'deduct'，再 SUM(credits_amount)。
+  - >
+    分析 credits 流水或余额变化时，deduct 记为负，earn/refund 记为正。
+  - >
+    按模型分析时，GROUP BY model_name。
+  - >
+    按日或按月分析时，先将 created_at 转为 TIMESTAMP。
+  - >
+    完整月份趋势建议使用 2025-04 到 2026-03，避免 2026-04 截断月份影响判断。
+  - >
+    按用户、部门、租户分析时，必须通过 dim_user_id_mapping 映射回 user_id。
+  - >
+    如果与 fact_daily_usage 关联，应同时按 user_id 和日期对齐。
+  - >
+    不要在未区分 operation_type 的情况下解释 SUM(credits_amount)。
+  - >
+    remark 可解析，但默认不参与主分析。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_ai_usage_log_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 248249
+    column_count: 7
+    log_id_unique: true
+    duplicate_log_id_count: 0
+    distinct_user_id_hash_count: 15000
+    mapped_user_hash_count: 15000
+    mapped_user_count: 15000
+    matched_dim_user_count: 15000
+    unmatched_ai_user_hash_count: 0
+    unmatched_mapped_user_count: 0
+    operation_type_count: 3
+    operation_type_values:
+      - refund
+      - earn
+      - deduct
+    model_name_count: 5
+    model_name_values:
+      - gpt-4o
+      - claude-3.5
+      - moonshot-v1
+      - glm-4
+      - doubao-pro
+    invalid_created_at_count: 0
+    min_created_time: "2025-04-01T03:00:00+11:00"
+    max_created_time: "2026-04-01T03:00:00+11:00"
+    min_credits_amount: 1
+    max_credits_amount: 500
+    negative_credits_count: 0
+    zero_credits_count: 0
+    avg_credits_amount: 250.45
+    empty_remark_count: 0
+    invalid_json_remark_count: 0
+    partial_month:
+      month: "2026-04"
+      row_count: 684
+      interpretation: >
+        人工确认 2026-04 是截断月份，不应作为完整月份进行趋势比较。
+  operation_type_summary:
+    deduct:
+      row_count: 210860
+      credits_amount: 52777659.0
+      interpretation: AI 使用/消耗
+    earn:
+      row_count: 24969
+      credits_amount: 6283874.0
+      interpretation: credits 获得
+    refund:
+      row_count: 12420
+      credits_amount: 3112351.0
+      interpretation: credits 退还
+  interpretation:
+    - >
+      log_id 唯一，验证“一行 = 一次 AI 操作”的 grain 成立。
+    - >
+      user_id_hash 映射覆盖率为 100%，映射后的 user_id 也全部能关联到 dim_user。
+    - >
+      operation_type 仅包含 deduct、earn、refund。
+    - >
+      人工确认：分析 AI 使用/消耗时，只统计 operation_type = 'deduct'。
+    - >
+      人工确认：分析 credits 流水时，deduct 记为负，earn/refund 记为正。
+    - >
+      created_at 全部可转换为 Unix timestamp。
+    - >
+      人工确认：2026-04 是截断月份，完整趋势分析应优先使用 2025-04 到 2026-03。
+    - >
+      remark 全部可解析为 JSON，但默认不作为主分析字段。
+    - >
+      只有用户明确问 token、cost、session_id 时，再解析 remark。
+
+validation_checks:
+  grain_checks:
+    - check_name: log_id_uniqueness
+      description: >
+        检查 log_id 是否唯一，验证“一行 = 一次 AI 操作”的粒度。
+      sql: |
+        SELECT
+            COUNT(*) AS row_count,
+            COUNT(DISTINCT log_id) AS distinct_log_id_count,
+            COUNT(*) - COUNT(DISTINCT log_id) AS duplicate_log_id_count
+        FROM fact_ai_usage_log;
+
+  dq_checks:
+    - check_name: user_id_hash_mapping_coverage
+      description: >
+        检查 fact_ai_usage_log.user_id_hash 是否都能映射到 dim_user_id_mapping.user_id_hash。
+      sql: |
+        SELECT
+            COUNT(*) AS unmatched_ai_user_hash_count
+        FROM fact_ai_usage_log a
+        LEFT JOIN dim_user_id_mapping m
+            ON a.user_id_hash = m.user_id_hash
+        WHERE m.user_id_hash IS NULL;
+
+    - check_name: mapped_user_coverage
+      description: >
+        检查映射后的 user_id 是否能关联到 dim_user.user_id。
+      sql: |
+        SELECT
+            COUNT(*) AS unmatched_mapped_user_count
+        FROM fact_ai_usage_log a
+        LEFT JOIN dim_user_id_mapping m
+            ON a.user_id_hash = m.user_id_hash
+        LEFT JOIN dim_user u
+            ON m.user_id = u.user_id
+        WHERE m.user_id IS NOT NULL
+          AND u.user_id IS NULL;
+
+    - check_name: operation_type_distribution
+      description: >
+        检查 operation_type 的取值分布。
+      sql: |
+        SELECT
+            operation_type,
+            COUNT(*) AS row_count,
+            SUM(credits_amount) AS credits_amount
+        FROM fact_ai_usage_log
+        GROUP BY operation_type
+        ORDER BY row_count DESC;
+
+    - check_name: model_name_distribution
+      description: >
+        检查 model_name 的取值分布。
+      sql: |
+        SELECT
+            model_name,
+            COUNT(*) AS row_count,
+            SUM(CASE WHEN operation_type = 'deduct' THEN credits_amount ELSE 0 END) AS credits_consumed
+        FROM fact_ai_usage_log
+        GROUP BY model_name
+        ORDER BY row_count DESC;
+
+    - check_name: created_at_timestamp_parse_check
+      description: >
+        检查 created_at 是否都能转换为 Unix epoch 秒时间戳。
+      sql: |
+        SELECT
+            COUNT(*) AS row_count,
+            SUM(
+                CASE
+                    WHEN TRY_CAST(created_at AS BIGINT) IS NULL THEN 1 ELSE 0
+                END
+            ) AS invalid_created_at_count,
+            MIN(TO_TIMESTAMP(TRY_CAST(created_at AS BIGINT))) AS min_created_time,
+            MAX(TO_TIMESTAMP(TRY_CAST(created_at AS BIGINT))) AS max_created_time
+        FROM fact_ai_usage_log;
+
+    - check_name: credits_amount_range_check
+      description: >
+        检查 credits_amount 是否存在负值或异常范围。
+      sql: |
+        SELECT
+            MIN(credits_amount) AS min_credits_amount,
+            MAX(credits_amount) AS max_credits_amount,
+            SUM(CASE WHEN credits_amount < 0 THEN 1 ELSE 0 END) AS negative_credits_count,
+            SUM(CASE WHEN credits_amount = 0 THEN 1 ELSE 0 END) AS zero_credits_count
+        FROM fact_ai_usage_log;
+
+    - check_name: remark_null_and_json_check
+      description: >
+        检查 remark 空值以及是否可被解析为 JSON。
+      sql: |
+        SELECT
+            COUNT(*) AS row_count,
+            SUM(CASE WHEN remark IS NULL OR CAST(remark AS VARCHAR) = '' THEN 1 ELSE 0 END) AS empty_remark_count,
+            SUM(CASE WHEN TRY_CAST(remark AS JSON) IS NULL THEN 1 ELSE 0 END) AS invalid_json_remark_count
+        FROM fact_ai_usage_log;
+
+sql_patterns:
+  ai_credits_by_model: |
+    SELECT
+        model_name,
+        COUNT(DISTINCT log_id) AS operation_count,
+        SUM(CASE WHEN operation_type = 'deduct' THEN credits_amount ELSE 0 END) AS credits_consumed
+    FROM fact_ai_usage_log
+    GROUP BY model_name
+    ORDER BY credits_consumed DESC;
+
+  daily_ai_credits_trend: |
+    SELECT
+        CAST(TO_TIMESTAMP(CAST(created_at AS BIGINT)) AS DATE) AS dt,
+        COUNT(DISTINCT log_id) AS operation_count,
+        SUM(CASE WHEN operation_type = 'deduct' THEN credits_amount ELSE 0 END) AS credits_consumed
+    FROM fact_ai_usage_log
+    GROUP BY dt
+    ORDER BY dt;
+
+  monthly_ai_credits_trend_complete_months: |
+    SELECT
+        STRFTIME(TO_TIMESTAMP(CAST(created_at AS BIGINT)), '%Y-%m') AS month,
+        COUNT(DISTINCT log_id) AS operation_count,
+        SUM(CASE WHEN operation_type = 'deduct' THEN credits_amount ELSE 0 END) AS credits_consumed
+    FROM fact_ai_usage_log
+    WHERE STRFTIME(TO_TIMESTAMP(CAST(created_at AS BIGINT)), '%Y-%m') BETWEEN '2025-04' AND '2026-03'
+    GROUP BY month
+    ORDER BY month;
+
+  monthly_ai_credits_trend_all_months: |
+    SELECT
+        STRFTIME(TO_TIMESTAMP(CAST(created_at AS BIGINT)), '%Y-%m') AS month,
+        COUNT(DISTINCT log_id) AS operation_count,
+        SUM(CASE WHEN operation_type = 'deduct' THEN credits_amount ELSE 0 END) AS credits_consumed
+    FROM fact_ai_usage_log
+    GROUP BY month
+    ORDER BY month;
+
+  credits_flow_by_operation_type: |
+    SELECT
+        operation_type,
+        COUNT(DISTINCT log_id) AS operation_count,
+        SUM(credits_amount) AS gross_credits_amount,
+        SUM(
+            CASE
+              WHEN operation_type IN ('earn', 'refund') THEN credits_amount
+              WHEN operation_type = 'deduct' THEN -credits_amount
+              ELSE 0
+            END
+        ) AS signed_credits_change
+    FROM fact_ai_usage_log
+    GROUP BY operation_type
+    ORDER BY operation_type;
+
+  ai_credits_by_tenant: |
+    SELECT
+        u.tenant_id,
+        COUNT(DISTINCT a.log_id) AS ai_operation_count,
+        SUM(CASE WHEN a.operation_type = 'deduct' THEN a.credits_amount ELSE 0 END) AS credits_consumed
+    FROM fact_ai_usage_log a
+    LEFT JOIN dim_user_id_mapping m
+        ON a.user_id_hash = m.user_id_hash
+    LEFT JOIN dim_user u
+        ON m.user_id = u.user_id
+    GROUP BY u.tenant_id
+    ORDER BY credits_consumed DESC;
+
+  ai_credits_by_tenant_profile: |
+    SELECT
+        t.country,
+        t.industry,
+        t.size_tier,
+        COUNT(DISTINCT a.log_id) AS ai_operation_count,
+        SUM(CASE WHEN a.operation_type = 'deduct' THEN a.credits_amount ELSE 0 END) AS credits_consumed
+    FROM fact_ai_usage_log a
+    LEFT JOIN dim_user_id_mapping m
+        ON a.user_id_hash = m.user_id_hash
+    LEFT JOIN dim_user u
+        ON m.user_id = u.user_id
+    LEFT JOIN dim_tenant t
+        ON u.tenant_id = t.tenant_id
+    GROUP BY t.country, t.industry, t.size_tier
+    ORDER BY credits_consumed DESC;
+
+  ai_user_activity_comparison_daily: |
+    WITH ai_daily AS (
+        SELECT
+            m.user_id,
+            CAST(TO_TIMESTAMP(CAST(a.created_at AS BIGINT)) AS DATE) AS dt,
+            COUNT(DISTINCT a.log_id) AS ai_operation_count,
+            SUM(CASE WHEN a.operation_type = 'deduct' THEN a.credits_amount ELSE 0 END) AS credits_consumed
+        FROM fact_ai_usage_log a
+        LEFT JOIN dim_user_id_mapping m
+            ON a.user_id_hash = m.user_id_hash
+        GROUP BY m.user_id, CAST(TO_TIMESTAMP(CAST(a.created_at AS BIGINT)) AS DATE)
+    )
+    SELECT
+        d.dt,
+        CASE WHEN ai.user_id IS NULL THEN 'non_ai_user_day' ELSE 'ai_user_day' END AS ai_usage_group,
+        COUNT(DISTINCT d.user_id) AS user_count,
+        AVG(d.active_duration_sec) AS avg_active_duration_sec,
+        AVG(d.session_count) AS avg_session_count
+    FROM fact_daily_usage d
+    LEFT JOIN ai_daily ai
+        ON d.user_id = ai.user_id
+       AND d.dt = ai.dt
+    GROUP BY d.dt, ai_usage_group
+    ORDER BY d.dt, ai_usage_group;
+
+prompt_summary: >
+  fact_ai_usage_log 是 AI 调用日志表，一行代表一次 AI credits 操作。
+  log_id 是主键。user_id_hash 是哈希用户 ID，不能直接 JOIN dim_user.user_id；
+  必须先通过 dim_user_id_mapping.user_id_hash 映射到明文 user_id。
+  created_at 是 Unix epoch 秒字符串，需要用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换。
+  分析 AI 使用/消耗时只统计 operation_type = 'deduct'，并 SUM(credits_amount)。
+  分析 credits 流水时，deduct 记为负，earn/refund 记为正。
+  model_name 可用于模型使用分布分析。
+  2026-04 是截断月份，完整月度趋势优先使用 2025-04 到 2026-03。
+  remark 可解析，但默认不作为主分析字段；只有用户明确询问 token、cost、session_id 时再解析。
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_ai_usage_log_validation.md
+  additional_review_source: user_manual_confirmation
+  checklist:
+    - confirmed: true
+      item: >
+        fact_ai_usage_log 行数为 248249，字段数为 7。
+    - confirmed: true
+      item: >
+        log_id 唯一，可以作为主键。
+    - confirmed: true
+      item: >
+        user_id_hash 全部能映射到 dim_user_id_mapping。
+    - confirmed: true
+      item: >
+        映射后的 user_id 全部能关联到 dim_user。
+    - confirmed: true
+      item: >
+        operation_type 仅包含 deduct、earn、refund。
+    - confirmed: true
+      item: >
+        人工确认：分析 AI 使用/消耗时，只统计 operation_type = 'deduct'。
+    - confirmed: true
+      item: >
+        人工确认：分析 credits 流水时，deduct 记为负，earn/refund 记为正。
+    - confirmed: true
+      item: >
+        model_name 枚举值正常。
+    - confirmed: true
+      item: >
+        created_at 全部能转换为 Unix timestamp。
+    - confirmed: true
+      item: >
+        人工确认：2026-04 是截断月份。
+    - confirmed: true
+      item: >
+        credits_amount 无负值、无零值，范围为 1 到 500。
+    - confirmed: true
+      item: >
+        remark 无空值，且全部可解析为 JSON。
+    - confirmed: true
+      item: >
+        人工确认：remark 默认不作为主分析字段；
+        只有用户明确问 token、cost、session_id 时再启用 JSON/text 解析。
+    - confirmed: true
+      item: >
+        主要 SQL patterns 均可在 DuckDB 中执行。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

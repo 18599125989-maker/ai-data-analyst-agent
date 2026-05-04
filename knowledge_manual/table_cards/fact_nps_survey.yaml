@@ -1,0 +1,709 @@
+table_name: fact_nps_survey
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: G
+  name: 增长与实验
+
+business_meaning: >
+  NPS 问卷与反馈事实表，记录用户的问卷提交、评分、文本反馈、所属租户与套餐信息。
+  该表可用于 NPS、完成率、反馈文本分布以及不同租户、套餐、时间维度下的满意度分析。
+  当前验证显示该表可正式用于 Agent 分析，但存在 `plan_tier` 大小写归一化和未完成问卷过滤规则，
+  因此应视为 validated_with_warnings。
+
+grain: >
+  一行 = 一条 NPS 问卷/反馈记录。
+  当前验证显示主键候选唯一：row_count = 8000，distinct_primary_key_count = 8000，
+  duplicate_primary_key_count = 0，因此记录级粒度成立。
+  但 NPS 业务分析不等于直接统计所有记录；计算 NPS 时只能使用 is_completed = 1
+  且 score != 'N/A' 的完成问卷。
+
+primary_key:
+  - survey_id
+
+natural_key_candidate:
+  - survey_id
+
+natural_key_status:
+  is_unique: true
+  tested_key:
+    - survey_id
+  duplicated_group_count: 0
+  note: >
+    当前验证显示 survey_id 唯一，可作为本表的物理主键与记录级唯一标识。
+
+profile:
+  row_count: 8000
+  column_count: 9
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/fact_nps_survey_validation.md
+  profile_status: validated_with_warnings
+
+columns:
+  survey_id:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: >
+      NPS 问卷记录 ID。
+      用于唯一标识一条问卷/反馈记录。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 8000
+      distinct_rate: 1.0
+      min: NPS00004d93201b
+      max: NPSfffcd136f879
+      sample_values:
+        - NPS00004d93201b
+        - NPS000820422981
+        - NPS001221144d5f
+        - NPS00143023801f
+        - NPS00175bde5fcd
+      is_possible_primary_key: true
+    notes:
+      - >
+        survey_id 已验证唯一，可直接作为问卷记录主键。
+
+  user_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      被调研用户 ID。
+      可用于关联用户维度，并进一步映射用户所属租户、部门和角色等属性。
+    references: dim_user.user_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 8000
+      distinct_rate: 1.0
+      min: U000001
+      max: U049998
+      sample_values:
+        - U000001
+        - U000002
+        - U000010
+        - U000012
+        - U000022
+      is_possible_primary_key: true
+    notes:
+      - >
+        user_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        统计参与问卷用户数时应使用 COUNT(DISTINCT user_id)。
+
+  tenant_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      问卷记录所属企业 ID。
+      可用于企业级 NPS、完成率和反馈分析。
+    references: dim_tenant.tenant_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 489
+      distinct_rate: 0.0611
+      min: T00001
+      max: T00500
+      sample_values:
+        - T00001
+        - T00002
+        - T00003
+        - T00004
+        - T00005
+      is_possible_primary_key: false
+    notes:
+      - >
+        tenant_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        统计企业数时应使用 COUNT(DISTINCT tenant_id)，不要把 COUNT(*) 当作企业数。
+
+  survey_date:
+    type: date
+    semantic_type: date_time_period
+    business_meaning: >
+      问卷日期。
+      可用于日趋势、月趋势、周期比较和时间窗口分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 366
+      distinct_rate: 0.0457
+      min: "2025-04-01"
+      max: "2026-04-01"
+      sample_values:
+        - "2025-04-01"
+        - "2025-04-02"
+        - "2025-04-03"
+        - "2025-04-04"
+        - "2025-04-05"
+      is_possible_primary_key: false
+    notes:
+      - >
+        可用于日/月趋势分析。
+      - >
+        2026-04-01 是边界日期，不应将 2026-04 当作完整月份参与月度趋势比较。
+      - >
+        完整月份趋势建议使用 2025-04 到 2026-03。
+
+  role:
+    type: bigint
+    semantic_type: enum_dimension
+    business_meaning: >
+      用户角色编码。
+      当前验证显示取值范围为 1 到 3，应视为角色编码/枚举字段。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3
+      distinct_rate: 0.0004
+      min: 1
+      max: 3
+      sample_values:
+        - 1
+        - 2
+        - 3
+      is_possible_primary_key: false
+    notes:
+      - >
+        role 取值为 1 到 3。
+      - >
+        role 是角色编码/枚举，不是可求和指标。
+      - >
+        如果数据字典没有明确说明 1/2/3 对应角色名，不要编造具体含义。
+
+  score:
+    type: varchar
+    semantic_type: nps_score_text_or_numeric
+    business_meaning: >
+      NPS 评分字段。
+      当前值域包含 0 到 10 的数值字符串，以及未完成问卷对应的 'N/A'。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 12
+      distinct_rate: 0.0015
+      min: "0"
+      max: N/A
+      sample_values:
+        - "0"
+        - "1"
+        - "10"
+        - "2"
+        - "3"
+      is_possible_primary_key: false
+    notes:
+      - >
+        score 包含 0 到 10 和 N/A。
+      - >
+        score = N/A 数量为 694，并与未完成问卷对应。
+      - >
+        NPS 分析必须过滤 is_completed = 1 AND score != 'N/A'。
+      - >
+        score 需要先过滤 N/A，再 CAST 为 INTEGER 后做分层或均值计算。
+      - >
+        NPS 不是 AVG(score)。
+
+  plan_tier:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >
+      问卷记录对应的套餐等级。
+      可用于按套餐层级分析满意度和完成情况。
+    references: dim_plan.plan_tier
+    validation_status: passed_with_normalization
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 0.0006
+      min: Business
+      max: Starter
+      sample_values:
+        - Business
+        - Enterprise
+        - Free
+        - Pro
+        - Starter
+      is_possible_primary_key: false
+    notes:
+      - >
+        直接等值 JOIN dim_plan.plan_tier 会 8000 条全部 unmatched。
+      - >
+        LOWER(plan_tier) 归一化后 unmatched_count = 0。
+      - >
+        正确 JOIN 条件应为 LOWER(fact_nps_survey.plan_tier) = LOWER(dim_plan.plan_tier)。
+      - >
+        不要默认使用直接等值 JOIN。
+
+  feedback_text:
+    type: varchar
+    semantic_type: text
+    business_meaning: >
+      用户填写的文本反馈内容。
+      可用于反馈分布、主题归纳和文本情绪相关分析。
+    references: null
+    profile:
+      null_rate: 0.1109
+      distinct_count: 8
+      distinct_rate: 0.001
+      min: Best tool ever
+      max: Too slow
+      sample_values:
+        - Best tool ever
+        - Crashes often
+        - Great product!
+        - Integration issues
+        - Love the collaboration
+      is_possible_primary_key: false
+    notes:
+      - >
+        None 可视为无文本反馈。
+      - >
+        feedback_text 可用于文本反馈分布分析。
+      - >
+        不应把 None 当作负面反馈。
+
+  is_completed:
+    type: bigint
+    semantic_type: completion_flag
+    business_meaning: >
+      问卷是否完成的标记。
+      1 表示完成，0 表示未完成。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 2
+      distinct_rate: 0.0003
+      min: 0
+      max: 1
+      sample_values:
+        - 0
+        - 1
+      is_possible_primary_key: false
+    notes:
+      - >
+        0 表示未完成，1 表示完成。
+      - >
+        is_completed = 0 数量为 694。
+      - >
+        NPS 计算只使用 is_completed = 1。
+
+join_keys:
+  - column: user_id
+    references: dim_user.user_id
+    relationship: many_to_one
+    join_condition: fact_nps_survey.user_id = dim_user.user_id
+    purpose: 将问卷记录关联到用户维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      user_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+  - column: tenant_id
+    references: dim_tenant.tenant_id
+    relationship: many_to_one
+    join_condition: fact_nps_survey.tenant_id = dim_tenant.tenant_id
+    purpose: 将问卷记录关联到企业维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      tenant_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+  - column: plan_tier
+    references: dim_plan.plan_tier
+    relationship: many_to_one
+    join_condition: LOWER(fact_nps_survey.plan_tier) = LOWER(dim_plan.plan_tier)
+    purpose: 将问卷记录关联到套餐维度。
+    risk_level: medium
+    validation_status: passed_with_normalization
+    note: >
+      直接等值 JOIN 失败，plan_tier_direct_join_unmatched_count = 8000；
+      但 LOWER 归一化后全部匹配，plan_tier_lower_join_unmatched_count = 0。
+
+derived_join_paths:
+  nps_to_tenant_profile:
+    path:
+      - fact_nps_survey.tenant_id = dim_tenant.tenant_id
+    purpose: >
+      将 NPS 与企业画像维度结合，分析国家、行业、规模维度下的满意度差异。
+    risk_level: low
+    validation_status: passed
+  nps_to_plan_dimension:
+    path:
+      - LOWER(fact_nps_survey.plan_tier) = LOWER(dim_plan.plan_tier)
+    purpose: >
+      将 NPS 问卷映射到套餐维度。
+    risk_level: medium
+    validation_status: passed_with_normalization
+
+field_groups:
+  id_columns:
+    - survey_id
+    - user_id
+    - tenant_id
+  time_columns:
+    - survey_date
+  metric_columns: []
+  dimension_columns:
+    - user_id
+    - tenant_id
+    - plan_tier
+    - role
+    - is_completed
+  enum_columns:
+    - plan_tier
+    - role
+    - is_completed
+    - score
+  json_columns: []
+  text_columns:
+    - feedback_text
+
+recommended_use_cases:
+  - 计算整体 NPS、平均评分和问卷完成率。
+  - 按月、按租户、按套餐层级分析 NPS 与评分分布。
+  - 结合 dim_tenant 分析不同企业画像下的满意度差异。
+  - 统计文本反馈覆盖率与常见反馈内容分布。
+
+preferred_metrics:
+  survey_response_count:
+    expression: COUNT(DISTINCT survey_id)
+    meaning: 问卷记录数
+    applicable_grain: 任意分析层级
+    note: >
+      survey_id 已验证唯一，可直接用于记录去重统计。
+  completed_response_count:
+    expression: COUNT(DISTINCT CASE WHEN is_completed = 1 THEN survey_id END)
+    meaning: 完成问卷数
+    applicable_grain: 任意分析层级
+    note: >
+      NPS 计算前应先看完成问卷规模。
+  respondent_user_count:
+    expression: COUNT(DISTINCT user_id)
+    meaning: 参与问卷用户数
+    applicable_grain: 任意分析层级
+    note: >
+      COUNT(*) 是问卷记录数，不是参与用户数。
+  respondent_tenant_count:
+    expression: COUNT(DISTINCT tenant_id)
+    meaning: 有问卷反馈的企业数
+    applicable_grain: 任意分析层级
+    note: >
+      企业数应使用 tenant_id 去重统计。
+  average_score:
+    expression: AVG(CAST(score AS INTEGER))
+    meaning: 平均评分，不等于 NPS
+    applicable_grain: 完成问卷且 score 非 N/A
+    note: >
+      使用前必须过滤 WHERE is_completed = 1 AND score != 'N/A'。
+  nps_score:
+    expression: "%Promoters - %Detractors"
+    meaning: 标准 NPS
+    applicable_grain: 完成问卷且 score 非 N/A
+    note: >
+      Promoter 为 score >= 9，Passive 为 score 7-8，Detractor 为 score <= 6。
+  completion_rate:
+    expression: AVG(CASE WHEN is_completed = 1 THEN 1 ELSE 0 END)
+    meaning: 问卷完成率
+    applicable_grain: 任意分析层级
+    note: >
+      可用于衡量问卷是否完成，不等于满意度指标。
+
+known_traps:
+  - trap: >
+      把 NPS 当作 AVG(score)。
+    consequence: >
+      AVG(score) 只是平均评分，不是标准 NPS。
+    prevention: >
+      标准 NPS = %Promoters - %Detractors。Promoter 为 score >= 9，
+      Passive 为 score 7-8，Detractor 为 score <= 6。
+  - trap: >
+      将 score = 'N/A' 或 is_completed = 0 的记录纳入 NPS 计算。
+    consequence: >
+      会污染 NPS 结果或导致 CAST 错误。
+    prevention: >
+      NPS 计算必须过滤 WHERE is_completed = 1 AND score != 'N/A'。
+  - trap: >
+      直接使用 fact_nps_survey.plan_tier = dim_plan.plan_tier JOIN。
+    consequence: >
+      由于大小写不一致，直接等值 JOIN 会导致全部 unmatched。
+    prevention: >
+      使用 LOWER(fact_nps_survey.plan_tier) = LOWER(dim_plan.plan_tier)。
+  - trap: >
+      把 role 当作可求和指标。
+    consequence: >
+      SUM(role) 没有业务意义。
+    prevention: >
+      role 是 1 到 3 的角色编码/枚举，只能作为分组维度；具体编码含义如数据字典未说明则保持待确认。
+  - trap: >
+      JOIN 用户或租户后直接 COUNT(*) 当作用户数或企业数。
+    consequence: >
+      COUNT(*) 是问卷记录数，不是用户数或企业数。
+    prevention: >
+      统计用户数使用 COUNT(DISTINCT user_id)，统计企业数使用 COUNT(DISTINCT tenant_id)。
+  - trap: >
+      把 2026-04 当作完整月份参与月度趋势比较。
+    consequence: >
+      当前数据最大日期为 2026-04-01，只是边界日期，会导致 2026-04 被低估。
+    prevention: >
+      完整月份趋势优先使用 2025-04 到 2026-03；如展示 2026-04，需注明不完整。
+
+aggregation_notes:
+  - >
+    NPS 相关聚合必须先过滤 is_completed = 1 AND score != 'N/A'。
+  - >
+    score 在过滤后再 CAST 为 INTEGER，避免未完成问卷引起类型问题。
+  - >
+    月度趋势默认应使用完整月份区间 2025-04 到 2026-03。
+  - >
+    plan_tier 维度分析可直接按事实表 plan_tier 分组；如需 JOIN dim_plan，必须做 LOWER 归一化。
+
+agent_usage_policy:
+  use_only_completed_responses_for_nps: true
+  exclude_na_score_for_nps: true
+  cast_score_to_integer_after_filter: true
+  nps_is_not_average_score: true
+  plan_tier_join_requires_lower_normalization: true
+  plan_tier_direct_join_is_invalid: true
+  role_is_enum_not_metric: true
+  do_not_sum_role: true
+  use_complete_month_range_for_trends: "2025-04 to 2026-03"
+  treat_2026_04_as_partial_month: true
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_nps_survey_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: partial
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 8000
+    column_count: 9
+    primary_key_unique: true
+    user_id_fk_unmatched_count: 0
+    tenant_id_fk_unmatched_count: 0
+    plan_tier_direct_join_unmatched_count: 8000
+    plan_tier_lower_join_unmatched_count: 0
+    score_na_count: 694
+    is_completed_zero_count: 694
+    feedback_text_none_count: 887
+    survey_date_min: "2025-04-01"
+    survey_date_max: "2026-04-01"
+    role_min: 1
+    role_max: 3
+  interpretation:
+    - >
+      主键候选唯一，NPS 问卷记录粒度成立。
+    - >
+      user_id 和 tenant_id 外键覆盖率通过。
+    - >
+      plan_tier 直接等值 JOIN dim_plan 失败，但 LOWER 归一化后可全部匹配。
+    - >
+      score = N/A 与 is_completed = 0 对应，NPS 计算必须过滤未完成问卷。
+    - >
+      role 是枚举编码，不是指标。
+    - >
+      2026-04-01 是边界日期，完整月度趋势应优先使用 2025-04 到 2026-03。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - user_id_fk_coverage
+  - user_id_fk_unmatched_examples
+  - tenant_id_fk_coverage
+  - tenant_id_fk_unmatched_examples
+  - plan_tier_fk_coverage
+  - plan_tier_fk_unmatched_examples
+  - score_distribution
+  - score_null_check
+  - plan_tier_distribution
+  - plan_tier_null_check
+  - feedback_text_distribution
+  - feedback_text_null_check
+  - survey_date_time_range_check
+  - role_numeric_range_check
+  - is_completed_numeric_range_check
+  - sql_pattern_time_distribution
+  - sql_pattern_enum_distribution
+  - sql_pattern_metric_trend
+  - sql_pattern_join_coverage_sample
+  - manual_lower_plan_tier_join_check
+
+sql_patterns:
+  nps_overall: |
+    WITH filtered AS (
+        SELECT CAST(score AS INTEGER) AS score_int
+        FROM fact_nps_survey
+        WHERE is_completed = 1
+          AND score != 'N/A'
+    )
+    SELECT
+        COUNT(*) AS total_response_count,
+        SUM(CASE WHEN score_int >= 9 THEN 1 ELSE 0 END) AS promoter_count,
+        SUM(CASE WHEN score_int BETWEEN 7 AND 8 THEN 1 ELSE 0 END) AS passive_count,
+        SUM(CASE WHEN score_int <= 6 THEN 1 ELSE 0 END) AS detractor_count,
+        ROUND(
+            100.0 * SUM(CASE WHEN score_int >= 9 THEN 1 ELSE 0 END) / COUNT(*)
+            - 100.0 * SUM(CASE WHEN score_int <= 6 THEN 1 ELSE 0 END) / COUNT(*),
+            2
+        ) AS nps_score
+    FROM filtered;
+  nps_by_month: |
+    WITH filtered AS (
+        SELECT
+            survey_date,
+            CAST(score AS INTEGER) AS score_int
+        FROM fact_nps_survey
+        WHERE is_completed = 1
+          AND score != 'N/A'
+          AND survey_date < DATE '2026-04-01'
+    )
+    SELECT
+        STRFTIME(survey_date, '%Y-%m') AS month_key,
+        COUNT(*) AS total_response_count,
+        SUM(CASE WHEN score_int >= 9 THEN 1 ELSE 0 END) AS promoter_count,
+        SUM(CASE WHEN score_int <= 6 THEN 1 ELSE 0 END) AS detractor_count,
+        ROUND(
+            100.0 * SUM(CASE WHEN score_int >= 9 THEN 1 ELSE 0 END) / COUNT(*)
+            - 100.0 * SUM(CASE WHEN score_int <= 6 THEN 1 ELSE 0 END) / COUNT(*),
+            2
+        ) AS nps_score
+    FROM filtered
+    GROUP BY STRFTIME(survey_date, '%Y-%m')
+    ORDER BY month_key;
+  nps_by_tenant: |
+    WITH filtered AS (
+        SELECT
+            tenant_id,
+            CAST(score AS INTEGER) AS score_int
+        FROM fact_nps_survey
+        WHERE is_completed = 1
+          AND score != 'N/A'
+    )
+    SELECT
+        tenant_id,
+        COUNT(*) AS response_count,
+        SUM(CASE WHEN score_int >= 9 THEN 1 ELSE 0 END) AS promoter_count,
+        SUM(CASE WHEN score_int <= 6 THEN 1 ELSE 0 END) AS detractor_count,
+        ROUND(
+            100.0 * SUM(CASE WHEN score_int >= 9 THEN 1 ELSE 0 END) / COUNT(*)
+            - 100.0 * SUM(CASE WHEN score_int <= 6 THEN 1 ELSE 0 END) / COUNT(*),
+            2
+        ) AS nps_score
+    FROM filtered
+    GROUP BY tenant_id
+    ORDER BY response_count DESC, tenant_id;
+  nps_by_plan_tier: |
+    WITH filtered AS (
+        SELECT
+            plan_tier,
+            CAST(score AS INTEGER) AS score_int
+        FROM fact_nps_survey
+        WHERE is_completed = 1
+          AND score != 'N/A'
+    )
+    SELECT
+        plan_tier,
+        COUNT(*) AS response_count,
+        SUM(CASE WHEN score_int >= 9 THEN 1 ELSE 0 END) AS promoter_count,
+        SUM(CASE WHEN score_int <= 6 THEN 1 ELSE 0 END) AS detractor_count,
+        ROUND(
+            100.0 * SUM(CASE WHEN score_int >= 9 THEN 1 ELSE 0 END) / COUNT(*)
+            - 100.0 * SUM(CASE WHEN score_int <= 6 THEN 1 ELSE 0 END) / COUNT(*),
+            2
+        ) AS nps_score
+    FROM filtered
+    GROUP BY plan_tier
+    ORDER BY response_count DESC, plan_tier;
+  nps_by_plan_tier_with_dim_plan: |
+    WITH filtered AS (
+        SELECT
+            n.plan_tier,
+            p.plan_tier AS dim_plan_tier,
+            CAST(n.score AS INTEGER) AS score_int
+        FROM fact_nps_survey n
+        JOIN dim_plan p
+          ON LOWER(n.plan_tier) = LOWER(p.plan_tier)
+        WHERE n.is_completed = 1
+          AND n.score != 'N/A'
+    )
+    SELECT
+        dim_plan_tier,
+        COUNT(*) AS response_count,
+        SUM(CASE WHEN score_int >= 9 THEN 1 ELSE 0 END) AS promoter_count,
+        SUM(CASE WHEN score_int <= 6 THEN 1 ELSE 0 END) AS detractor_count,
+        ROUND(
+            100.0 * SUM(CASE WHEN score_int >= 9 THEN 1 ELSE 0 END) / COUNT(*)
+            - 100.0 * SUM(CASE WHEN score_int <= 6 THEN 1 ELSE 0 END) / COUNT(*),
+            2
+        ) AS nps_score
+    FROM filtered
+    GROUP BY dim_plan_tier
+    ORDER BY response_count DESC, dim_plan_tier;
+  feedback_text_distribution: |
+    SELECT
+        feedback_text,
+        COUNT(*) AS response_count
+    FROM fact_nps_survey
+    GROUP BY feedback_text
+    ORDER BY response_count DESC, feedback_text;
+  completion_rate_by_month: |
+    SELECT
+        STRFTIME(survey_date, '%Y-%m') AS month_key,
+        AVG(CASE WHEN is_completed = 1 THEN 1.0 ELSE 0.0 END) AS completion_rate
+    FROM fact_nps_survey
+    GROUP BY STRFTIME(survey_date, '%Y-%m')
+    ORDER BY month_key;
+
+prompt_summary: >
+  fact_nps_survey 是 NPS 问卷与反馈事实表，一行代表一条 survey_id 级问卷记录，主键已验证唯一。
+  常用 JOIN 路径包括 user_id -> dim_user、tenant_id -> dim_tenant，以及经 LOWER 归一化后的
+  plan_tier -> dim_plan。
+  NPS 计算只能使用 is_completed = 1 且 score != 'N/A' 的完成问卷，并在过滤后将 score CAST 为 INTEGER。
+  关键指标包括问卷数、完成问卷数、参与用户数、参与企业数、平均评分和标准 NPS；其中 NPS 不是 AVG(score)。
+  关键陷阱是 plan_tier 不能直接等值 JOIN、role 不是 metric、2026-04 是不完整月份边界。
+
+manual_review:
+  required: true
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_nps_survey_validation.md
+  additional_review_source: user_manual_sql_check
+  checklist:
+    - confirmed: true
+      item: >
+        主键候选唯一已验证。
+    - confirmed: true
+      item: >
+        user_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        tenant_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        plan_tier 直接 JOIN 失败已确认。
+    - confirmed: true
+      item: >
+        LOWER(plan_tier) 归一化后 JOIN 通过已人工确认。
+    - confirmed: true
+      item: >
+        score = N/A 与 is_completed = 0 对应。
+    - confirmed: true
+      item: >
+        NPS 不是 AVG(score)。
+    - confirmed: true
+      item: >
+        role 是枚举，不作为 metric。
+    - confirmed: true
+      item: >
+        2026-04-01 是边界日期。
+
+status:
+  authoring_status: validated_with_warnings
+  profile_filled: true
+  grain_validated: true
+  dq_validated: partial
+  ready_for_agent: true

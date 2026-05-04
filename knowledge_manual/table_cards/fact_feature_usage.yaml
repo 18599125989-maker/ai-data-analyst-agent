@@ -1,0 +1,494 @@
+table_name: fact_feature_usage
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: C
+  name: 产品使用
+
+business_meaning: >
+  功能使用事实表，记录用户在某一天对某个产品功能的使用情况。
+  该表适合分析功能采用、功能活跃用户、功能操作次数和功能使用时长。
+  当前验证显示该表可作为正式的功能使用分析事实表使用。
+
+grain: >
+  一行 = 一个 user_id 在某一天 dt 对一个 feature_key 的一条功能使用记录。
+  当前验证显示 user_id + feature_key + dt 在现有数据中唯一，
+  row_count = 2700092，distinct_primary_key_count = 2700092，
+  duplicate_primary_key_count = 0，因此该粒度成立。
+
+primary_key:
+  - user_id
+  - feature_key
+  - dt
+
+natural_key_candidate:
+  - user_id
+  - feature_key
+  - dt
+
+natural_key_status:
+  is_unique: true
+  tested_key:
+    - user_id
+    - feature_key
+    - dt
+  duplicated_group_count: 0
+  note: >
+    当前验证显示 user_id + feature_key + dt 在样本中唯一，
+    可作为本表的复合物理主键与业务粒度键使用。
+
+profile:
+  row_count: 2700092
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  validation_file: outputs/knowledge/validation/fact_feature_usage_validation.md
+  profile_status: validated
+
+columns:
+  user_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      用户 ID。
+      用于将功能使用记录关联到用户维度，并进一步关联租户、部门等组织维度。
+    references: dim_user.user_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 15000
+      distinct_rate: 0.0056
+      min: U000005
+      max: U049999
+      sample_values:
+        - U000005
+        - U000011
+        - U000014
+        - U000020
+        - U000021
+      is_possible_primary_key: false
+    notes:
+      - >
+        user_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        统计用户数时应使用 COUNT(DISTINCT user_id)，不要把 COUNT(*) 当作用户数。
+
+  feature_key:
+    type: varchar
+    semantic_type: foreign_key_dimension
+    business_meaning: >
+      功能标识，表示本条记录对应的产品功能模块。
+      适合做功能分布、功能采用和功能使用强度分析。
+    references: dim_feature.feature_key
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 12
+      distinct_rate: 0.0
+      min: approval
+      max: wiki
+      sample_values:
+        - base
+        - video_conf
+        - calendar
+        - minutes
+        - docs
+        - whiteboard
+        - approval
+        - wiki
+        - email
+        - task
+        - sheets
+        - im
+      is_possible_primary_key: false
+    notes:
+      - >
+        feature_key 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        feature_key 无 NULL 或空字符串，blank_or_null_count = 0。
+
+  dt:
+    type: date
+    semantic_type: date_time_period
+    business_meaning: >
+      使用日期。
+      该字段适合做按日趋势、窗口分析和跨表按 user_id + dt 对齐分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 365
+      distinct_rate: 0.0001
+      min: "2025-04-01T00:00:00"
+      max: "2026-03-31T00:00:00"
+      sample_values:
+        - "2025-04-01"
+        - "2025-04-02"
+        - "2025-04-03"
+        - "2025-04-04"
+        - "2025-04-05"
+      is_possible_primary_key: false
+    notes:
+      - >
+        dt 无空值，时间范围为 2025-04-01T00:00:00 到 2026-03-31T00:00:00。
+      - >
+        适合做日趋势分析；跨表关联时优先按 user_id + dt 对齐。
+
+  action_count:
+    type: bigint
+    semantic_type: metric
+    business_meaning: >
+      当天该用户在该功能上的操作次数。
+      适合聚合为功能总操作量或用户层面的功能使用强度指标。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 65
+      distinct_rate: 0.0
+      min: 1
+      max: 65
+      sample_values:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      is_possible_primary_key: false
+    notes:
+      - >
+        当前验证范围为 1 到 65，negative_count = 0，zero_count = 0。
+      - >
+        统计使用量时可使用 SUM(action_count) 表示功能操作次数。
+
+  duration_sec:
+    type: bigint
+    semantic_type: metric
+    business_meaning: >
+      当天该用户在该功能上的使用时长，单位为秒。
+      适合聚合为功能总使用时长或用户层面的时长强度指标。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3591
+      distinct_rate: 0.0013
+      min: 10
+      max: 3600
+      sample_values:
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+      is_possible_primary_key: false
+    notes:
+      - >
+        当前验证范围为 10 到 3600，negative_count = 0，zero_count = 0。
+      - >
+        统计使用时长时可使用 SUM(duration_sec)。
+
+join_keys:
+  - column: user_id
+    references: dim_user.user_id
+    relationship: many_to_one
+    join_condition: fact_feature_usage.user_id = dim_user.user_id
+    purpose: 将功能使用记录关联到用户维度及其所属租户、部门等信息。
+    risk_level: low
+    validation_status: passed
+    note: >
+      user_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+  - column: feature_key
+    references: dim_feature.feature_key
+    relationship: many_to_one
+    join_condition: fact_feature_usage.feature_key = dim_feature.feature_key
+    purpose: 将功能使用记录关联到功能维度，分析功能类别与功能采用情况。
+    risk_level: low
+    validation_status: passed
+    note: >
+      feature_key 外键覆盖率已验证通过，unmatched_count = 0。
+
+derived_join_paths:
+  feature_usage_to_tenant:
+    path:
+      - fact_feature_usage.user_id = dim_user.user_id
+      - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: >
+      将功能使用记录映射到租户，分析企业级功能采用和企业级使用强度。
+    risk_level: medium
+    validation_status: passed
+  feature_usage_to_tenant_profile:
+    path:
+      - fact_feature_usage.user_id = dim_user.user_id
+      - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: >
+      将功能使用与企业行业、规模、国家等画像维度结合，做租户画像分析。
+    risk_level: medium
+    validation_status: passed
+
+field_groups:
+  id_columns:
+    - user_id
+    - feature_key
+    - dt
+  time_columns:
+    - dt
+  metric_columns:
+    - action_count
+    - duration_sec
+  dimension_columns:
+    - user_id
+    - feature_key
+    - dt
+  enum_columns:
+    - feature_key
+  json_columns: []
+  text_columns: []
+
+recommended_use_cases:
+  - 按日分析功能使用趋势、功能活跃度和功能使用时长。
+  - 分析不同 feature_key 的采用度、操作量和使用时长。
+  - 结合 dim_user 和 dim_tenant 分析不同企业或用户群体的功能使用差异。
+  - 与日粒度行为表按 user_id + dt 对齐，分析功能使用与整体活跃度之间的关系。
+
+preferred_metrics:
+  feature_usage_record_count:
+    expression: COUNT(DISTINCT (user_id, feature_key, dt))
+    meaning: 功能使用记录数
+    applicable_grain: fact_feature_usage 原子粒度
+    note: >
+      由于当前主键为 user_id + feature_key + dt，记录数可按该复合键去重统计。
+  active_feature_user_count:
+    expression: COUNT(DISTINCT user_id)
+    meaning: 使用过功能的用户数
+    applicable_grain: 任意功能或时间汇总层级
+    note: >
+      统计用户数时应使用 COUNT(DISTINCT user_id)。
+  feature_count:
+    expression: COUNT(DISTINCT feature_key)
+    meaning: 功能数
+    applicable_grain: 任意时间或用户范围
+    note: >
+      统计功能覆盖数时应使用 COUNT(DISTINCT feature_key)。
+  total_action_count:
+    expression: SUM(action_count)
+    meaning: 总功能操作次数
+    applicable_grain: 任意汇总层级
+    note: >
+      使用量应按 SUM(action_count) 聚合。
+  total_duration_sec:
+    expression: SUM(duration_sec)
+    meaning: 总功能使用时长（秒）
+    applicable_grain: 任意汇总层级
+    note: >
+      使用时长应按 SUM(duration_sec) 聚合。
+
+known_traps:
+  - trap: >
+      JOIN dim_user 或 dim_tenant 后直接用 COUNT(*) 当作用户数或企业数。
+    consequence: >
+      COUNT(*) 表示功能使用记录数，不是用户数，也不是企业数。
+    prevention: >
+      统计用户数使用 COUNT(DISTINCT user_id)；统计企业数需先通过 dim_user 映射 tenant_id，
+      再使用 COUNT(DISTINCT tenant_id)。
+  - trap: >
+      统计功能数时直接使用 COUNT(*)。
+    consequence: >
+      会把使用记录数误当成功能数。
+    prevention: >
+      统计功能数应使用 COUNT(DISTINCT feature_key)。
+  - trap: >
+      统计功能使用量时只看记录条数，不聚合 action_count 或 duration_sec。
+    consequence: >
+      会低估或误读真实使用强度。
+    prevention: >
+      统计使用量应使用 SUM(action_count) 或 SUM(duration_sec)。
+  - trap: >
+      与 fact_daily_usage 或 fact_ai_usage_log 关联时只按 user_id JOIN。
+    consequence: >
+      会在多日、多记录情况下产生多对多膨胀，导致计数和时长被放大。
+    prevention: >
+      跨日粒度行为表关联时应优先按 user_id + dt 对齐，再根据分析目标控制聚合层级。
+
+aggregation_notes:
+  - >
+    本表是日粒度功能明细表。按日汇总时可直接 GROUP BY dt。
+  - >
+    分析用户规模时应使用 COUNT(DISTINCT user_id)，不要把记录数当作用户数。
+  - >
+    分析企业规模时需先通过 dim_user 映射 tenant_id，再使用 COUNT(DISTINCT tenant_id)。
+  - >
+    分析功能使用量时，优先使用 SUM(action_count) 与 SUM(duration_sec)，而不是仅统计记录数。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_feature_usage_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 2700092
+    column_count: 5
+    primary_key_row_count: 2700092
+    distinct_primary_key_count: 2700092
+    duplicate_primary_key_count: 0
+    user_id_unmatched_count: 0
+    feature_key_unmatched_count: 0
+    feature_key_blank_or_null_count: 0
+    feature_key_values:
+      - base
+      - video_conf
+      - calendar
+      - minutes
+      - docs
+      - whiteboard
+      - approval
+      - wiki
+      - email
+      - task
+      - sheets
+      - im
+    dt_min_value: "2025-04-01T00:00:00"
+    dt_max_value: "2026-03-31T00:00:00"
+    dt_null_count: 0
+    action_count_min_value: 1
+    action_count_max_value: 65
+    action_count_negative_count: 0
+    action_count_zero_count: 0
+    duration_sec_min_value: 10
+    duration_sec_max_value: 3600
+    duration_sec_negative_count: 0
+    duration_sec_zero_count: 0
+    sql_patterns_executable: true
+  interpretation:
+    - >
+      当前验证显示 user_id + feature_key + dt 唯一，因此本表的日粒度功能使用明细成立。
+    - >
+      user_id 对 dim_user 的覆盖率为 100%，feature_key 对 dim_feature 的覆盖率也为 100%。
+    - >
+      feature_key 枚举稳定且无空值，适合作为功能分组维度。
+    - >
+      dt 无空值，覆盖 2025-04-01 到 2026-03-31，适合做完整的日趋势分析。
+    - >
+      action_count 与 duration_sec 范围正常，当前未发现负值或 0 值异常。
+    - >
+      主要 SQL patterns 已执行，可直接用于功能使用分析。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - user_id_fk_coverage
+  - user_id_fk_unmatched_examples
+  - feature_key_fk_coverage
+  - feature_key_fk_unmatched_examples
+  - feature_key_distribution
+  - feature_key_null_check
+  - dt_time_range_check
+  - action_count_numeric_range_check
+  - duration_sec_numeric_range_check
+  - sql_pattern_time_distribution
+  - sql_pattern_enum_distribution
+  - sql_pattern_metric_trend
+  - sql_pattern_join_coverage_sample
+
+sql_patterns:
+  daily_feature_usage_trend: |
+    SELECT
+        dt,
+        COUNT(DISTINCT user_id) AS active_feature_user_count,
+        ROUND(SUM(action_count), 2) AS total_action_count,
+        ROUND(SUM(duration_sec), 2) AS total_duration_sec
+    FROM fact_feature_usage
+    GROUP BY dt
+    ORDER BY dt;
+  feature_usage_by_feature_key: |
+    SELECT
+        feature_key,
+        COUNT(DISTINCT user_id) AS active_feature_user_count,
+        ROUND(SUM(action_count), 2) AS total_action_count,
+        ROUND(SUM(duration_sec), 2) AS total_duration_sec
+    FROM fact_feature_usage
+    GROUP BY feature_key
+    ORDER BY total_action_count DESC, feature_key;
+  feature_usage_by_user: |
+    SELECT
+        user_id,
+        COUNT(DISTINCT feature_key) AS feature_count,
+        ROUND(SUM(action_count), 2) AS total_action_count,
+        ROUND(SUM(duration_sec), 2) AS total_duration_sec
+    FROM fact_feature_usage
+    GROUP BY user_id
+    ORDER BY total_action_count DESC, user_id;
+  feature_usage_by_tenant: |
+    SELECT
+        u.tenant_id,
+        COUNT(DISTINCT f.user_id) AS active_feature_user_count,
+        COUNT(DISTINCT f.feature_key) AS feature_count,
+        ROUND(SUM(f.action_count), 2) AS total_action_count,
+        ROUND(SUM(f.duration_sec), 2) AS total_duration_sec
+    FROM fact_feature_usage f
+    JOIN dim_user u
+      ON f.user_id = u.user_id
+    GROUP BY u.tenant_id
+    ORDER BY total_action_count DESC, u.tenant_id;
+  feature_usage_by_tenant_profile: |
+    SELECT
+        t.country,
+        t.industry,
+        t.size_tier,
+        COUNT(DISTINCT u.tenant_id) AS tenant_count,
+        COUNT(DISTINCT f.user_id) AS active_feature_user_count,
+        ROUND(SUM(f.action_count), 2) AS total_action_count,
+        ROUND(SUM(f.duration_sec), 2) AS total_duration_sec
+    FROM fact_feature_usage f
+    JOIN dim_user u
+      ON f.user_id = u.user_id
+    JOIN dim_tenant t
+      ON u.tenant_id = t.tenant_id
+    GROUP BY t.country, t.industry, t.size_tier
+    ORDER BY total_action_count DESC, t.country, t.industry, t.size_tier;
+
+prompt_summary: >
+  fact_feature_usage 是功能使用事实表，粒度为一行一个 user_id 在某天 dt 对一个 feature_key 的使用记录。
+  当前验证显示主键 user_id + feature_key + dt 唯一，user_id 与 dim_user、feature_key 与 dim_feature 的关联覆盖率均为 100%。
+  常用路径为 user_id -> dim_user -> dim_tenant，以及 feature_key -> dim_feature。
+  关键指标应使用 COUNT(DISTINCT user_id)、COUNT(DISTINCT feature_key)、SUM(action_count)、SUM(duration_sec)。
+  关键陷阱是不要把 COUNT(*) 当作用户数或企业数，且与 fact_daily_usage 或 fact_ai_usage_log 关联时不能只按 user_id JOIN。
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_feature_usage_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        已确认 row_count = 2700092，column_count = 5。
+    - confirmed: true
+      item: >
+        已确认 user_id + feature_key + dt 当前唯一，可作为本表主键。
+    - confirmed: true
+      item: >
+        已确认 user_id 全部可关联到 dim_user.user_id，unmatched_count = 0。
+    - confirmed: true
+      item: >
+        已确认 feature_key 全部可关联到 dim_feature.feature_key，unmatched_count = 0。
+    - confirmed: true
+      item: >
+        已确认 feature_key 无 NULL 或空字符串，且枚举值稳定。
+    - confirmed: true
+      item: >
+        已确认 dt 无空值，范围为 2025-04-01T00:00:00 到 2026-03-31T00:00:00。
+    - confirmed: true
+      item: >
+        已确认 action_count 范围为 1 到 65，duration_sec 范围为 10 到 3600，未发现负值或 0 值异常。
+    - confirmed: true
+      item: >
+        已确认主要 SQL patterns 均可执行。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

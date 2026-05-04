@@ -1,0 +1,285 @@
+table_name: dim_feature
+card_version: v0.1
+card_type: table_card
+domain:
+  id: C
+  name: 产品使用
+business_meaning: >-
+  功能维度。
+
+  数据字典将该表归入“产品使用”域。
+
+  数据字典行数说明为：12。
+
+  当前 card 仍为 draft，以上内容属于数据字典说明与待验证假设，不能视为验证通过结论。
+grain: >-
+  数据字典说明主键：`feature_key`。
+
+  当前 draft 只能把这些内容视为待验证假设；是否在当前 DuckDB 数据中成立，仍以后续 validation 脚本和人工复核为准。
+primary_key:
+- feature_key
+natural_key_candidate: []
+profile:
+  row_count: 12
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: auto_filled_pending_validation
+columns:
+  feature_key:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: >-
+      功能 key。枚举：im / docs / sheets / calendar / video_conf / email / approval / base / wiki / minutes / task / whiteboard
+
+      枚举值集合来自数据字典说明，当前仅作为待验证假设。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 12
+      distinct_rate: 1.0
+      min: approval
+      max: wiki
+      sample_values:
+      - approval
+      - base
+      - calendar
+      - docs
+      - email
+      is_possible_primary_key: true
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  feature_name:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      功能展示名
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 12
+      distinct_rate: 1.0
+      min: Approval
+      max: Wiki
+      sample_values:
+      - Approval
+      - Bitable
+      - Calendar
+      - Cloud Documents
+      - Email
+      is_possible_primary_key: true
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  module:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      所属模块。枚举：Communication / Productivity / Workflow / Knowledge
+
+      枚举值集合来自数据字典说明，当前仅作为待验证假设。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 4
+      distinct_rate: 0.3333
+      min: Communication
+      max: Workflow
+      sample_values:
+      - Communication
+      - Knowledge
+      - Productivity
+      - Workflow
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  category:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      定位。枚举：core / advanced / premium
+
+      枚举值集合来自数据字典说明，当前仅作为待验证假设。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3
+      distinct_rate: 0.25
+      min: advanced
+      max: premium
+      sample_values:
+      - advanced
+      - core
+      - premium
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  launched_at:
+    type: date
+    semantic_type: event_time
+    business_meaning: >-
+      上线日期
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 12
+      distinct_rate: 1.0
+      min: '2023-04-20'
+      max: '2025-02-27'
+      sample_values:
+      - '2023-04-20'
+      - '2023-08-20'
+      - '2024-02-04'
+      - '2024-06-01'
+      - '2024-06-06'
+      is_possible_primary_key: true
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+join_keys:
+- column: feature_key
+  references: fact_feature_usage.feature_key
+  relationship: pending_validation
+  join_condition: dim_feature.feature_key = fact_feature_usage.feature_key
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    数据字典 JOIN 参考显示 dim_feature 是功能使用相关事实的功能维度。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - feature_key
+  time_columns:
+  - launched_at
+  metric_columns: []
+  dimension_columns:
+  - feature_key
+  - feature_name
+  - module
+  - category
+  - launched_at
+  enum_columns:
+  - feature_key
+  - feature_name
+  - module
+  - category
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 dim_feature 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 按数据字典声明的枚举字段做结构分布分析
+- 基于数据字典说明的时间字段做趋势或窗口分析
+preferred_metrics:
+  entity_count:
+    expression: COUNT(DISTINCT feature_key)
+    meaning: 实体或记录数量
+    applicable_grain: 待验证
+    note: >-
+      当前为自动草稿，需要先验证主键或业务粒度后再确认统计口径。
+
+      对于复合键表，COUNT(*) 仅在 grain 成立时才可解释为记录数。
+known_traps:
+- trap: >-
+    把数据字典声明的主键直接当作已验证事实。
+
+    当前仍是 draft。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`feature_key`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: >-
+    将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+    当前仍是 draft。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: null
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent_recommendation: false
+  key_results: {}
+  interpretation:
+  - 当前为待验证 draft，尚未经过人工确认。
+  - 主键、自然键、JOIN 覆盖率、指标口径和 known_traps 均需要验证脚本和人工复核。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: >-
+    SELECT
+        launched_at AS time_key,
+        COUNT(*) AS row_count
+    FROM dim_feature
+
+    GROUP BY launched_at
+
+    ORDER BY launched_at;
+  enum_distribution: >-
+    SELECT
+        feature_key,
+        COUNT(DISTINCT feature_key) AS entity_count
+    FROM dim_feature
+
+    GROUP BY feature_key
+
+    ORDER BY entity_count DESC, feature_key;
+  join_coverage_sample: >-
+    SELECT
+        COUNT(*) AS row_count
+    FROM dim_feature base
+
+    LEFT JOIN dim_ticket_category ref
+        ON base.category = ref.category_id;
+prompt_summary: >-
+  dim_feature 是 功能维度。
+
+  数据字典声明 grain 为：待补充。
+
+  数据字典主键说明为：`feature_key`。
+
+  常用 JOIN 假设包括：feature_key -> fact_feature_usage.feature_key。
+
+  当前 card 仍是 draft，数据字典中的主键、JOIN、口径和特殊说明都只能视为待验证假设。
+manual_review:
+  reviewer: null
+  review_status: pending_validation
+  review_notes:
+  - 当前为批量生成的 draft，需要结合 validation report 逐张人工复查。
+  - 主键、自然键、JOIN 覆盖率、字段口径和 known_traps 都不能直接视为最终结论。
+  checklist:
+  - confirmed: false
+    item: 数据字典声明主键为：`feature_key`。需要核对当前数据是否满足唯一性。
+  - confirmed: false
+    item: 数据字典说明行数约为：12。需要与当前 profile 和 DuckDB 数据核对。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：dim_feature.feature_key -> fact_feature_usage.feature_key。需要验证覆盖率与口径风险。
+status:
+  authoring_status: manual_draft
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent: false

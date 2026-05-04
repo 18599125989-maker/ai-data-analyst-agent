@@ -1,0 +1,267 @@
+table_name: dim_user_id_mapping
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: B
+  name: 用户
+
+business_meaning: >
+  用户 ID 哈希映射表，用于把隐私保护场景中的哈希用户 ID 映射回明文 user_id。
+  该表是 `fact_ai_usage_log.user_id_hash` 与 `dim_user.user_id` 之间的桥接维度。
+  当前验证显示该表可作为正式桥接表使用。
+
+grain: >
+  一行代表一个 user_id_hash 与明文 user_id 的映射关系。
+  当前验证显示主键候选已唯一：row_count = 40016，distinct_primary_key_count = 40016，
+  duplicate_primary_key_count = 0，因此映射关系粒度成立。
+  该表用于把隐私保护后的 user_id_hash 映射回 dim_user.user_id。
+
+primary_key:
+  - user_id
+
+natural_key_candidate:
+  - user_id
+
+natural_key_status:
+  is_unique: true
+  tested_key:
+    - user_id
+  duplicated_group_count: 0
+  note: >
+    当前验证显示 user_id 唯一，可作为本表主键与映射记录唯一标识。
+
+profile:
+  row_count: 40016
+  column_count: 2
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/dim_user_id_mapping_validation.md
+  profile_status: validated
+
+columns:
+  user_id_hash:
+    type: varchar
+    semantic_type: hashed_user_identifier
+    business_meaning: >
+      哈希后的用户 ID，用于隐私保护场景。
+      该字段用于连接使用哈希用户标识的事实表，例如 fact_ai_usage_log。
+    references: fact_ai_usage_log.user_id_hash
+    profile:
+      null_rate: 0.0
+      distinct_count: 40016
+      distinct_rate: 1.0
+      min: 00003063c513424d154448f7f136cafa073a855a
+      max: ffff654565aea03cb0acb0d7744571bd26cd8108
+      sample_values:
+        - 00003063c513424d154448f7f136cafa073a855a
+        - 0002a65cf0dbe24324a47da4d5248eeda690ae67
+        - 000480605323e25f10dcab1f209c30152fec62b8
+        - 00049bc60608060ddd0f2955e0a81e863f96114a
+        - 000513719dcf4392f4d5d7e96648b963925afe7d
+      is_possible_primary_key: true
+    notes:
+      - >
+        user_id_hash 是哈希标识，不等于明文 user_id。
+      - >
+        它不能直接 JOIN dim_user.user_id。
+
+  user_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      明文用户 ID。
+      对应 dim_user.user_id，用于把哈希用户标识映射回正式用户维度。
+    references: dim_user.user_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 40016
+      distinct_rate: 1.0
+      min: U000001
+      max: U049999
+      sample_values:
+        - U000001
+        - U000003
+        - U000004
+        - U000005
+        - U000006
+      is_possible_primary_key: true
+    notes:
+      - >
+        user_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        可作为桥接后的正式用户键，用于继续关联 dim_user 及其衍生维度。
+
+join_keys:
+  - column: user_id
+    references: dim_user.user_id
+    relationship: many_to_one
+    join_condition: dim_user_id_mapping.user_id = dim_user.user_id
+    purpose: 将哈希用户映射到正式用户维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      user_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+derived_join_paths:
+  ai_log_to_user:
+    path:
+      - fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash
+      - dim_user_id_mapping.user_id = dim_user.user_id
+    purpose: 将 AI 日志中的哈希用户 ID 映射为明文用户维度
+    risk_level: low
+    validation_status: passed
+  ai_log_to_tenant:
+    path:
+      - fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash
+      - dim_user_id_mapping.user_id = dim_user.user_id
+      - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: 将 AI 日志关联到租户维度
+    risk_level: low
+    validation_status: passed
+
+field_groups:
+  id_columns:
+    - user_id
+    - user_id_hash
+  time_columns: []
+  metric_columns: []
+  dimension_columns:
+    - user_id
+    - user_id_hash
+  enum_columns: []
+  json_columns: []
+  text_columns:
+    - user_id_hash
+
+recommended_use_cases:
+  - 将 fact_ai_usage_log 中的哈希用户 ID 映射到正式用户维度。
+  - 作为 AI 行为日志与用户、租户、部门等维度之间的桥接表。
+  - 统计已映射用户规模和哈希映射覆盖规模。
+
+preferred_metrics:
+  mapped_user_count:
+    expression: COUNT(DISTINCT user_id)
+    meaning: 已映射用户数
+    applicable_grain: 任意汇总层级
+    note: >
+      统计用户规模时应使用明文 user_id 去重。
+  hash_mapping_count:
+    expression: COUNT(DISTINCT user_id_hash)
+    meaning: 哈希用户映射数
+    applicable_grain: 任意汇总层级
+    note: >
+      可用于衡量哈希 ID 映射覆盖规模。
+
+known_traps:
+  - trap: >
+      直接将 fact_ai_usage_log.user_id_hash 与 dim_user.user_id JOIN。
+    consequence: >
+      user_id_hash 是哈希 ID，不等于明文 user_id，直接 JOIN 会导致错误匹配或匹配失败。
+    prevention: >
+      必须先通过 dim_user_id_mapping.user_id_hash 映射到 dim_user_id_mapping.user_id，
+      再 JOIN dim_user.user_id。
+  - trap: >
+      JOIN 到用户行为事实表后直接 COUNT(*) 当作用户数。
+    consequence: >
+      COUNT(*) 会变成行为记录数或映射记录数，不是用户数。
+    prevention: >
+      统计用户数时使用 COUNT(DISTINCT user_id)。
+
+aggregation_notes:
+  - >
+    本表是桥接维度，主要用于映射而非业务数值聚合。
+  - >
+    与事实表 JOIN 后，COUNT(*) 通常表示行为记录数或桥接后记录数，不应误读为用户数。
+  - >
+    用户规模统计优先使用 COUNT(DISTINCT user_id)。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/dim_user_id_mapping_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 40016
+    column_count: 2
+    primary_key_unique: true
+    duplicate_primary_key_count: 0
+    user_id_fk_unmatched_count: 0
+  interpretation:
+    - >
+      主键候选唯一，映射关系粒度成立。
+    - >
+      user_id 全部可以关联到 dim_user.user_id。
+    - >
+      该表可以作为 fact_ai_usage_log.user_id_hash 到 dim_user.user_id 的桥接表。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - user_id_fk_coverage
+  - user_id_fk_unmatched_examples
+  - sql_pattern_join_coverage_sample
+
+sql_patterns:
+  hash_to_user_mapping_sample: |
+    SELECT
+        m.user_id_hash,
+        m.user_id
+    FROM dim_user_id_mapping m
+    ORDER BY m.user_id
+    LIMIT 50;
+  ai_log_to_user_bridge: |
+    SELECT
+        a.user_id_hash,
+        m.user_id
+    FROM fact_ai_usage_log a
+    JOIN dim_user_id_mapping m
+      ON a.user_id_hash = m.user_id_hash
+    LIMIT 50;
+  ai_log_to_tenant_bridge: |
+    SELECT
+        a.user_id_hash,
+        m.user_id,
+        u.tenant_id
+    FROM fact_ai_usage_log a
+    JOIN dim_user_id_mapping m
+      ON a.user_id_hash = m.user_id_hash
+    JOIN dim_user u
+      ON m.user_id = u.user_id
+    LIMIT 50;
+
+prompt_summary: >
+  dim_user_id_mapping 是用户哈希 ID 到明文 user_id 的桥接映射表，一行代表一个 user_id_hash 与 user_id 的映射关系。
+  当前验证显示主键 user_id 唯一，且 user_id 到 dim_user 的关联覆盖率为 100%。
+  该表的主要用途是把 fact_ai_usage_log.user_id_hash 映射到 dim_user.user_id，
+  再进一步关联 dim_tenant 等维度。
+  关键陷阱是不能直接把 user_id_hash 与 dim_user.user_id JOIN，且 JOIN 行为表后不要把 COUNT(*) 当作用户数。
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/dim_user_id_mapping_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        主键候选唯一已验证。
+    - confirmed: true
+      item: >
+        user_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        可作为 user_id_hash 到 user_id 的映射桥表。
+    - confirmed: true
+      item: >
+        不允许直接将 user_id_hash JOIN dim_user.user_id。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

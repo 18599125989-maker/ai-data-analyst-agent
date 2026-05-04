@@ -1,0 +1,389 @@
+table_name: dim_tenant
+card_version: v0.1
+card_type: table_card
+domain:
+  id: A
+  name: 租户与组织
+business_meaning: >-
+  企业客户维度。
+
+  数据字典将该表归入“租户与组织”域。
+
+  数据字典行数说明为：500。
+
+  当前 card 仍为 draft，以上内容属于数据字典说明与待验证假设，不能视为验证通过结论。
+grain: >-
+  数据字典说明粒度：一行 = 一个企业。
+
+  数据字典说明主键：`tenant_id`。
+
+  当前 draft 只能把这些内容视为待验证假设；是否在当前 DuckDB 数据中成立，仍以后续 validation 脚本和人工复核为准。
+primary_key:
+- tenant_id
+natural_key_candidate:
+- name
+natural_key_status:
+  is_unique: pending_validation
+  duplicated_group_count: pending_validation
+  note: >
+    profile 显示 name 当前 distinct_count 与 row_count 相同， 但企业名称是否可作为稳定自然键并未得到业务确认。 只可作为候选观察项，不能作为确定主键或长期 JOIN 键。
+profile:
+  row_count: 500
+  column_count: 6
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  validation_file: outputs/knowledge/validation/dim_tenant_validation.md
+  profile_status: auto_filled_pending_validation
+columns:
+  tenant_id:
+    type: string
+    semantic_type: primary_key
+    business_meaning: >-
+      企业 ID（`T00001` 起）
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 500
+      distinct_rate: 1.0
+      min: T00001
+      max: T00500
+      sample_values:
+      - T00001
+      - T00002
+      - T00003
+      - T00004
+      - T00005
+      is_possible_primary_key: true
+    notes:
+    - >
+      profile 显示 tenant_id 当前无空值且 distinct_count = row_count。
+    - >
+      是否可视为正式主键仍需 validation script 复核。
+    - >
+      统计企业数时优先使用 COUNT(DISTINCT tenant_id)。
+  name:
+    type: string
+    semantic_type: dimension
+    business_meaning: >-
+      企业名称（形如 `Company_17`）
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 500
+      distinct_rate: 1.0
+      min: Company_1
+      max: Company_99
+      sample_values:
+      - Company_1
+      - Company_10
+      - Company_100
+      - Company_101
+      - Company_102
+      is_possible_primary_key: true
+    notes:
+    - >
+      当前 profile 显示 name 唯一，但这不代表它是稳定自然键。
+    - >
+      企业更名风险和业务命名规则尚未人工验证。
+  industry:
+    type: string
+    semantic_type: dimension
+    business_meaning: >-
+      行业。枚举：Technology / Finance / Healthcare / Education / Retail / Manufacturing / Media / Consulting / Legal / Real Estate / Government / Nonprofit / Logistics / Hospitality / Energy
+
+      枚举值集合来自数据字典说明，当前仅作为待验证假设。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 15
+      distinct_rate: 0.03
+      min: Consulting
+      max: Technology
+      sample_values:
+      - Consulting
+      - Education
+      - Energy
+      - Finance
+      - Government
+      is_possible_primary_key: false
+    notes:
+    - >
+      industry 应视为枚举/维度字段，不是唯一键。
+    - >
+      枚举值集合是否完全等于数据字典声明，需验证脚本复核。
+  size_tier:
+    type: string
+    semantic_type: dimension
+    business_meaning: >-
+      规模。枚举：startup / small / medium / large / enterprise
+
+      枚举值集合来自数据字典说明，当前仅作为待验证假设。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 0.01
+      min: enterprise
+      max: startup
+      sample_values:
+      - enterprise
+      - large
+      - medium
+      - small
+      - startup
+      is_possible_primary_key: false
+    notes:
+    - >
+      适合做租户规模分布分析。
+    - >
+      该字段为维度字段，不可当作企业唯一标识。
+  country:
+    type: string
+    semantic_type: dimension
+    business_meaning: >-
+      国家代码。枚举：CN / US / JP / DE / GB / SG / IN / BR / KR / AU
+
+      枚举值集合来自数据字典说明，当前仅作为待验证假设。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 10
+      distinct_rate: 0.02
+      min: AU
+      max: US
+      sample_values:
+      - AU
+      - BR
+      - CN
+      - DE
+      - GB
+      is_possible_primary_key: false
+    notes:
+    - >
+      适合做国家分布和区域分析。
+    - >
+      国家代码口径应以数据字典和实际分布共同验证。
+  created_at:
+    type: timestamp
+    semantic_type: event_time
+    business_meaning: >-
+      企业创建时间（UTC）
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 500
+      distinct_rate: 1.0
+      min: '2024-04-01 17:04:57'
+      max: '2025-06-29 17:09:33'
+      sample_values:
+      - '2024-04-01 17:04:57'
+      - '2024-04-02 11:26:19'
+      - '2024-04-02 14:43:08'
+      - '2024-04-04 16:25:47'
+      - '2024-04-05 14:51:00'
+      is_possible_primary_key: true
+    notes:
+    - >
+      时间字段解析应由验证脚本确认。
+    - >
+      created_at 唯一不代表它可作为业务键。
+join_keys:
+- column: tenant_id
+  references: dim_user.tenant_id
+  relationship: pending_validation
+  join_condition: dim_tenant.tenant_id = dim_user.tenant_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    数据字典 JOIN 参考显示 dim_tenant 是多个用户、订阅和租户相关事实的上游企业维度。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+- column: tenant_id
+  references: dim_tenant_plan.tenant_id
+  relationship: pending_validation
+  join_condition: dim_tenant.tenant_id = dim_tenant_plan.tenant_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    数据字典字段说明明确 dim_tenant_plan.tenant_id 关联 dim_tenant.tenant_id。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+- column: tenant_id
+  references: fact_subscription.tenant_id
+  relationship: pending_validation
+  join_condition: dim_tenant.tenant_id = fact_subscription.tenant_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    数据字典 JOIN 参考显示 dim_tenant 与 fact_subscription 直接关联。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - tenant_id
+  time_columns:
+  - created_at
+  metric_columns: []
+  dimension_columns:
+  - name
+  - industry
+  - size_tier
+  - country
+  enum_columns:
+  - industry
+  - size_tier
+  - country
+  json_columns: []
+  text_columns:
+  - name
+recommended_use_cases:
+- 基于数据字典理解 dim_tenant 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 按数据字典声明的枚举字段做结构分布分析
+- 基于数据字典说明的时间字段做趋势或窗口分析
+preferred_metrics:
+  tenant_count:
+    expression: COUNT(DISTINCT tenant_id)
+    meaning: 企业数量
+    applicable_grain: 企业级
+    note: >
+      统计企业实体数量时优先使用此口径。
+  tenant_created_count:
+    expression: COUNT(DISTINCT tenant_id)
+    meaning: 指定时间窗内新创建企业数
+    applicable_grain: created_at 时间级
+    note: >
+      通常结合 created_at 的日期截断使用。
+known_traps:
+- trap: >-
+    把数据字典声明的主键直接当作已验证事实。
+
+    当前仍是 draft。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`tenant_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: >-
+    将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+    当前仍是 draft。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 数据字典说明该表粒度为：一行 = 一个企业。聚合前必须先验证这一粒度在当前数据中是否成立。
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  overall_status: pending_validation
+  notes:
+  - >
+    profile 已自动填充，但主键唯一性、候选自然键唯一性、下游覆盖率和 SQL pattern 仍待验证。
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent_recommendation: false
+validation_checks:
+- basic_table_profile
+- column_count
+- tenant_id_uniqueness
+- duplicated_tenant_id_examples
+- name_uniqueness
+- duplicated_name_examples
+- country_distribution
+- industry_distribution
+- size_tier_distribution
+- created_at_range_check
+- dim_user_join_coverage
+- fact_subscription_join_coverage
+- sql_pattern_tenant_count_by_country
+- sql_pattern_tenant_count_by_industry
+- sql_pattern_tenant_created_by_month
+sql_patterns:
+  tenant_count_by_country:
+    description: >
+      按国家统计企业数。
+    sql: >
+      SELECT
+          country,
+          COUNT(DISTINCT tenant_id) AS tenant_count
+      FROM dim_tenant
+
+      GROUP BY country
+
+      ORDER BY tenant_count DESC, country;
+  tenant_count_by_industry:
+    description: >
+      按行业统计企业数。
+    sql: >
+      SELECT
+          industry,
+          COUNT(DISTINCT tenant_id) AS tenant_count
+      FROM dim_tenant
+
+      GROUP BY industry
+
+      ORDER BY tenant_count DESC, industry;
+  tenant_created_by_month:
+    description: >
+      按企业创建月份统计新企业数。
+    sql: >
+      SELECT
+          STRFTIME(DATE_TRUNC('month', created_at), '%Y-%m') AS created_month,
+          COUNT(DISTINCT tenant_id) AS tenant_count
+      FROM dim_tenant
+
+      GROUP BY created_month
+
+      ORDER BY created_month;
+prompt_summary: >-
+  dim_tenant 是 企业客户维度。
+
+  数据字典声明 grain 为：一行 = 一个企业。
+
+  数据字典主键说明为：`tenant_id`。
+
+  常用 JOIN 假设包括：tenant_id -> dim_user.tenant_id；tenant_id -> dim_tenant_plan.tenant_id；tenant_id -> fact_subscription.tenant_id。
+
+  当前 card 仍是 draft，数据字典中的主键、JOIN、口径和特殊说明都只能视为待验证假设。
+manual_review:
+  reviewer: null
+  review_status: pending_validation
+  review_notes:
+  - >
+    需要人工确认 name 是否允许视为业务自然键候选。
+  - >
+    需要人工确认 created_at 是否可以直接解释为企业创建时间而非导入时间。
+  checklist:
+  - confirmed: false
+    item: 数据字典声明主键为：`tenant_id`。需要核对当前数据是否满足唯一性。
+  - confirmed: false
+    item: 数据字典声明粒度为：一行 = 一个企业。需要验证实际 grain 是否成立。
+  - confirmed: false
+    item: 数据字典说明行数约为：500。需要与当前 profile 和 DuckDB 数据核对。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：dim_tenant.tenant_id -> dim_user.tenant_id。需要验证覆盖率与口径风险。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：dim_tenant.tenant_id -> dim_tenant_plan.tenant_id。需要验证覆盖率与口径风险。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：dim_tenant.tenant_id -> fact_subscription.tenant_id。需要验证覆盖率与口径风险。
+status:
+  authoring_status: manual_draft
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent: false

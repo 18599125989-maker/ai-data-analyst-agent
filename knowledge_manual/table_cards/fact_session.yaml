@@ -1,0 +1,492 @@
+table_name: fact_session
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: C
+  name: 产品使用
+
+business_meaning: >
+  用户会话事实表，记录用户一次从开始到结束的访问或登录会话。
+  该表适合分析登录/访问会话数、活跃用户数、设备分布、国家分布和会话时长。
+  当前验证显示该表可作为正式会话分析事实表使用。
+
+grain: >
+  一行代表一次用户 session。
+  当前验证显示主键候选 session_id 唯一：row_count = 1269417，
+  distinct_primary_key_count = 1269417，duplicate_primary_key_count = 0。
+  同一个 user_id 可以有多条 session。
+  该表适合分析登录/访问会话数、活跃用户数、设备分布、国家分布和会话时长。
+
+primary_key:
+  - session_id
+
+natural_key_candidate:
+  - session_id
+
+natural_key_status:
+  is_unique: true
+  tested_key:
+    - session_id
+  duplicated_group_count: 0
+  note: >
+    当前验证显示 session_id 唯一，可作为本表的物理主键和会话级唯一标识。
+
+profile:
+  row_count: 1269417
+  column_count: 6
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/fact_session_validation.md
+  profile_status: validated
+
+columns:
+  session_id:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: >
+      会话 ID。
+      用于唯一标识一次用户 session。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 1269417
+      distinct_rate: 1.0
+      min: S00000ba4ffe9
+      max: Sfffffa00c799
+      sample_values:
+        - S00000ba4ffe9
+        - S000050c81fa0
+        - S0000578e5e3e
+        - S000059ad6f30
+        - S00005e9b5512
+      is_possible_primary_key: true
+    notes:
+      - >
+        session_id 已验证唯一，可直接用于统计 session 数。
+
+  user_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      用户 ID。
+      用于将 session 记录关联到用户维度，并进一步关联租户、部门等组织属性。
+    references: dim_user.user_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 30000
+      distinct_rate: 0.0236
+      min: U000001
+      max: U049999
+      sample_values:
+        - U000001
+        - U000007
+        - U000008
+        - U000011
+        - U000013
+      is_possible_primary_key: false
+    notes:
+      - >
+        user_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        统计用户数时应使用 COUNT(DISTINCT user_id)。
+
+  start_time:
+    type: timestamp
+    semantic_type: timestamp
+    business_meaning: >
+      session 开始时间。
+      适合做日、周、月的 session 趋势分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 1234424
+      distinct_rate: 0.9724
+      min: "2025-04-01T00:00:12"
+      max: "2026-03-30T23:59:58"
+      sample_values:
+        - "2025-04-01 00:00:12"
+        - "2025-04-01 00:01:34"
+        - "2025-04-01 00:02:59"
+        - "2025-04-01 00:03:43"
+        - "2025-04-01 00:04:07"
+      is_possible_primary_key: false
+    notes:
+      - >
+        start_time 是 session 开始时间，适合做 session 趋势分析。
+      - >
+        当前验证时间范围为 2025-04-01T00:00:12 到 2026-03-30T23:59:58。
+
+  end_time:
+    type: timestamp
+    semantic_type: timestamp
+    business_meaning: >
+      session 结束时间。
+      可与 start_time 一起用于计算会话时长。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 1234450
+      distinct_rate: 0.9725
+      min: "2025-04-01T00:17:26"
+      max: "2026-03-31T01:52:15"
+      sample_values:
+        - "2025-04-01 00:17:26"
+        - "2025-04-01 00:23:02"
+        - "2025-04-01 00:27:35"
+        - "2025-04-01 00:30:43"
+        - "2025-04-01 00:32:46"
+      is_possible_primary_key: false
+    notes:
+      - >
+        end_time 是 session 结束时间，可与 start_time 计算 session_duration。
+      - >
+        当前验证时间范围为 2025-04-01T00:17:26 到 2026-03-31T01:52:15。
+
+  device:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      用户访问设备类型。
+      可用于分析不同终端的访问结构和会话分布。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 0.0
+      min: Android
+      max: macOS
+      sample_values:
+        - Windows
+        - macOS
+        - Linux
+        - Android
+        - iOS
+      is_possible_primary_key: false
+    notes:
+      - >
+        device 无空值。
+      - >
+        device 是设备类型，不是数值指标。
+
+  ip_country:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      登录或访问来源 IP 所属国家代码。
+      可用于分析访问来源国家分布。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 10
+      distinct_rate: 0.0
+      min: AU
+      max: US
+      sample_values:
+        - JP
+        - CN
+        - KR
+        - GB
+        - US
+        - AU
+        - IN
+        - DE
+        - SG
+        - BR
+      is_possible_primary_key: false
+    notes:
+      - >
+        ip_country 无空值。
+      - >
+        ip_country 是登录或访问 IP 国家维度，不一定等同于租户注册国家。
+
+join_keys:
+  - column: user_id
+    references: dim_user.user_id
+    relationship: many_to_one
+    join_condition: fact_session.user_id = dim_user.user_id
+    purpose: 将 session 记录关联到用户维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      user_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+derived_join_paths:
+  session_to_tenant:
+    path:
+      - fact_session.user_id = dim_user.user_id
+      - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: 将 session 记录关联到租户维度
+    risk_level: low
+    validation_status: passed
+    note: >
+      同一用户可以有多条 session，按租户统计用户数时应 COUNT(DISTINCT user_id)，统计 session 数时才 COUNT(DISTINCT session_id)。
+
+field_groups:
+  id_columns:
+    - session_id
+    - user_id
+  time_columns:
+    - start_time
+    - end_time
+  metric_columns: []
+  dimension_columns:
+    - user_id
+    - device
+    - ip_country
+  enum_columns:
+    - device
+    - ip_country
+  json_columns: []
+  text_columns: []
+
+recommended_use_cases:
+  - 统计 session 数和活跃用户数。
+  - 分析不同设备和访问国家的 session 分布。
+  - 按日或按月分析 session 趋势。
+  - 计算平均 session 时长和总 session 时长。
+  - 结合 dim_user 和 dim_tenant 分析不同租户或用户群体的访问会话情况。
+
+preferred_metrics:
+  session_count:
+    expression: COUNT(DISTINCT session_id)
+    meaning: session 数
+    applicable_grain: 任意分析层级
+    note: >
+      统计 session 数应使用 session_id 去重，或在确认无重复时使用 COUNT(*)。
+  active_user_count:
+    expression: COUNT(DISTINCT user_id)
+    meaning: 有 session 的活跃用户数
+    applicable_grain: 任意分析层级
+    note: >
+      用户数和 session 数不能混用。
+  avg_session_duration_sec:
+    expression: AVG(DATEDIFF('second', start_time, end_time))
+    meaning: 平均 session 时长秒数
+    applicable_grain: 任意分析层级
+    note: >
+      使用 start_time 与 end_time 计算时长。
+  total_session_duration_sec:
+    expression: SUM(DATEDIFF('second', start_time, end_time))
+    meaning: 总 session 时长秒数
+    applicable_grain: 任意分析层级
+    note: >
+      可用于分析总体访问时长规模。
+  device_count:
+    expression: COUNT(DISTINCT device)
+    meaning: 设备类型数
+    applicable_grain: 任意分析层级
+    note: >
+      device 是分组维度，不是数值指标。
+  ip_country_count:
+    expression: COUNT(DISTINCT ip_country)
+    meaning: 访问来源国家数
+    applicable_grain: 任意分析层级
+    note: >
+      ip_country 表示访问来源国家，不等同于租户注册国家。
+
+known_traps:
+  - trap: >
+      直接 COUNT(*) 当作用户数。
+    consequence: >
+      COUNT(*) 是 session 记录数，不是用户数。
+    prevention: >
+      统计用户数使用 COUNT(DISTINCT user_id)，统计 session 数使用 COUNT(DISTINCT session_id) 或 COUNT(*)。
+  - trap: >
+      把 device 或 ip_country 当作数值指标。
+    consequence: >
+      device 和 ip_country 是枚举维度，不能 SUM 或 AVG。
+    prevention: >
+      device/ip_country 只能作为分组或筛选维度。
+  - trap: >
+      把 ip_country 等同于租户注册国家。
+    consequence: >
+      ip_country 来自访问 IP，可能与 dim_tenant.country 不同。
+    prevention: >
+      分析访问来源国家用 ip_country；分析企业注册或所属国家用 dim_tenant.country。
+  - trap: >
+      计算 session 时长时没有使用 end_time - start_time。
+    consequence: >
+      无法得到正确会话时长。
+    prevention: >
+      使用 DATEDIFF('second', start_time, end_time) 计算 session_duration_sec。
+  - trap: >
+      JOIN page_view/event_log 后直接 COUNT(*) 当作 session 数。
+    consequence: >
+      一个 session 可能对应多个 page view 或 event，JOIN 后会放大 session 行数。
+    prevention: >
+      JOIN 后统计 session 数使用 COUNT(DISTINCT session_id)。
+
+aggregation_notes:
+  - >
+    统计 session 数用 COUNT(DISTINCT session_id)。
+  - >
+    统计用户数用 COUNT(DISTINCT user_id)。
+  - >
+    计算时长用 DATEDIFF('second', start_time, end_time)。
+  - >
+    ip_country 不等于 dim_tenant.country，跨表解释时要区分访问来源与租户属性。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_session_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 1269417
+    column_count: 6
+    primary_key_unique: true
+    duplicate_primary_key_count: 0
+    user_id_fk_unmatched_count: 0
+    device_blank_or_null_count: 0
+    ip_country_blank_or_null_count: 0
+    start_time_null_count: 0
+    start_time_min: "2025-04-01T00:00:12"
+    start_time_max: "2026-03-30T23:59:58"
+    end_time_null_count: 0
+    end_time_min: "2025-04-01T00:17:26"
+    end_time_max: "2026-03-31T01:52:15"
+  interpretation:
+    - >
+      主键候选唯一，session 记录粒度成立。
+    - >
+      user_id 全部可以关联到 dim_user.user_id。
+    - >
+      device 和 ip_country 无空值，可作为枚举分组维度。
+    - >
+      start_time 和 end_time 无空值，可用于 session 时间趋势和时长计算。
+    - >
+      ip_country 是访问来源国家，不应与租户注册国家混用。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - user_id_fk_coverage
+  - user_id_fk_unmatched_examples
+  - device_distribution
+  - device_null_check
+  - ip_country_distribution
+  - ip_country_null_check
+  - start_time_time_range_check
+  - end_time_time_range_check
+  - sql_pattern_time_distribution
+  - sql_pattern_enum_distribution
+  - sql_pattern_join_coverage_sample
+
+sql_patterns:
+  session_count_by_day: |
+    SELECT
+        CAST(start_time AS DATE) AS dt,
+        COUNT(DISTINCT session_id) AS session_count
+    FROM fact_session
+    GROUP BY CAST(start_time AS DATE)
+    ORDER BY dt;
+  session_count_by_month: |
+    SELECT
+        STRFTIME(start_time, '%Y-%m') AS month_key,
+        COUNT(DISTINCT session_id) AS session_count
+    FROM fact_session
+    GROUP BY STRFTIME(start_time, '%Y-%m')
+    ORDER BY month_key;
+  active_user_count_by_day: |
+    SELECT
+        CAST(start_time AS DATE) AS dt,
+        COUNT(DISTINCT user_id) AS active_user_count
+    FROM fact_session
+    GROUP BY CAST(start_time AS DATE)
+    ORDER BY dt;
+  session_count_by_device: |
+    SELECT
+        device,
+        COUNT(DISTINCT session_id) AS session_count
+    FROM fact_session
+    GROUP BY device
+    ORDER BY session_count DESC, device;
+  session_count_by_ip_country: |
+    SELECT
+        ip_country,
+        COUNT(DISTINCT session_id) AS session_count
+    FROM fact_session
+    GROUP BY ip_country
+    ORDER BY session_count DESC, ip_country;
+  avg_session_duration_by_device: |
+    SELECT
+        device,
+        AVG(DATEDIFF('second', start_time, end_time)) AS avg_session_duration_sec
+    FROM fact_session
+    GROUP BY device
+    ORDER BY avg_session_duration_sec DESC, device;
+  session_count_by_tenant: |
+    SELECT
+        u.tenant_id,
+        COUNT(DISTINCT s.session_id) AS session_count,
+        COUNT(DISTINCT s.user_id) AS active_user_count
+    FROM fact_session s
+    JOIN dim_user u
+      ON s.user_id = u.user_id
+    GROUP BY u.tenant_id
+    ORDER BY session_count DESC, u.tenant_id;
+  session_count_by_tenant_country: |
+    SELECT
+        t.country,
+        COUNT(DISTINCT s.session_id) AS session_count,
+        COUNT(DISTINCT s.user_id) AS active_user_count
+    FROM fact_session s
+    JOIN dim_user u
+      ON s.user_id = u.user_id
+    JOIN dim_tenant t
+      ON u.tenant_id = t.tenant_id
+    GROUP BY t.country
+    ORDER BY session_count DESC, t.country;
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_session_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        主键候选唯一已验证。
+    - confirmed: true
+      item: >
+        user_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        device/ip_country 枚举正常且无空值。
+    - confirmed: true
+      item: >
+        start_time/end_time 时间范围已验证。
+    - confirmed: true
+      item: >
+        统计用户数时应使用 COUNT(DISTINCT user_id)。
+    - confirmed: true
+      item: >
+        JOIN 事件或页面表后统计 session 数应使用 COUNT(DISTINCT session_id)。
+
+agent_usage_policy:
+  count_sessions_with_distinct_session_id: true
+  count_users_with_distinct_user_id: true
+  device_is_enum_not_metric: true
+  ip_country_is_access_country_not_tenant_country: true
+  calculate_duration_from_start_and_end_time: true
+  use_start_time_for_session_trends: true
+  join_to_event_tables_can_duplicate_sessions: true
+
+prompt_summary: >
+  fact_session 是用户会话事实表，一行代表一次 session，主键 session_id 已验证唯一。
+  常用路径是 user_id -> dim_user -> dim_tenant。
+  关键指标包括 session 数、活跃用户数、平均会话时长和设备或访问国家分布。
+  统计 session 数使用 COUNT(DISTINCT session_id)，统计用户数使用 COUNT(DISTINCT user_id)，
+  会话时长通过 DATEDIFF('second', start_time, end_time) 计算。
+  关键陷阱是不要把 COUNT(*) 当作用户数，不要把 device/ip_country 当作 metric，并且 ip_country 不等于租户注册国家。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

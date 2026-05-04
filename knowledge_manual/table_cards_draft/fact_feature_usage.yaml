@@ -1,0 +1,351 @@
+table_name: fact_feature_usage
+card_version: v0.1
+card_type: table_card
+domain:
+  id: C
+  name: 产品使用
+business_meaning: >-
+  功能使用明细。
+
+  数据字典将该表归入“产品使用”域。
+
+  数据字典行数说明为：~270 万。
+
+  当前 card 仍为 draft，以上内容属于数据字典说明与待验证假设，不能视为验证通过结论。
+grain: >-
+  数据字典说明粒度：一行 = 一个用户一个功能一天的使用。
+
+  数据字典说明主键：`user_id` + `feature_key` + `dt`。
+
+  当前 draft 只能把这些内容视为待验证假设；是否在当前 DuckDB 数据中成立，仍以后续 validation 脚本和人工复核为准。
+primary_key:
+- user_id
+- feature_key
+- dt
+natural_key_candidate:
+- user_id
+- feature_key
+- dt
+natural_key_status:
+  is_unique: pending_validation
+  note: >-
+    当前为自动草稿，候选自然键仅用于后续验证，不代表已确认业务唯一性。
+
+    需要通过 validate 脚本与人工复核确认。
+profile:
+  row_count: 2700092
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: auto_filled_pending_validation
+columns:
+  user_id:
+    type: varchar
+    semantic_type: composite_key_part
+    business_meaning: >-
+      用户
+
+      数据字典说明已补充，仍需人工复核。
+    references: dim_user.user_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 15000
+      distinct_rate: 0.0056
+      min: U000005
+      max: U049999
+      sample_values:
+      - U000005
+      - U000011
+      - U000014
+      - U000020
+      - U000021
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  feature_key:
+    type: varchar
+    semantic_type: composite_key_part
+    business_meaning: >-
+      功能 key
+
+      数据字典说明已补充，仍需人工复核。
+    references: dim_feature.feature_key
+    profile:
+      null_rate: 0.0
+      distinct_count: 12
+      distinct_rate: 0.0
+      min: approval
+      max: wiki
+      sample_values:
+      - approval
+      - base
+      - calendar
+      - docs
+      - email
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  dt:
+    type: date
+    semantic_type: composite_key_part
+    business_meaning: >-
+      日期
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 365
+      distinct_rate: 0.0001
+      min: '2025-04-01'
+      max: '2026-03-31'
+      sample_values:
+      - '2025-04-01'
+      - '2025-04-02'
+      - '2025-04-03'
+      - '2025-04-04'
+      - '2025-04-05'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  action_count:
+    type: bigint
+    semantic_type: metric
+    business_meaning: >-
+      当日动作次数（包含子动作；与 `fact_daily_usage.feature_usage_json` 的同名维度口径不同，请按业务目标选择）
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 65
+      distinct_rate: 0.0
+      min: '1'
+      max: '65'
+      sample_values:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  duration_sec:
+    type: bigint
+    semantic_type: metric
+    business_meaning: >-
+      当日使用时长（秒）
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3591
+      distinct_rate: 0.0013
+      min: '10'
+      max: '3600'
+      sample_values:
+      - '10'
+      - '11'
+      - '12'
+      - '13'
+      - '14'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+join_keys:
+- column: user_id
+  references: dim_user.user_id
+  relationship: pending_validation
+  join_condition: fact_feature_usage.user_id = dim_user.user_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 user_id 表示用户。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+- column: feature_key
+  references: dim_feature.feature_key
+  relationship: pending_validation
+  join_condition: fact_feature_usage.feature_key = dim_feature.feature_key
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 feature_key 表示功能 key。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+derived_join_paths:
+  feature_usage_to_tenant:
+    path:
+    - fact_feature_usage.user_id = dim_user.user_id
+    - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: >-
+      数据字典 JOIN 参考显示功能使用明细可通过用户维度关联企业。
+
+      当前仅作为待验证路径。
+    risk_level: pending_validation
+    validation_status: pending_validation
+field_groups:
+  id_columns:
+  - user_id
+  - feature_key
+  - dt
+  time_columns:
+  - dt
+  metric_columns:
+  - action_count
+  - duration_sec
+  dimension_columns:
+  - user_id
+  - feature_key
+  - dt
+  enum_columns:
+  - feature_key
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 fact_feature_usage 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 基于数据字典说明的时间字段做趋势或窗口分析
+preferred_metrics:
+  entity_count:
+    expression: COUNT(*)
+    meaning: 实体或记录数量
+    applicable_grain: 待验证
+    note: >-
+      当前为自动草稿，需要先验证主键或业务粒度后再确认统计口径。
+
+      对于复合键表，COUNT(*) 仅在 grain 成立时才可解释为记录数。
+  action_count_sum:
+    expression: SUM(action_count)
+    meaning: action_count 的SUM指标
+    applicable_grain: 待验证
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+  duration_sec_sum:
+    expression: SUM(duration_sec)
+    meaning: duration_sec 的SUM指标
+    applicable_grain: 待验证
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+known_traps:
+- trap: >-
+    把数据字典声明的主键直接当作已验证事实。
+
+    当前仍是 draft。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`user_id` + `feature_key` + `dt`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: 把 fact_feature_usage.action_count 与 fact_daily_usage.feature_usage_json 的同名概念当成完全一致口径。
+  consequence: 数据字典明确二者口径不同，直接对比可能产生错误解释。
+  prevention: 先按业务目标区分“功能明细动作次数”和“日聚合 JSON 摘要口径”。
+- trap: >-
+    将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+    当前仍是 draft。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 数据字典说明该表粒度为：一行 = 一个用户一个功能一天的使用。聚合前必须先验证这一粒度在当前数据中是否成立。
+- action_count 的含义来自功能明细口径，不应自动等同于 fact_daily_usage 的 JSON 摘要。
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: null
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent_recommendation: false
+  key_results: {}
+  interpretation:
+  - 当前为待验证 draft，尚未经过人工确认。
+  - 主键、自然键、JOIN 覆盖率、指标口径和 known_traps 均需要验证脚本和人工复核。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: >-
+    SELECT
+        dt AS time_key,
+        COUNT(*) AS row_count
+    FROM fact_feature_usage
+
+    GROUP BY dt
+
+    ORDER BY dt;
+  enum_distribution: >-
+    SELECT
+        feature_key,
+        COUNT(DISTINCT user_id) AS entity_count
+    FROM fact_feature_usage
+
+    GROUP BY feature_key
+
+    ORDER BY entity_count DESC, feature_key;
+  metric_trend: >-
+    SELECT
+        dt AS time_key,
+        ROUND(SUM(action_count), 2) AS total_action_count
+    FROM fact_feature_usage
+
+    GROUP BY dt
+
+    ORDER BY dt;
+  join_coverage_sample: >-
+    SELECT
+        COUNT(*) AS row_count
+    FROM fact_feature_usage base
+
+    LEFT JOIN dim_user ref
+        ON base.user_id = ref.user_id;
+prompt_summary: >-
+  fact_feature_usage 是 功能使用明细。
+
+  数据字典声明 grain 为：一行 = 一个用户一个功能一天的使用。
+
+  数据字典主键说明为：`user_id` + `feature_key` + `dt`。
+
+  常用 JOIN 假设包括：user_id -> dim_user.user_id；feature_key -> dim_feature.feature_key。
+
+  当前 card 仍是 draft，数据字典中的主键、JOIN、口径和特殊说明都只能视为待验证假设。
+manual_review:
+  reviewer: null
+  review_status: pending_validation
+  review_notes:
+  - 当前为批量生成的 draft，需要结合 validation report 逐张人工复查。
+  - 主键、自然键、JOIN 覆盖率、字段口径和 known_traps 都不能直接视为最终结论。
+  checklist:
+  - confirmed: false
+    item: 数据字典声明主键为：`user_id` + `feature_key` + `dt`。需要核对当前数据是否满足唯一性。
+  - confirmed: false
+    item: 数据字典声明粒度为：一行 = 一个用户一个功能一天的使用。需要验证实际 grain 是否成立。
+  - confirmed: false
+    item: 数据字典说明行数约为：~270 万。需要与当前 profile 和 DuckDB 数据核对。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_feature_usage.user_id -> dim_user.user_id。需要验证覆盖率与口径风险。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_feature_usage.feature_key -> dim_feature.feature_key。需要验证覆盖率与口径风险。
+status:
+  authoring_status: manual_draft
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent: false

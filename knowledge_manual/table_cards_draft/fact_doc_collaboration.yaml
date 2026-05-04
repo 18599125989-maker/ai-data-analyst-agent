@@ -1,0 +1,311 @@
+table_name: fact_doc_collaboration
+card_version: v0.1
+card_type: table_card
+domain:
+  id: D
+  name: 协作与内容
+business_meaning: >-
+  文档协作明细。
+
+  数据字典将该表归入“协作与内容”域。
+
+  数据字典行数说明为：~9 万。
+
+  当前 card 仍为 draft，以上内容属于数据字典说明与待验证假设，不能视为验证通过结论。
+grain: >-
+  数据字典说明粒度：一行 = 一个用户一天对一个文档的协作。
+
+  当前 draft 只能把这些内容视为待验证假设；是否在当前 DuckDB 数据中成立，仍以后续 validation 脚本和人工复核为准。
+primary_key: []
+natural_key_candidate: []
+profile:
+  row_count: 89676
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: auto_filled_pending_validation
+columns:
+  doc_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >-
+      文档
+
+      数据字典说明已补充，仍需人工复核。
+    references: fact_document.doc_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 30000
+      distinct_rate: 0.3345
+      min: DOC0001e50fc43d
+      max: DOCffff5ba43954
+      sample_values:
+      - DOC0001e50fc43d
+      - DOC0002bb299e07
+      - DOC0005cbc980db
+      - DOC0005d8f06015
+      - DOC0008b8837801
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  user_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >-
+      协作者
+
+      数据字典说明已补充，仍需人工复核。
+    references: dim_user.user_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 35558
+      distinct_rate: 0.3965
+      min: U000001
+      max: U049999
+      sample_values:
+      - U000001
+      - U000003
+      - U000004
+      - U000005
+      - U000006
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  dt:
+    type: date
+    semantic_type: event_time
+    business_meaning: >-
+      日期
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 363
+      distinct_rate: 0.004
+      min: '2025-04-02'
+      max: '2026-03-30'
+      sample_values:
+      - '2025-04-02'
+      - '2025-04-03'
+      - '2025-04-04'
+      - '2025-04-05'
+      - '2025-04-06'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  edit_duration_sec:
+    type: bigint
+    semantic_type: metric
+    business_meaning: >-
+      当日编辑时长（秒）
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3601
+      distinct_rate: 0.0402
+      min: '0'
+      max: '3600'
+      sample_values:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  comment_count:
+    type: bigint
+    semantic_type: metric
+    business_meaning: >-
+      当日评论数
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 21
+      distinct_rate: 0.0002
+      min: '0'
+      max: '20'
+      sample_values:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+join_keys:
+- column: doc_id
+  references: fact_document.doc_id
+  relationship: pending_validation
+  join_condition: fact_doc_collaboration.doc_id = fact_document.doc_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 doc_id 表示文档。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+- column: user_id
+  references: dim_user.user_id
+  relationship: pending_validation
+  join_condition: fact_doc_collaboration.user_id = dim_user.user_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 user_id 表示用户。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+derived_join_paths:
+  doc_collab_to_tenant:
+    path:
+    - fact_doc_collaboration.user_id = dim_user.user_id
+    - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: >-
+      数据字典 JOIN 参考显示文档协作可通过用户维度关联到租户画像。
+
+      当前仅作为待验证路径。
+    risk_level: pending_validation
+    validation_status: pending_validation
+field_groups:
+  id_columns:
+  - doc_id
+  - user_id
+  time_columns:
+  - dt
+  metric_columns:
+  - edit_duration_sec
+  - comment_count
+  dimension_columns:
+  - doc_id
+  - user_id
+  - dt
+  enum_columns: []
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 fact_doc_collaboration 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 基于数据字典说明的时间字段做趋势或窗口分析
+preferred_metrics:
+  row_count:
+    expression: COUNT(*)
+    meaning: 记录数
+    applicable_grain: 待验证
+    note: 当前表未确认稳定主键，COUNT(*) 只能先解释为记录数。
+  edit_duration_sec_sum:
+    expression: SUM(edit_duration_sec)
+    meaning: edit_duration_sec 的SUM指标
+    applicable_grain: 待验证
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+  comment_count_sum:
+    expression: SUM(comment_count)
+    meaning: comment_count 的SUM指标
+    applicable_grain: 待验证
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+known_traps:
+- trap: >-
+    将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+    当前仍是 draft。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 数据字典说明该表粒度为：一行 = 一个用户一天对一个文档的协作。聚合前必须先验证这一粒度在当前数据中是否成立。
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: null
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent_recommendation: false
+  key_results: {}
+  interpretation:
+  - 当前为待验证 draft，尚未经过人工确认。
+  - 主键、自然键、JOIN 覆盖率、指标口径和 known_traps 均需要验证脚本和人工复核。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: >-
+    SELECT
+        dt AS time_key,
+        COUNT(*) AS row_count
+    FROM fact_doc_collaboration
+
+    GROUP BY dt
+
+    ORDER BY dt;
+  metric_trend: >-
+    SELECT
+        dt AS time_key,
+        ROUND(SUM(edit_duration_sec), 2) AS total_edit_duration_sec
+    FROM fact_doc_collaboration
+
+    GROUP BY dt
+
+    ORDER BY dt;
+  join_coverage_sample: >-
+    SELECT
+        COUNT(*) AS row_count
+    FROM fact_doc_collaboration base
+
+    LEFT JOIN fact_document ref
+        ON base.doc_id = ref.doc_id;
+prompt_summary: >-
+  fact_doc_collaboration 是 文档协作明细。
+
+  数据字典声明 grain 为：一行 = 一个用户一天对一个文档的协作。
+
+  数据字典主键说明为：待补充。
+
+  常用 JOIN 假设包括：doc_id -> fact_document.doc_id；user_id -> dim_user.user_id。
+
+  当前 card 仍是 draft，数据字典中的主键、JOIN、口径和特殊说明都只能视为待验证假设。
+manual_review:
+  reviewer: null
+  review_status: pending_validation
+  review_notes:
+  - 当前为批量生成的 draft，需要结合 validation report 逐张人工复查。
+  - 主键、自然键、JOIN 覆盖率、字段口径和 known_traps 都不能直接视为最终结论。
+  checklist:
+  - confirmed: false
+    item: 数据字典声明粒度为：一行 = 一个用户一天对一个文档的协作。需要验证实际 grain 是否成立。
+  - confirmed: false
+    item: 数据字典说明行数约为：~9 万。需要与当前 profile 和 DuckDB 数据核对。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_doc_collaboration.doc_id -> fact_document.doc_id。需要验证覆盖率与口径风险。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_doc_collaboration.user_id -> dim_user.user_id。需要验证覆盖率与口径风险。
+status:
+  authoring_status: manual_draft
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent: false

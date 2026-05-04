@@ -1,0 +1,453 @@
+table_name: fact_nps_survey
+card_version: v0.1
+card_type: table_card
+domain:
+  id: G
+  name: 增长与实验
+business_meaning: >-
+  NPS 调研。
+
+  数据字典将该表归入“增长与实验”域。
+
+  数据字典行数说明为：~8k。
+
+  当前 card 仍为 draft，以上内容属于数据字典说明与待验证假设，不能视为验证通过结论。
+grain: >-
+  数据字典说明主键：`survey_id`。
+
+  当前 draft 只能把这些内容视为待验证假设；是否在当前 DuckDB 数据中成立，仍以后续 validation 脚本和人工复核为准。
+primary_key:
+- survey_id
+natural_key_candidate: []
+profile:
+  row_count: 8000
+  column_count: 9
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: auto_filled_pending_validation
+columns:
+  survey_id:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: >-
+      调研 ID
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 8000
+      distinct_rate: 1.0
+      min: NPS00004d93201b
+      max: NPSfffcd136f879
+      sample_values:
+      - NPS00004d93201b
+      - NPS000820422981
+      - NPS001221144d5f
+      - NPS00143023801f
+      - NPS00175bde5fcd
+      is_possible_primary_key: true
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  user_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >-
+      被调研用户
+
+      数据字典说明已补充，仍需人工复核。
+    references: dim_user.user_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 8000
+      distinct_rate: 1.0
+      min: U000001
+      max: U049998
+      sample_values:
+      - U000001
+      - U000002
+      - U000010
+      - U000012
+      - U000022
+      is_possible_primary_key: true
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  tenant_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >-
+      所属企业
+
+      数据字典说明已补充，仍需人工复核。
+    references: dim_tenant.tenant_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 489
+      distinct_rate: 0.0611
+      min: T00001
+      max: T00500
+      sample_values:
+      - T00001
+      - T00002
+      - T00003
+      - T00004
+      - T00005
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  survey_date:
+    type: date
+    semantic_type: event_time
+    business_meaning: >-
+      调研日期
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 366
+      distinct_rate: 0.0457
+      min: '2025-04-01'
+      max: '2026-04-01'
+      sample_values:
+      - '2025-04-01'
+      - '2025-04-02'
+      - '2025-04-03'
+      - '2025-04-04'
+      - '2025-04-05'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  role:
+    type: bigint
+    semantic_type: dimension
+    business_meaning: >-
+      角色（**本表以整数编码**，与 `dim_user.role` 的字符串值不同）。编码：1=end_user / 2=admin / 3=it_manager
+
+      该字段在跨表比较时存在编码或格式口径风险，不能直接假设与其他表完全一致。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3
+      distinct_rate: 0.0004
+      min: '1'
+      max: '3'
+      sample_values:
+      - '1'
+      - '2'
+      - '3'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  score:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      NPS 分数（0~10）。**未完成调研时为字符串 `"N/A"`**，注意混合类型
+
+      空值、空字符串或混合类型语义来自数据字典说明，仍需结合实际数据分布复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 12
+      distinct_rate: 0.0015
+      min: '0'
+      max: N/A
+      sample_values:
+      - '0'
+      - '1'
+      - '10'
+      - '2'
+      - '3'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  plan_tier:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      套餐等级（本表使用**首字母大写形式**：Free / Starter / Pro / Business / Enterprise，与 `dim_plan.plan_tier` 的全小写写法不同）
+
+      该字段在跨表比较时存在编码或格式口径风险，不能直接假设与其他表完全一致。
+    references: dim_plan.plan_tier
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 0.0006
+      min: Business
+      max: Starter
+      sample_values:
+      - Business
+      - Enterprise
+      - Free
+      - Pro
+      - Starter
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  feedback_text:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      用户反馈文本（可为空）
+
+      空值、空字符串或混合类型语义来自数据字典说明，仍需结合实际数据分布复核。
+    references: null
+    profile:
+      null_rate: 0.1109
+      distinct_count: 8
+      distinct_rate: 0.001
+      min: Best tool ever
+      max: Too slow
+      sample_values:
+      - Best tool ever
+      - Crashes often
+      - Great product!
+      - Integration issues
+      - Love the collaboration
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  is_completed:
+    type: bigint
+    semantic_type: metric
+    business_meaning: >-
+      是否完成。1=完成 / 0=未完成
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 2
+      distinct_rate: 0.0003
+      min: '0'
+      max: '1'
+      sample_values:
+      - '0'
+      - '1'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+join_keys:
+- column: user_id
+  references: dim_user.user_id
+  relationship: pending_validation
+  join_condition: fact_nps_survey.user_id = dim_user.user_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 user_id 为被调研用户。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+- column: tenant_id
+  references: dim_tenant.tenant_id
+  relationship: pending_validation
+  join_condition: fact_nps_survey.tenant_id = dim_tenant.tenant_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 tenant_id 为所属企业。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+- column: plan_tier
+  references: dim_plan.plan_tier
+  relationship: pending_validation
+  join_condition: fact_nps_survey.plan_tier = dim_plan.plan_tier
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    数据字典特别说明本表 plan_tier 使用首字母大写，而 dim_plan.plan_tier 为全小写，不能直接假设无需标准化。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+derived_join_paths:
+  nps_plan_tier_standardization:
+    path:
+    - fact_nps_survey.plan_tier = INITCAP(dim_plan.plan_tier)
+    purpose: >-
+      数据字典特别说明本表 plan_tier 为首字母大写，而 dim_plan.plan_tier 为全小写。
+
+      跨表比较前需要先做标准化假设验证。
+    risk_level: pending_validation
+    validation_status: pending_validation
+field_groups:
+  id_columns:
+  - survey_id
+  - user_id
+  - tenant_id
+  time_columns:
+  - survey_date
+  metric_columns:
+  - role
+  - is_completed
+  dimension_columns:
+  - survey_id
+  - user_id
+  - tenant_id
+  - survey_date
+  - score
+  - plan_tier
+  - feedback_text
+  enum_columns:
+  - score
+  - plan_tier
+  - feedback_text
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 fact_nps_survey 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 基于数据字典说明的时间字段做趋势或窗口分析
+preferred_metrics:
+  entity_count:
+    expression: COUNT(DISTINCT survey_id)
+    meaning: 实体或记录数量
+    applicable_grain: 待验证
+    note: >-
+      当前为自动草稿，需要先验证主键或业务粒度后再确认统计口径。
+
+      对于复合键表，COUNT(*) 仅在 grain 成立时才可解释为记录数。
+  role_sum:
+    expression: SUM(role)
+    meaning: role 的SUM指标
+    applicable_grain: 待验证
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+  is_completed_sum:
+    expression: SUM(is_completed)
+    meaning: is_completed 的SUM指标
+    applicable_grain: 待验证
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+known_traps:
+- trap: >-
+    把数据字典声明的主键直接当作已验证事实。
+
+    当前仍是 draft。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`survey_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: 忽略数据字典中对空字符串、N/A 或混合类型的特别说明。
+  consequence: 可能把“当前仍有效”“未完成调研”或“缺失值”误当成普通值。
+  prevention: 先按数据字典说明理解异常取值语义，再用验证脚本检查实际分布。
+- trap: 将 fact_nps_survey.plan_tier 与 dim_plan.plan_tier 直接按原值 JOIN。
+  consequence: 数据字典明确两表大小写写法不同，直接 JOIN 可能全部失配。
+  prevention: 先做字符串标准化假设，再用验证脚本确认可用 JOIN 规则。
+- trap: 将 fact_nps_survey.role 的整数编码与 dim_user.role 的字符串角色直接比较。
+  consequence: 数据字典明确两者编码方式不同，直接比较会得到错误结论。
+  prevention: 先按数据字典说明做编码映射假设，验证后再跨表比较。
+- trap: >-
+    将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+    当前仍是 draft。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- score 含有字符串 N/A，聚合前需要先区分完成与未完成调研记录。
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: null
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent_recommendation: false
+  key_results: {}
+  interpretation:
+  - 当前为待验证 draft，尚未经过人工确认。
+  - 主键、自然键、JOIN 覆盖率、指标口径和 known_traps 均需要验证脚本和人工复核。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: >-
+    SELECT
+        survey_date AS time_key,
+        COUNT(*) AS row_count
+    FROM fact_nps_survey
+
+    GROUP BY survey_date
+
+    ORDER BY survey_date;
+  enum_distribution: >-
+    SELECT
+        score,
+        COUNT(DISTINCT survey_id) AS entity_count
+    FROM fact_nps_survey
+
+    GROUP BY score
+
+    ORDER BY entity_count DESC, score;
+  metric_trend: >-
+    SELECT
+        survey_date AS time_key,
+        ROUND(SUM(role), 2) AS total_role
+    FROM fact_nps_survey
+
+    GROUP BY survey_date
+
+    ORDER BY survey_date;
+  join_coverage_sample: >-
+    SELECT
+        COUNT(*) AS row_count
+    FROM fact_nps_survey base
+
+    LEFT JOIN dim_user ref
+        ON base.user_id = ref.user_id;
+prompt_summary: >-
+  fact_nps_survey 是 NPS 调研。
+
+  数据字典声明 grain 为：待补充。
+
+  数据字典主键说明为：`survey_id`。
+
+  常用 JOIN 假设包括：user_id -> dim_user.user_id；tenant_id -> dim_tenant.tenant_id；plan_tier -> dim_plan.plan_tier。
+
+  当前 card 仍是 draft，数据字典中的主键、JOIN、口径和特殊说明都只能视为待验证假设。
+manual_review:
+  reviewer: null
+  review_status: pending_validation
+  review_notes:
+  - 当前为批量生成的 draft，需要结合 validation report 逐张人工复查。
+  - 主键、自然键、JOIN 覆盖率、字段口径和 known_traps 都不能直接视为最终结论。
+  checklist:
+  - confirmed: false
+    item: 数据字典声明主键为：`survey_id`。需要核对当前数据是否满足唯一性。
+  - confirmed: false
+    item: 数据字典说明行数约为：~8k。需要与当前 profile 和 DuckDB 数据核对。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_nps_survey.user_id -> dim_user.user_id。需要验证覆盖率与口径风险。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_nps_survey.tenant_id -> dim_tenant.tenant_id。需要验证覆盖率与口径风险。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_nps_survey.plan_tier -> dim_plan.plan_tier。需要验证覆盖率与口径风险。
+status:
+  authoring_status: manual_draft
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent: false

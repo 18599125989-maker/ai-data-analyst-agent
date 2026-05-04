@@ -1,0 +1,298 @@
+table_name: fact_ticket_reply
+card_version: v0.1
+card_type: table_card
+domain:
+  id: F
+  name: 客服工单
+business_meaning: >-
+  工单回复。
+
+  数据字典将该表归入“客服工单”域。
+
+  数据字典行数说明为：~2.2 万。
+
+  当前 card 仍为 draft，以上内容属于数据字典说明与待验证假设，不能视为验证通过结论。
+grain: >-
+  数据字典说明主键：`reply_id`。
+
+  当前 draft 只能把这些内容视为待验证假设；是否在当前 DuckDB 数据中成立，仍以后续 validation 脚本和人工复核为准。
+primary_key:
+- reply_id
+natural_key_candidate: []
+profile:
+  row_count: 21715
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: auto_filled_pending_validation
+columns:
+  reply_id:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: >-
+      回复 ID（`TR` 前缀）
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 21715
+      distinct_rate: 1.0
+      min: TR000049e796af
+      max: TRfff985360056
+      sample_values:
+      - TR000049e796af
+      - TR00040ae3b28c
+      - TR0012c875fe86
+      - TR00166184ebe7
+      - TR001665d11c6d
+      is_possible_primary_key: true
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  ticket_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >-
+      关联工单
+
+      数据字典说明已补充，仍需人工复核。
+    references: fact_ticket.ticket_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 3922
+      distinct_rate: 0.1806
+      min: TK00011dfd5d95
+      max: TKfff4d6c95a3b
+      sample_values:
+      - TK00011dfd5d95
+      - TK0001ef8bfd87
+      - TK0003961c1632
+      - TK00071d1f9d91
+      - TK001259a2f61f
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  author_type:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      回复者类型。枚举：customer / agent / bot
+
+      枚举值集合来自数据字典说明，当前仅作为待验证假设。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3
+      distinct_rate: 0.0001
+      min: agent
+      max: customer
+      sample_values:
+      - agent
+      - bot
+      - customer
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  content_length:
+    type: bigint
+    semantic_type: metric
+    business_meaning: >-
+      回复字符数
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 1991
+      distinct_rate: 0.0917
+      min: '10'
+      max: '2000'
+      sample_values:
+      - '10'
+      - '11'
+      - '12'
+      - '13'
+      - '14'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  replied_at:
+    type: timestamp
+    semantic_type: event_time
+    business_meaning: >-
+      回复时间
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 21217
+      distinct_rate: 0.9771
+      min: '2025-04-01 02:10:05'
+      max: '2026-04-06 01:42:38'
+      sample_values:
+      - '2025-04-01 02:10:05'
+      - '2025-04-01 02:24:25'
+      - '2025-04-01 05:58:43'
+      - '2025-04-01 06:10:05'
+      - '2025-04-01 06:14:46'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+join_keys:
+- column: ticket_id
+  references: fact_ticket.ticket_id
+  relationship: pending_validation
+  join_condition: fact_ticket_reply.ticket_id = fact_ticket.ticket_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 ticket_id 关联工单。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - reply_id
+  - ticket_id
+  time_columns:
+  - replied_at
+  metric_columns:
+  - content_length
+  dimension_columns:
+  - reply_id
+  - ticket_id
+  - author_type
+  - replied_at
+  enum_columns:
+  - author_type
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 fact_ticket_reply 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 按数据字典声明的枚举字段做结构分布分析
+- 基于数据字典说明的时间字段做趋势或窗口分析
+preferred_metrics:
+  entity_count:
+    expression: COUNT(DISTINCT reply_id)
+    meaning: 实体或记录数量
+    applicable_grain: 待验证
+    note: >-
+      当前为自动草稿，需要先验证主键或业务粒度后再确认统计口径。
+
+      对于复合键表，COUNT(*) 仅在 grain 成立时才可解释为记录数。
+  content_length_sum:
+    expression: SUM(content_length)
+    meaning: content_length 的SUM指标
+    applicable_grain: 待验证
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+known_traps:
+- trap: >-
+    把数据字典声明的主键直接当作已验证事实。
+
+    当前仍是 draft。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`reply_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: >-
+    将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+    当前仍是 draft。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: null
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent_recommendation: false
+  key_results: {}
+  interpretation:
+  - 当前为待验证 draft，尚未经过人工确认。
+  - 主键、自然键、JOIN 覆盖率、指标口径和 known_traps 均需要验证脚本和人工复核。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: >-
+    SELECT
+        replied_at AS time_key,
+        COUNT(*) AS row_count
+    FROM fact_ticket_reply
+
+    GROUP BY replied_at
+
+    ORDER BY replied_at;
+  enum_distribution: >-
+    SELECT
+        author_type,
+        COUNT(DISTINCT reply_id) AS entity_count
+    FROM fact_ticket_reply
+
+    GROUP BY author_type
+
+    ORDER BY entity_count DESC, author_type;
+  metric_trend: >-
+    SELECT
+        replied_at AS time_key,
+        ROUND(SUM(content_length), 2) AS total_content_length
+    FROM fact_ticket_reply
+
+    GROUP BY replied_at
+
+    ORDER BY replied_at;
+  join_coverage_sample: >-
+    SELECT
+        COUNT(*) AS row_count
+    FROM fact_ticket_reply base
+
+    LEFT JOIN fact_ticket ref
+        ON base.ticket_id = ref.ticket_id;
+prompt_summary: >-
+  fact_ticket_reply 是 工单回复。
+
+  数据字典声明 grain 为：待补充。
+
+  数据字典主键说明为：`reply_id`。
+
+  常用 JOIN 假设包括：ticket_id -> fact_ticket.ticket_id。
+
+  当前 card 仍是 draft，数据字典中的主键、JOIN、口径和特殊说明都只能视为待验证假设。
+manual_review:
+  reviewer: null
+  review_status: pending_validation
+  review_notes:
+  - 当前为批量生成的 draft，需要结合 validation report 逐张人工复查。
+  - 主键、自然键、JOIN 覆盖率、字段口径和 known_traps 都不能直接视为最终结论。
+  checklist:
+  - confirmed: false
+    item: 数据字典声明主键为：`reply_id`。需要核对当前数据是否满足唯一性。
+  - confirmed: false
+    item: 数据字典说明行数约为：~2.2 万。需要与当前 profile 和 DuckDB 数据核对。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_ticket_reply.ticket_id -> fact_ticket.ticket_id。需要验证覆盖率与口径风险。
+status:
+  authoring_status: manual_draft
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent: false

@@ -1,0 +1,341 @@
+table_name: fact_daily_usage
+card_version: v0.1
+card_type: table_card
+domain:
+  id: C
+  name: 产品使用
+business_meaning: >-
+  用户日度聚合。
+
+  数据字典将该表归入“产品使用”域。
+
+  数据字典行数说明为：~192 万。
+
+  当前 card 仍为 draft，以上内容属于数据字典说明与待验证假设，不能视为验证通过结论。
+grain: >-
+  数据字典说明粒度：一行 = 一个用户一天的聚合行为。
+
+  数据字典说明主键：`user_id` + `dt`。
+
+  当前 draft 只能把这些内容视为待验证假设；是否在当前 DuckDB 数据中成立，仍以后续 validation 脚本和人工复核为准。
+primary_key:
+- user_id
+- dt
+natural_key_candidate:
+- user_id
+- dt
+natural_key_status:
+  is_unique: pending_validation
+  duplicated_group_count: pending_validation
+  note: >
+    对于该表，主键与业务自然粒度预期一致。 但在 validation 完成前，仍需检查是否存在重复的 user_id + dt。
+profile:
+  row_count: 1915210
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  validation_file: outputs/knowledge/validation/fact_daily_usage_validation.md
+  profile_status: auto_filled_pending_validation
+columns:
+  user_id:
+    type: string
+    semantic_type: foreign_key
+    business_meaning: >-
+      用户
+
+      数据字典说明已补充，仍需人工复核。
+    references: dim_user.user_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 20000
+      distinct_rate: 0.0104
+      min: U000001
+      max: U049999
+      sample_values:
+      - U000001
+      - U000005
+      - U000011
+      - U000014
+      - U000020
+      is_possible_primary_key: false
+    notes:
+    - >
+      当前表仅覆盖 20000 个用户，不等于 dim_user 全量 50000 用户。
+    - >
+      覆盖率需结合 dim_user 验证脚本确认。
+  dt:
+    type: date
+    semantic_type: event_date
+    business_meaning: >-
+      日期
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 365
+      distinct_rate: 0.0002
+      min: '2025-04-01'
+      max: '2026-03-31'
+      sample_values:
+      - '2025-04-01'
+      - '2025-04-02'
+      - '2025-04-03'
+      - '2025-04-04'
+      - '2025-04-05'
+      is_possible_primary_key: false
+    notes:
+    - >
+      数据字典覆盖期为 2025-04-01 到 2026-03-31。
+    - >
+      日期解析和范围需要验证脚本复核。
+  session_count:
+    type: integer
+    semantic_type: metric
+    business_meaning: >-
+      当日会话数
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 15
+      distinct_rate: 0.0
+      min: '1'
+      max: '15'
+      sample_values:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      is_possible_primary_key: false
+    notes:
+    - >
+      需验证是否存在 0、负值或异常大值。
+  active_duration_sec:
+    type: integer
+    semantic_type: metric
+    business_meaning: >-
+      当日活跃时长（秒）
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 7141
+      distinct_rate: 0.0037
+      min: '60'
+      max: '7200'
+      sample_values:
+      - '60'
+      - '61'
+      - '62'
+      - '63'
+      - '64'
+      is_possible_primary_key: false
+    notes:
+    - >
+      需验证是否存在负值、0 值或超过合理上限的异常值。
+  feature_usage_json:
+    type: string
+    semantic_type: json_text
+    business_meaning: >-
+      当日功能使用 JSON，形如 `{"im": 12, "docs": 5}`，value = 顶层动作次数
+
+      数据字典说明已补充，仍需人工复核。
+    references: dim_feature.feature_key
+    profile:
+      null_rate: 0.0
+      distinct_count: 1380148
+      distinct_rate: 0.7206
+      min: '{"approval": 0, "base": 0, "calendar": 41}'
+      max: '{"wiki": 9}'
+      sample_values:
+      - '{"approval": 0, "base": 0, "calendar": 41}'
+      - '{"approval": 0, "base": 0, "docs": 18, "calendar": 7}'
+      - '{"approval": 0, "base": 0, "minutes": 35}'
+      - '{"approval": 0, "base": 0, "task": 19, "video_conf": 25}'
+      - '{"approval": 0, "base": 0}'
+      is_possible_primary_key: false
+    notes:
+    - >
+      首版 Agent 应优先使用结构化字段 dt、session_count、active_duration_sec。
+    - >
+      feature_usage_json 可作为补充字段，但解析前必须验证 JSON 兼容性。
+join_keys:
+- column: user_id
+  references: dim_user.user_id
+  relationship: pending_validation
+  join_condition: fact_daily_usage.user_id = dim_user.user_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 user_id 表示用户。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - user_id
+  time_columns:
+  - dt
+  metric_columns:
+  - session_count
+  - active_duration_sec
+  dimension_columns:
+  - user_id
+  - dt
+  enum_columns: []
+  json_columns:
+  - feature_usage_json
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 fact_daily_usage 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 基于数据字典说明的时间字段做趋势或窗口分析
+preferred_metrics:
+  active_user_day_rows:
+    expression: COUNT(*)
+    meaning: 用户日记录数
+    applicable_grain: 用户天级
+    note: >
+      在 grain 成立且一行一个 user_id + dt 时，COUNT(*) 表示用户日记录数，不等于唯一用户数。
+  active_user_count:
+    expression: COUNT(DISTINCT user_id)
+    meaning: 时间窗内活跃用户数
+    applicable_grain: 多日聚合级
+    note: >
+      跨多天聚合时应用此口径统计唯一活跃用户。
+  total_session_count:
+    expression: SUM(session_count)
+    meaning: 会话总数
+    applicable_grain: 日级或更高聚合级
+    note: >
+      适合衡量访问频率。
+  total_active_duration_sec:
+    expression: SUM(active_duration_sec)
+    meaning: 活跃总时长
+    applicable_grain: 日级或更高聚合级
+    note: >
+      适合衡量使用深度。
+known_traps:
+- trap: >-
+    把数据字典声明的主键直接当作已验证事实。
+
+    当前仍是 draft。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`user_id` + `dt`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: >-
+    将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+    当前仍是 draft。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 数据字典说明该表粒度为：一行 = 一个用户一天的聚合行为。聚合前必须先验证这一粒度在当前数据中是否成立。
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  overall_status: pending_validation
+  notes:
+  - >
+    需要重点验证 user_id + dt 唯一性、dim_user 覆盖率、 feature_usage_json 可解析性以及 session_count / active_duration_sec 的数值范围。
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent_recommendation: false
+validation_checks:
+- basic_table_profile
+- column_count
+- user_dt_uniqueness
+- duplicated_user_dt_examples
+- user_id_fk_coverage
+- unmatched_user_examples
+- dt_range_check
+- session_count_range_check
+- active_duration_range_check
+- feature_usage_json_null_check
+- feature_usage_json_parse_check
+- sql_pattern_daily_active_users
+- sql_pattern_session_and_duration_by_day
+- sql_pattern_tenant_level_daily_usage
+sql_patterns:
+  daily_active_users:
+    description: >
+      按天统计活跃用户数。
+    sql: >
+      SELECT
+          dt,
+          COUNT(DISTINCT user_id) AS active_user_count
+      FROM fact_daily_usage
+
+      GROUP BY dt
+
+      ORDER BY dt;
+  session_and_duration_by_day:
+    description: >
+      按天统计会话数和活跃时长。
+    sql: >
+      SELECT
+          dt,
+          SUM(session_count) AS total_session_count,
+          SUM(active_duration_sec) AS total_active_duration_sec
+      FROM fact_daily_usage
+
+      GROUP BY dt
+
+      ORDER BY dt;
+  tenant_level_daily_usage:
+    description: >
+      按企业国家汇总用户活跃表现。
+    sql: >
+      SELECT
+          t.country,
+          COUNT(DISTINCT f.user_id) AS active_user_count,
+          SUM(f.session_count) AS total_session_count,
+          SUM(f.active_duration_sec) AS total_active_duration_sec
+      FROM fact_daily_usage f
+
+      LEFT JOIN dim_user u
+          ON f.user_id = u.user_id
+      LEFT JOIN dim_tenant t
+          ON u.tenant_id = t.tenant_id
+      GROUP BY t.country
+
+      ORDER BY active_user_count DESC, t.country;
+prompt_summary: >-
+  fact_daily_usage 是 用户日度聚合。
+
+  数据字典声明 grain 为：一行 = 一个用户一天的聚合行为。
+
+  数据字典主键说明为：`user_id` + `dt`。
+
+  常用 JOIN 假设包括：user_id -> dim_user.user_id。
+
+  当前 card 仍是 draft，数据字典中的主键、JOIN、口径和特殊说明都只能视为待验证假设。
+manual_review:
+  reviewer: null
+  review_status: pending_validation
+  review_notes:
+  - >
+    需要人工确认 feature_usage_json 的字段集合和 value 含义是否稳定。
+  - >
+    需要人工确认 active_duration_sec 上限是否代表截断值。
+  checklist:
+  - confirmed: false
+    item: 数据字典声明主键为：`user_id` + `dt`。需要核对当前数据是否满足唯一性。
+  - confirmed: false
+    item: 数据字典声明粒度为：一行 = 一个用户一天的聚合行为。需要验证实际 grain 是否成立。
+  - confirmed: false
+    item: 数据字典说明行数约为：~192 万。需要与当前 profile 和 DuckDB 数据核对。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_daily_usage.user_id -> dim_user.user_id。需要验证覆盖率与口径风险。
+status:
+  authoring_status: manual_draft
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent: false

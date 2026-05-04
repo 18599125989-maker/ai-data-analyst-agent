@@ -1,0 +1,525 @@
+table_name: dim_department
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: A
+  name: 租户与组织
+
+business_meaning: >
+  部门维度表，描述每个企业 tenant 下的部门信息，以及部门之间的上下级关系。
+  该表用于组织结构分析、部门分布分析，也可以作为用户分析中的部门维度表。
+
+grain: >
+  一行 = 一个部门。
+  每个部门属于一个 tenant。
+  一个 tenant 可以有多个部门。
+  parent_dept_id 表示上级部门，空值表示顶级部门。
+
+primary_key:
+  - dept_id
+
+profile:
+  row_count: 2937
+  column_count: 4
+  source_profile_file: outputs/profiles/table_profile.json
+  validation_file: outputs/knowledge/validation/dim_department_validation.md
+  profile_status: validated
+
+columns:
+  dept_id:
+    type: string
+    semantic_type: primary_key
+    business_meaning: >
+      部门 ID，唯一标识一个部门。
+      通常用于统计部门数量，或作为 dim_user.dept_id 的关联键。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: 2937
+      distinct_rate: 1.0
+      min: null
+      max: null
+      sample_values: []
+      is_possible_primary_key: true
+    notes:
+      - >
+        dept_id 在 dim_department 中唯一，可作为该表主键。
+      - >
+        本次验证中 row_count = 2937，COUNT(DISTINCT dept_id) = 2937。
+      - >
+        统计部门数量时，优先使用 COUNT(DISTINCT dept_id)。
+      - >
+        不应使用 dept_name 代替 dept_id 作为唯一部门标识。
+
+  tenant_id:
+    type: string
+    semantic_type: foreign_key
+    business_meaning: >
+      部门所属企业 ID。
+      用于把部门关联到企业客户维度 dim_tenant。
+    references: dim_tenant.tenant_id
+    profile:
+      null_rate: null
+      distinct_count: 500
+      distinct_rate: null
+      min: null
+      max: null
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        一个 tenant_id 可以对应多个部门。
+      - >
+        本次验证中 dim_department.tenant_id 全部可以关联到 dim_tenant.tenant_id。
+      - >
+        与 dim_tenant JOIN 后，可分析不同行业、国家、规模企业的部门结构。
+      - >
+        JOIN 到 dim_tenant 后如果统计企业数，需要使用 COUNT(DISTINCT tenant_id)。
+
+  dept_name:
+    type: string
+    semantic_type: dimension
+    business_meaning: >
+      部门名称或部门类型，例如 HR、Support、Sales、Design、Product、
+      Marketing、Finance、Engineering、Legal、Operations。
+      可用于按部门类型统计组织结构。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 10
+      distinct_rate: null
+      min: null
+      max: null
+      sample_values:
+        - HR
+        - Support
+        - Sales
+        - Design
+        - Product
+        - Marketing
+        - Finance
+        - Engineering
+        - Legal
+        - Operations
+      is_possible_primary_key: false
+    notes:
+      - >
+        dept_name 是枚举型维度字段，不是唯一键。
+      - >
+        不同 tenant 下会重复出现相同 dept_name。
+      - >
+        如果按 dept_name 聚合，统计的是部门类型分布，不是唯一部门实体。
+      - >
+        本次验证中 dept_name 无 NULL 或空字符串。
+
+  parent_dept_id:
+    type: string
+    semantic_type: self_reference_key
+    business_meaning: >
+      上级部门 ID，用于表示部门层级关系。
+      为空表示该部门是顶级部门。
+    references: dim_department.dept_id
+    profile:
+      null_rate: 0.7613
+      distinct_count: null
+      distinct_rate: null
+      min: null
+      max: null
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        parent_dept_id 是自关联字段，可用于构建部门树或区分顶级/子级部门。
+      - >
+        parent_dept_id 为空表示顶级部门；本次验证中空值率为 0.7613。
+      - >
+        非空 parent_dept_id 均可在 dim_department.dept_id 中找到对应上级部门。
+      - >
+        分析部门层级时，可对 dim_department 做 self join。
+
+join_keys:
+  - column: tenant_id
+    references: dim_tenant.tenant_id
+    relationship: many_to_one
+    join_condition: dim_department.tenant_id = dim_tenant.tenant_id
+    purpose: 将部门关联到企业维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      一个企业可以有多个部门。
+      本次验证中 unmatched_department_count = 0。
+      如果 JOIN 后统计企业数，需要使用 COUNT(DISTINCT dim_tenant.tenant_id)。
+
+  - column: dept_id
+    references: dim_user.dept_id
+    relationship: one_to_many
+    join_condition: dim_department.dept_id = dim_user.dept_id
+    purpose: 将用户关联到其所属部门。
+    risk_level: low
+    validation_status: passed
+    note: >
+      一个部门可以有多个用户。
+      本次验证中 dim_user.dept_id 无空值，且全部可以关联到 dim_department.dept_id。
+      为兼容未来数据版本，用户部门分析仍建议从 dim_user LEFT JOIN dim_department。
+
+  - column: parent_dept_id
+    references: dim_department.dept_id
+    relationship: many_to_one_self_join
+    join_condition: child_department.parent_dept_id = parent_department.dept_id
+    purpose: 构建部门上下级层级。
+    risk_level: medium
+    validation_status: passed
+    note: >
+      parent_dept_id 为空表示顶级部门。
+      本次验证中 parent_dept_id 空值率为 0.7613，
+      非空 parent_dept_id 均可关联到有效 dept_id。
+      自 JOIN 时建议使用别名，例如 child_department 和 parent_department。
+
+field_groups:
+  id_columns:
+    - dept_id
+    - tenant_id
+    - parent_dept_id
+
+  time_columns: []
+
+  metric_columns: []
+
+  dimension_columns:
+    - tenant_id
+    - dept_name
+    - parent_dept_id
+
+  enum_columns:
+    - dept_name
+
+  json_columns: []
+
+  text_columns: []
+
+recommended_use_cases:
+  - 按企业统计部门数量
+  - 按部门名称统计部门类型分布
+  - 分析不同国家、行业、规模企业的部门结构差异
+  - 将用户关联到部门，分析不同部门的用户数量、活跃度、功能使用情况
+  - 区分顶级部门和子部门
+  - 构建部门层级关系
+
+preferred_metrics:
+  department_count:
+    expression: COUNT(DISTINCT dept_id)
+    meaning: 部门数量
+    applicable_grain: 部门级
+    note: >
+      统计部门实体数量时使用。
+
+  tenant_count:
+    expression: COUNT(DISTINCT tenant_id)
+    meaning: 企业数量
+    applicable_grain: 企业级
+    note: >
+      统计拥有相关部门的企业数量时使用。
+
+  top_level_department_count:
+    expression: >
+      SUM(
+        CASE
+          WHEN parent_dept_id IS NULL OR CAST(parent_dept_id AS VARCHAR) = ''
+          THEN 1 ELSE 0
+        END
+      )
+    meaning: 顶级部门数量
+    applicable_grain: 部门级
+    note: >
+      parent_dept_id 为空代表顶级部门。
+
+known_traps:
+  - trap: >
+      dept_name 不是唯一部门 ID。
+    consequence: >
+      如果用 dept_name 统计唯一部门，会把不同企业下同名部门合并。
+    prevention: >
+      统计部门实体时使用 dept_id。
+
+  - trap: >
+      parent_dept_id 空值率较高。
+    consequence: >
+      容易被误判为数据质量问题。
+    prevention: >
+      将 parent_dept_id 为空解释为顶级部门。
+      本次验证中空值率为 0.7613，且非空 parent_dept_id 均可自关联到有效 dept_id。
+
+  - trap: >
+      dim_department JOIN dim_user 后直接 COUNT(*)。
+    consequence: >
+      COUNT(*) 通常统计的是用户记录数，不是部门数。
+    prevention: >
+      统计部门数使用 COUNT(DISTINCT dim_department.dept_id)。
+
+  - trap: >
+      使用 INNER JOIN 分析用户部门时可能降低未来数据版本的鲁棒性。
+    consequence: >
+      当前验证中 dim_user.dept_id 无空值且全部可关联 dim_department。
+      但未来数据版本若出现空值或无法匹配，INNER JOIN 会丢失用户。
+    prevention: >
+      默认从 dim_user LEFT JOIN dim_department，
+      并在报告中说明当前数据版本 join coverage 为 100%。
+
+aggregation_notes:
+  - >
+    单独统计部门数量时，使用 COUNT(DISTINCT dept_id)。
+  - >
+    按企业统计部门数量时，GROUP BY tenant_id。
+  - >
+    按部门类型统计分布时，GROUP BY dept_name。
+  - >
+    做用户部门分析时，推荐从 dim_user LEFT JOIN dim_department。
+  - >
+    构建层级分析时，对 dim_department 做 self join，并明确 child / parent 别名。
+  - >
+    统计企业数量时，不要在 JOIN 用户后使用 COUNT(*)，应使用 COUNT(DISTINCT tenant_id)。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/dim_department_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 2937
+    column_count: 4
+    dept_id_unique: true
+    duplicate_dept_id_count: 0
+    tenant_id_fk_unmatched_count: 0
+    parent_dept_id_null_rate: 0.7613
+    orphan_parent_dept_id_count: 0
+    bad_dept_name_count: 0
+    dim_user_dept_id_null_count: 0
+    dim_user_dept_id_unmatched_count: 0
+    tenant_count_with_departments: 500
+    min_department_count_per_tenant: 2
+    max_department_count_per_tenant: 10
+    avg_department_count_per_tenant: 5.87
+  interpretation:
+    - >
+      dept_id 唯一，验证“一行 = 一个部门”的 grain 成立。
+    - >
+      tenant_id 外键覆盖率为 100%，可安全关联 dim_tenant。
+    - >
+      parent_dept_id 空值代表顶级部门；非空 parent_dept_id 均能自关联到有效部门。
+    - >
+      dept_name 是稳定枚举字段，无 NULL 或空字符串。
+    - >
+      dim_user.dept_id 在当前数据版本中无空值且全部能关联 dim_department。
+
+validation_checks:
+  grain_checks:
+    - check_name: dept_id_uniqueness
+      description: >
+        检查 dept_id 是否唯一，验证“一行 = 一个部门”的粒度。
+      sql: |
+        SELECT
+            COUNT(*) AS row_count,
+            COUNT(DISTINCT dept_id) AS distinct_dept_id_count,
+            COUNT(*) - COUNT(DISTINCT dept_id) AS duplicate_dept_id_count
+        FROM dim_department;
+
+    - check_name: tenant_department_grain
+      description: >
+        检查 tenant_id + dept_id 是否唯一。
+      sql: |
+        SELECT
+            COUNT(*) AS duplicated_key_groups
+        FROM (
+            SELECT
+                tenant_id,
+                dept_id,
+                COUNT(*) AS duplicate_count
+            FROM dim_department
+            GROUP BY tenant_id, dept_id
+            HAVING COUNT(*) > 1
+        );
+
+  dq_checks:
+    - check_name: parent_dept_id_null_rate
+      description: >
+        检查 parent_dept_id 空值比例，用于识别顶级部门比例。
+      sql: |
+        SELECT
+            COUNT(*) AS row_count,
+            SUM(
+                CASE
+                    WHEN parent_dept_id IS NULL OR CAST(parent_dept_id AS VARCHAR) = ''
+                    THEN 1 ELSE 0
+                END
+            ) AS null_parent_dept_count,
+            ROUND(
+                SUM(
+                    CASE
+                        WHEN parent_dept_id IS NULL OR CAST(parent_dept_id AS VARCHAR) = ''
+                        THEN 1 ELSE 0
+                    END
+                ) * 1.0 / COUNT(*),
+                4
+            ) AS null_parent_dept_rate
+        FROM dim_department;
+
+    - check_name: orphan_parent_dept_id
+      description: >
+        检查非空 parent_dept_id 是否能在 dept_id 中找到。
+      sql: |
+        SELECT
+            COUNT(*) AS orphan_parent_dept_count
+        FROM dim_department child
+        LEFT JOIN dim_department parent
+            ON child.parent_dept_id = parent.dept_id
+        WHERE child.parent_dept_id IS NOT NULL
+          AND CAST(child.parent_dept_id AS VARCHAR) != ''
+          AND parent.dept_id IS NULL;
+
+    - check_name: tenant_id_fk_coverage
+      description: >
+        检查 dim_department.tenant_id 是否都能关联到 dim_tenant.tenant_id。
+      sql: |
+        SELECT
+            COUNT(*) AS unmatched_department_count
+        FROM dim_department d
+        LEFT JOIN dim_tenant t
+            ON d.tenant_id = t.tenant_id
+        WHERE t.tenant_id IS NULL;
+
+    - check_name: dim_user_dept_id_join_coverage
+      description: >
+        检查 dim_user.dept_id 是否都能关联到 dim_department.dept_id。
+      sql: |
+        SELECT
+            COUNT(*) AS user_count,
+            SUM(
+                CASE
+                    WHEN u.dept_id IS NULL OR CAST(u.dept_id AS VARCHAR) = ''
+                    THEN 1 ELSE 0
+                END
+            ) AS user_without_dept_count,
+            SUM(
+                CASE
+                    WHEN u.dept_id IS NOT NULL
+                     AND CAST(u.dept_id AS VARCHAR) != ''
+                     AND d.dept_id IS NULL
+                    THEN 1 ELSE 0
+                END
+            ) AS unmatched_user_dept_count
+        FROM dim_user u
+        LEFT JOIN dim_department d
+            ON u.dept_id = d.dept_id;
+
+sql_patterns:
+  department_count_by_tenant: |
+    SELECT
+        tenant_id,
+        COUNT(DISTINCT dept_id) AS department_count
+    FROM dim_department
+    GROUP BY tenant_id
+    ORDER BY department_count DESC;
+
+  department_name_distribution: |
+    SELECT
+        dept_name,
+        COUNT(DISTINCT dept_id) AS department_count
+    FROM dim_department
+    GROUP BY dept_name
+    ORDER BY department_count DESC;
+
+  top_level_vs_child_departments: |
+    SELECT
+        CASE
+            WHEN parent_dept_id IS NULL OR CAST(parent_dept_id AS VARCHAR) = '' THEN 'top_level'
+            ELSE 'child_department'
+        END AS department_level_type,
+        COUNT(DISTINCT dept_id) AS department_count
+    FROM dim_department
+    GROUP BY department_level_type
+    ORDER BY department_count DESC;
+
+  user_count_by_department_name: |
+    SELECT
+        COALESCE(d.dept_name, 'unknown_or_unassigned') AS dept_name,
+        COUNT(DISTINCT u.user_id) AS user_count
+    FROM dim_user u
+    LEFT JOIN dim_department d
+        ON u.dept_id = d.dept_id
+    GROUP BY COALESCE(d.dept_name, 'unknown_or_unassigned')
+    ORDER BY user_count DESC;
+
+  department_count_by_tenant_profile: |
+    SELECT
+        t.country,
+        t.industry,
+        t.size_tier,
+        COUNT(DISTINCT d.dept_id) AS department_count,
+        COUNT(DISTINCT t.tenant_id) AS tenant_count,
+        ROUND(
+            COUNT(DISTINCT d.dept_id) * 1.0 / NULLIF(COUNT(DISTINCT t.tenant_id), 0),
+            2
+        ) AS avg_department_count_per_tenant
+    FROM dim_tenant t
+    LEFT JOIN dim_department d
+        ON t.tenant_id = d.tenant_id
+    GROUP BY t.country, t.industry, t.size_tier
+    ORDER BY avg_department_count_per_tenant DESC;
+
+  department_hierarchy_self_join: |
+    SELECT
+        child.dept_id AS child_dept_id,
+        child.dept_name AS child_dept_name,
+        child.tenant_id,
+        parent.dept_id AS parent_dept_id,
+        parent.dept_name AS parent_dept_name
+    FROM dim_department child
+    LEFT JOIN dim_department parent
+        ON child.parent_dept_id = parent.dept_id;
+
+prompt_summary: >
+  dim_department 是部门维度表，一行代表一个部门。dept_id 是主键；
+  tenant_id 可关联 dim_tenant.tenant_id；dept_id 可关联 dim_user.dept_id；
+  parent_dept_id 是自关联上级部门，空值表示顶级部门。
+  dept_name 是部门类型枚举，不是唯一键。
+  JOIN dim_user 后统计部门数应使用 COUNT(DISTINCT dim_department.dept_id)。
+  当前验证显示 dept_id 唯一，tenant_id 外键覆盖率 100%，dim_user.dept_id 覆盖率 100%。
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/dim_department_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        dim_department 行数为 2937，字段数为 4。
+    - confirmed: true
+      item: >
+        dept_id 唯一，可以作为主键。
+    - confirmed: true
+      item: >
+        tenant_id 全部能关联到 dim_tenant.tenant_id。
+    - confirmed: true
+      item: >
+        parent_dept_id 为空表示顶级部门，空值率为 0.7613。
+    - confirmed: true
+      item: >
+        非空 parent_dept_id 全部能在 dim_department.dept_id 中找到。
+    - confirmed: true
+      item: >
+        dept_name 无 NULL 或空字符串，枚举值正常。
+    - confirmed: true
+      item: >
+        dim_user.dept_id 无空值，且全部能关联到 dim_department.dept_id。
+    - confirmed: true
+      item: >
+        已验证主要 SQL patterns 可执行。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

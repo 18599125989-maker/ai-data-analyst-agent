@@ -1,0 +1,63 @@
+# Python 相关
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.tox/
+.coverage
+.hypothesis/
+
+# 虚拟环境
+.venv/
+venv/
+env/
+ENV/
+
+# 比赛官方资料（无需上传）
+for_contestants/
+
+# 数据库文件
+*.duckdb
+*.db
+
+# 输出结果
+outputs/
+
+# 敏感配置文件（绝对不能上传）
+.env
+.env.local
+.env.*
+*.pem
+*.key
+id_rsa
+secrets.*
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE 配置
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

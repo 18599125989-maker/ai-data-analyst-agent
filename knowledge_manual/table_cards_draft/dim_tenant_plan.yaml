@@ -1,0 +1,319 @@
+table_name: dim_tenant_plan
+card_version: v0.1
+card_type: table_card
+domain:
+  id: A
+  name: 租户与组织
+business_meaning: >-
+  租户套餐历史（SCD2）。
+
+  数据字典将该表归入“租户与组织”域。
+
+  数据字典行数说明为：~2.3k。
+
+  当前 card 仍为 draft，以上内容属于数据字典说明与待验证假设，不能视为验证通过结论。
+grain: >-
+  数据字典说明粒度：一行 = 一个租户在某个时间区间使用的套餐。
+
+  数据字典说明主键：`tenant_id` + `effective_from`。
+
+  当前 draft 只能把这些内容视为待验证假设；是否在当前 DuckDB 数据中成立，仍以后续 validation 脚本和人工复核为准。
+primary_key:
+- tenant_id
+- effective_from
+natural_key_candidate:
+- tenant_id
+- effective_from
+natural_key_status:
+  is_unique: pending_validation
+  note: >-
+    当前为自动草稿，候选自然键仅用于后续验证，不代表已确认业务唯一性。
+
+    需要通过 validate 脚本与人工复核确认。
+profile:
+  row_count: 2320
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: auto_filled_pending_validation
+columns:
+  tenant_id:
+    type: varchar
+    semantic_type: composite_key_part
+    business_meaning: >-
+      关联 `dim_tenant.tenant_id`
+
+      以上字段说明来自数据字典，关联关系仍需验证脚本确认覆盖率与方向。
+    references: dim_tenant.tenant_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 500
+      distinct_rate: 0.2155
+      min: T00001
+      max: T00500
+      sample_values:
+      - T00001
+      - T00002
+      - T00003
+      - T00004
+      - T00005
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  plan_name:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      套餐展示名：Free / Starter / Professional / Business / Enterprise
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 0.0022
+      min: Business
+      max: Starter
+      sample_values:
+      - Business
+      - Enterprise
+      - Free
+      - Professional
+      - Starter
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  plan_tier:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      套餐等级（小写短语）：free / starter / pro / business / enterprise
+
+      数据字典说明已补充，仍需人工复核。
+    references: dim_plan.plan_tier
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 0.0022
+      min: business
+      max: starter
+      sample_values:
+      - business
+      - enterprise
+      - free
+      - pro
+      - starter
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  effective_from:
+    type: date
+    semantic_type: composite_key_part
+    business_meaning: >-
+      该套餐生效开始日
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 661
+      distinct_rate: 0.2849
+      min: '2024-04-01'
+      max: '2026-03-30'
+      sample_values:
+      - '2024-04-01'
+      - '2024-04-02'
+      - '2024-04-04'
+      - '2024-04-05'
+      - '2024-04-09'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  effective_to:
+    type: date
+    semantic_type: event_time
+    business_meaning: >-
+      该套餐失效日；**空字符串表示当前仍有效**
+
+      空值、空字符串或混合类型语义来自数据字典说明，仍需结合实际数据分布复核。
+    references: null
+    profile:
+      null_rate: 0.2134
+      distinct_count: 545
+      distinct_rate: 0.2349
+      min: '2024-06-18'
+      max: '2026-03-31'
+      sample_values:
+      - '2024-06-18'
+      - '2024-06-21'
+      - '2024-06-27'
+      - '2024-07-03'
+      - '2024-07-04'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+join_keys:
+- column: tenant_id
+  references: dim_tenant.tenant_id
+  relationship: pending_validation
+  join_condition: dim_tenant_plan.tenant_id = dim_tenant.tenant_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明明确 tenant_id 关联 dim_tenant.tenant_id。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+- column: plan_tier
+  references: dim_plan.plan_tier
+  relationship: pending_validation
+  join_condition: dim_tenant_plan.plan_tier = dim_plan.plan_tier
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 plan_tier 为套餐等级，可与 dim_plan 的套餐等级对照，具体覆盖率待验证。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - tenant_id
+  - effective_from
+  time_columns:
+  - effective_from
+  - effective_to
+  metric_columns: []
+  dimension_columns:
+  - tenant_id
+  - plan_name
+  - plan_tier
+  - effective_from
+  - effective_to
+  enum_columns:
+  - plan_name
+  - plan_tier
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 dim_tenant_plan 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+preferred_metrics:
+  entity_count:
+    expression: COUNT(*)
+    meaning: 实体或记录数量
+    applicable_grain: 待验证
+    note: >-
+      当前为自动草稿，需要先验证主键或业务粒度后再确认统计口径。
+
+      对于复合键表，COUNT(*) 仅在 grain 成立时才可解释为记录数。
+known_traps:
+- trap: >-
+    把数据字典声明的主键直接当作已验证事实。
+
+    当前仍是 draft。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`tenant_id` + `effective_from`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: 忽略数据字典中对空字符串、N/A 或混合类型的特别说明。
+  consequence: 可能把“当前仍有效”“未完成调研”或“缺失值”误当成普通值。
+  prevention: 先按数据字典说明理解异常取值语义，再用验证脚本检查实际分布。
+- trap: >-
+    将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+    当前仍是 draft。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 数据字典说明该表粒度为：一行 = 一个租户在某个时间区间使用的套餐。聚合前必须先验证这一粒度在当前数据中是否成立。
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: null
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent_recommendation: false
+  key_results: {}
+  interpretation:
+  - 当前为待验证 draft，尚未经过人工确认。
+  - 主键、自然键、JOIN 覆盖率、指标口径和 known_traps 均需要验证脚本和人工复核。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: >-
+    SELECT
+        effective_from AS time_key,
+        COUNT(*) AS row_count
+    FROM dim_tenant_plan
+
+    GROUP BY effective_from
+
+    ORDER BY effective_from;
+  enum_distribution: >-
+    SELECT
+        plan_name,
+        COUNT(DISTINCT tenant_id) AS entity_count
+    FROM dim_tenant_plan
+
+    GROUP BY plan_name
+
+    ORDER BY entity_count DESC, plan_name;
+  join_coverage_sample: >-
+    SELECT
+        COUNT(*) AS row_count
+    FROM dim_tenant_plan base
+
+    LEFT JOIN dim_tenant ref
+        ON base.tenant_id = ref.tenant_id;
+prompt_summary: >-
+  dim_tenant_plan 是 租户套餐历史（SCD2）。
+
+  数据字典声明 grain 为：一行 = 一个租户在某个时间区间使用的套餐。
+
+  数据字典主键说明为：`tenant_id` + `effective_from`。
+
+  常用 JOIN 假设包括：tenant_id -> dim_tenant.tenant_id；plan_tier -> dim_plan.plan_tier。
+
+  当前 card 仍是 draft，数据字典中的主键、JOIN、口径和特殊说明都只能视为待验证假设。
+manual_review:
+  reviewer: null
+  review_status: pending_validation
+  review_notes:
+  - 当前为批量生成的 draft，需要结合 validation report 逐张人工复查。
+  - 主键、自然键、JOIN 覆盖率、字段口径和 known_traps 都不能直接视为最终结论。
+  checklist:
+  - confirmed: false
+    item: 数据字典声明主键为：`tenant_id` + `effective_from`。需要核对当前数据是否满足唯一性。
+  - confirmed: false
+    item: 数据字典声明粒度为：一行 = 一个租户在某个时间区间使用的套餐。需要验证实际 grain 是否成立。
+  - confirmed: false
+    item: 数据字典说明行数约为：~2.3k。需要与当前 profile 和 DuckDB 数据核对。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：dim_tenant_plan.tenant_id -> dim_tenant.tenant_id。需要验证覆盖率与口径风险。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：dim_tenant_plan.plan_tier -> dim_plan.plan_tier。需要验证覆盖率与口径风险。
+status:
+  authoring_status: manual_draft
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent: false

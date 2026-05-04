@@ -1,0 +1,275 @@
+table_name: fact_experiment_assignment
+card_version: v0.1
+card_type: table_card
+domain:
+  id: G
+  name: 增长与实验
+business_meaning: >-
+  实验分流。
+
+  数据字典将该表归入“增长与实验”域。
+
+  数据字典行数说明为：~13.4 万。
+
+  当前 card 仍为 draft，以上内容属于数据字典说明与待验证假设，不能视为验证通过结论。
+grain: >-
+  数据字典说明粒度：一行 = 一个用户在一个实验中的分组。
+
+  当前 draft 只能把这些内容视为待验证假设；是否在当前 DuckDB 数据中成立，仍以后续 validation 脚本和人工复核为准。
+primary_key: []
+natural_key_candidate:
+- user_id
+- exp_id
+natural_key_status:
+  is_unique: pending_validation
+  note: >-
+    当前为自动草稿，候选自然键仅用于后续验证，不代表已确认业务唯一性。
+
+    需要通过 validate 脚本与人工复核确认。
+profile:
+  row_count: 133748
+  column_count: 4
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: auto_filled_pending_validation
+columns:
+  user_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >-
+      用户
+
+      数据字典说明已补充，仍需人工复核。
+    references: dim_user.user_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 38824
+      distinct_rate: 0.2903
+      min: U000001
+      max: U049999
+      sample_values:
+      - U000001
+      - U000003
+      - U000004
+      - U000005
+      - U000006
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  exp_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >-
+      实验
+
+      数据字典说明已补充，仍需人工复核。
+    references: fact_experiment.exp_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 50
+      distinct_rate: 0.0004
+      min: EXP001
+      max: EXP050
+      sample_values:
+      - EXP001
+      - EXP002
+      - EXP003
+      - EXP004
+      - EXP005
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  variant:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >-
+      分组。枚举：control / treatment_a / treatment_b
+
+      枚举值集合来自数据字典说明，当前仅作为待验证假设。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3
+      distinct_rate: 0.0
+      min: control
+      max: treatment_b
+      sample_values:
+      - control
+      - treatment_a
+      - treatment_b
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+  assigned_at:
+    type: timestamp
+    semantic_type: event_time
+    business_meaning: >-
+      分组时间
+
+      数据字典说明已补充，仍需人工复核。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 133300
+      distinct_rate: 0.9967
+      min: '2025-04-07 00:07:54'
+      max: '2026-03-19 23:50:27'
+      sample_values:
+      - '2025-04-07 00:07:54'
+      - '2025-04-07 00:36:59'
+      - '2025-04-07 00:42:55'
+      - '2025-04-07 00:47:19'
+      - '2025-04-07 01:03:25'
+      is_possible_primary_key: false
+    notes:
+    - 当前字段说明主要来自 DATA_DICTIONARY.md 与自动 profile，尚未人工验证。
+    - 如需依赖该字段做 JOIN、聚合或口径判断，请先运行对应 validate 脚本并人工复核。
+join_keys:
+- column: user_id
+  references: dim_user.user_id
+  relationship: pending_validation
+  join_condition: fact_experiment_assignment.user_id = dim_user.user_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 user_id 表示用户。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+- column: exp_id
+  references: fact_experiment.exp_id
+  relationship: pending_validation
+  join_condition: fact_experiment_assignment.exp_id = fact_experiment.exp_id
+  purpose: >-
+    数据字典说明中的主关联路径。
+
+    当前仅作为待验证 JOIN 假设使用。
+  risk_level: pending_validation
+  validation_status: pending_validation
+  note: >-
+    字段说明写明 exp_id 表示实验。
+
+    当前不得视为验证通过；覆盖率、方向、大小写/编码兼容性和聚合风险仍需 validation 脚本与人工复核。
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - user_id
+  - exp_id
+  time_columns:
+  - assigned_at
+  metric_columns: []
+  dimension_columns:
+  - user_id
+  - exp_id
+  - variant
+  - assigned_at
+  enum_columns:
+  - variant
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 fact_experiment_assignment 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 按数据字典声明的枚举字段做结构分布分析
+- 基于数据字典说明的时间字段做趋势或窗口分析
+preferred_metrics:
+  row_count:
+    expression: COUNT(*)
+    meaning: 记录数
+    applicable_grain: 待验证
+    note: 当前表未确认稳定主键，COUNT(*) 只能先解释为记录数。
+known_traps:
+- trap: >-
+    将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+    当前仍是 draft。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 数据字典说明该表粒度为：一行 = 一个用户在一个实验中的分组。聚合前必须先验证这一粒度在当前数据中是否成立。
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: null
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent_recommendation: false
+  key_results: {}
+  interpretation:
+  - 当前为待验证 draft，尚未经过人工确认。
+  - 主键、自然键、JOIN 覆盖率、指标口径和 known_traps 均需要验证脚本和人工复核。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- candidate_natural_key_uniqueness
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: >-
+    SELECT
+        assigned_at AS time_key,
+        COUNT(*) AS row_count
+    FROM fact_experiment_assignment
+
+    GROUP BY assigned_at
+
+    ORDER BY assigned_at;
+  enum_distribution: >-
+    SELECT
+        variant,
+        COUNT(DISTINCT user_id) AS entity_count
+    FROM fact_experiment_assignment
+
+    GROUP BY variant
+
+    ORDER BY entity_count DESC, variant;
+  join_coverage_sample: >-
+    SELECT
+        COUNT(*) AS row_count
+    FROM fact_experiment_assignment base
+
+    LEFT JOIN dim_user ref
+        ON base.user_id = ref.user_id;
+prompt_summary: >-
+  fact_experiment_assignment 是 实验分流。
+
+  数据字典声明 grain 为：一行 = 一个用户在一个实验中的分组。
+
+  数据字典主键说明为：待补充。
+
+  常用 JOIN 假设包括：user_id -> dim_user.user_id；exp_id -> fact_experiment.exp_id。
+
+  当前 card 仍是 draft，数据字典中的主键、JOIN、口径和特殊说明都只能视为待验证假设。
+manual_review:
+  reviewer: null
+  review_status: pending_validation
+  review_notes:
+  - 当前为批量生成的 draft，需要结合 validation report 逐张人工复查。
+  - 主键、自然键、JOIN 覆盖率、字段口径和 known_traps 都不能直接视为最终结论。
+  checklist:
+  - confirmed: false
+    item: 数据字典声明粒度为：一行 = 一个用户在一个实验中的分组。需要验证实际 grain 是否成立。
+  - confirmed: false
+    item: 数据字典说明行数约为：~13.4 万。需要与当前 profile 和 DuckDB 数据核对。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_experiment_assignment.user_id -> dim_user.user_id。需要验证覆盖率与口径风险。
+  - confirmed: false
+    item: 数据字典给出的 JOIN 假设：fact_experiment_assignment.exp_id -> fact_experiment.exp_id。需要验证覆盖率与口径风险。
+status:
+  authoring_status: manual_draft
+  profile_filled: true
+  grain_validated: false
+  dq_validated: false
+  ready_for_agent: false

@@ -1,0 +1,589 @@
+table_name: fact_ticket
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: F
+  name: 客服工单
+
+business_meaning: >
+  客服/支持工单事实表，记录工单的企业归属、提单用户、分类、优先级、状态、创建时间和解决时间。
+  该表适合分析工单数量、优先级、状态、类别、解决时长和租户支持负载。
+  当前验证显示该表可作为正式工单分析事实表使用。
+
+grain: >
+  一行代表一个客服/支持工单。
+  当前验证显示主键候选 ticket_id 唯一：row_count = 3922，
+  distinct_primary_key_count = 3922，duplicate_primary_key_count = 0。
+  同一个 ticket_id 可以在 fact_ticket_reply 中对应多条回复。
+  该表适合分析工单数量、优先级、状态、类别、解决时长和租户支持负载。
+
+primary_key:
+  - ticket_id
+
+natural_key_candidate:
+  - ticket_id
+
+natural_key_status:
+  is_unique: true
+  tested_key:
+    - ticket_id
+  duplicated_group_count: 0
+  note: >
+    当前验证显示 ticket_id 唯一，可作为本表主键和工单级唯一标识。
+
+profile:
+  row_count: 3922
+  column_count: 8
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/fact_ticket_validation.md
+  profile_status: validated
+
+columns:
+  ticket_id:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: >
+      工单 ID。
+      用于唯一标识一张客服/支持工单。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3922
+      distinct_rate: 1.0
+      min: TK00011dfd5d95
+      max: TKfff4d6c95a3b
+      sample_values:
+        - TK00011dfd5d95
+        - TK0001ef8bfd87
+        - TK0003961c1632
+        - TK00071d1f9d91
+        - TK001259a2f61f
+      is_possible_primary_key: true
+    notes:
+      - >
+        ticket_id 已验证唯一，可直接用于统计工单数。
+
+  tenant_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      提单企业 ID。
+      用于将工单关联到租户维度，分析企业支持负载和企业侧问题分布。
+    references: dim_tenant.tenant_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 500
+      distinct_rate: 0.1275
+      min: T00001
+      max: T00500
+      sample_values:
+        - T00001
+        - T00002
+        - T00003
+        - T00004
+        - T00005
+      is_possible_primary_key: false
+    notes:
+      - >
+        tenant_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        统计企业数时应使用 COUNT(DISTINCT tenant_id)。
+
+  reporter_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      提交工单的用户 ID。
+      可用于分析报障用户分布和用户层面的工单行为。
+    references: dim_user.user_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 3328
+      distinct_rate: 0.8485
+      min: U000010
+      max: U049999
+      sample_values:
+        - U000010
+        - U000011
+        - U000012
+        - U000023
+        - U000024
+      is_possible_primary_key: false
+    notes:
+      - >
+        reporter_id 是提交工单的用户键，可用于后续人工验证用户维度关联覆盖率。
+      - >
+        当前正式卡未将其覆盖率写为已验证通过。
+
+  category:
+    type: varchar
+    semantic_type: foreign_key_or_enum_dimension
+    business_meaning: >
+      工单分类键。
+      对应 dim_ticket_category.category_id，可用于问题类型、工单主题和问题结构分析。
+    references: dim_ticket_category.category_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 12
+      distinct_rate: 0.0031
+      min: account
+      max: security
+      sample_values:
+        - integration
+        - account_permission
+        - billing_invoice
+        - bug_data_loss
+        - security
+        - account
+        - billing_refund
+        - bug_crash
+        - bug
+        - feature
+        - account_login
+        - billing
+      is_possible_primary_key: false
+    notes:
+      - >
+        category 全部可以关联 dim_ticket_category.category_id，且无空值。
+      - >
+        category 适合做问题类型分组，不是数值指标。
+
+  priority:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      工单优先级。
+      可用于区分工单紧急程度和支持队列压力结构。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 4
+      distinct_rate: 0.001
+      min: critical
+      max: medium
+      sample_values:
+        - critical
+        - high
+        - medium
+        - low
+      is_possible_primary_key: false
+    notes:
+      - >
+        priority 无空值。
+      - >
+        priority 是工单优先级，不是数值指标。
+
+  status:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      工单处理状态。
+      可用于区分已解决、关闭、处理中和未处理工单。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 4
+      distinct_rate: 0.001
+      min: closed
+      max: resolved
+      sample_values:
+        - resolved
+        - closed
+        - open
+        - in_progress
+      is_possible_primary_key: false
+    notes:
+      - >
+        status 无空值。
+      - >
+        status 是工单处理状态，可用于区分已解决、关闭、处理中和未处理工单。
+
+  created_at:
+    type: timestamp
+    semantic_type: timestamp
+    business_meaning: >
+      工单创建时间。
+      适合做工单创建趋势、时间窗口和支持负载变化分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3922
+      distinct_rate: 1.0
+      min: "2025-04-01T02:10:05"
+      max: "2026-03-30T21:44:06"
+      sample_values:
+        - "2025-04-01 02:10:05"
+        - "2025-04-01 02:24:25"
+        - "2025-04-01 05:58:43"
+        - "2025-04-01 06:14:46"
+        - "2025-04-01 07:32:05"
+      is_possible_primary_key: true
+    notes:
+      - >
+        created_at 是工单创建时间，适合做工单创建趋势分析。
+      - >
+        当前验证时间范围为 2025-04-01T02:10:05 到 2026-03-30T21:44:06。
+
+  resolved_at:
+    type: timestamp
+    semantic_type: nullable_timestamp
+    business_meaning: >
+      工单解决或关闭时间。
+      该字段可用于计算解决时长，但并非所有工单都会有值。
+    references: null
+    profile:
+      null_rate: 0.3195
+      distinct_count: 2669
+      distinct_rate: 0.6805
+      min: "2025-04-04T09:46:21"
+      max: "2026-04-12T00:45:30"
+      sample_values:
+        - "2025-04-04 09:46:21"
+        - "2025-04-04 14:04:18"
+        - "2025-04-05 14:31:31"
+        - "2025-04-05 23:07:12"
+        - "2025-04-07 03:36:10"
+      is_possible_primary_key: false
+      null_count: 1253
+    notes:
+      - >
+        resolved_at 为空通常代表尚未解决或未关闭的工单。
+      - >
+        计算解决时长时必须过滤 resolved_at IS NOT NULL。
+      - >
+        当前验证时间范围为 2025-04-04T09:46:21 到 2026-04-12T00:45:30。
+
+join_keys:
+  - column: tenant_id
+    references: dim_tenant.tenant_id
+    relationship: many_to_one
+    join_condition: fact_ticket.tenant_id = dim_tenant.tenant_id
+    purpose: 将工单关联到租户维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      tenant_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+  - column: category
+    references: dim_ticket_category.category_id
+    relationship: many_to_one
+    join_condition: fact_ticket.category = dim_ticket_category.category_id
+    purpose: 将工单关联到工单分类维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      category 外键覆盖率已验证通过，unmatched_count = 0。
+
+  - column: ticket_id
+    references: fact_ticket_reply.ticket_id
+    relationship: one_to_many
+    join_condition: fact_ticket.ticket_id = fact_ticket_reply.ticket_id
+    purpose: 将工单关联到回复事实表。
+    risk_level: medium
+    validation_status: passed
+    note: >
+      一个 ticket 可以有多条 reply，JOIN 后统计工单数必须 COUNT(DISTINCT ticket_id)。
+
+field_groups:
+  id_columns:
+    - ticket_id
+    - tenant_id
+  time_columns:
+    - created_at
+    - resolved_at
+  metric_columns: []
+  dimension_columns:
+    - tenant_id
+    - category
+    - priority
+    - status
+  enum_columns:
+    - category
+    - priority
+    - status
+  json_columns: []
+  text_columns: []
+
+recommended_use_cases:
+  - 统计工单总量、未解决工单量和不同状态工单分布。
+  - 分析不同优先级和类别下的工单压力结构。
+  - 按日、按月分析工单创建趋势。
+  - 计算已解决工单的平均解决时长。
+  - 按租户和租户画像分析支持负载与问题类型分布。
+
+preferred_metrics:
+  ticket_count:
+    expression: COUNT(DISTINCT ticket_id)
+    meaning: 工单数
+    applicable_grain: 任意分析层级
+    note: >
+      工单数量应使用 ticket_id 去重统计。
+  open_ticket_count:
+    expression: COUNT(DISTINCT CASE WHEN status = 'open' THEN ticket_id END)
+    meaning: open 工单数
+    applicable_grain: 任意分析层级
+    note: >
+      用于统计未处理工单数量。
+  in_progress_ticket_count:
+    expression: COUNT(DISTINCT CASE WHEN status = 'in_progress' THEN ticket_id END)
+    meaning: 处理中工单数
+    applicable_grain: 任意分析层级
+    note: >
+      用于统计处理中工单数量。
+  resolved_ticket_count:
+    expression: COUNT(DISTINCT CASE WHEN status = 'resolved' THEN ticket_id END)
+    meaning: 已解决工单数
+    applicable_grain: 任意分析层级
+    note: >
+      用于统计已解决工单数量。
+  closed_ticket_count:
+    expression: COUNT(DISTINCT CASE WHEN status = 'closed' THEN ticket_id END)
+    meaning: 已关闭工单数
+    applicable_grain: 任意分析层级
+    note: >
+      用于统计已关闭工单数量。
+  unresolved_ticket_count:
+    expression: COUNT(DISTINCT CASE WHEN resolved_at IS NULL THEN ticket_id END)
+    meaning: 未解决或无解决时间工单数
+    applicable_grain: 任意分析层级
+    note: >
+      需结合 status 理解未解决或未关闭状态。
+  avg_resolution_hours:
+    expression: AVG(DATEDIFF('second', created_at, resolved_at) / 3600.0)
+    meaning: 平均解决时长小时数
+    applicable_grain: resolved_at 非空的工单
+    note: >
+      使用前必须过滤 WHERE resolved_at IS NOT NULL。
+
+known_traps:
+  - trap: >
+      JOIN fact_ticket_reply 后直接 COUNT(*) 当作工单数。
+    consequence: >
+      一个 ticket_id 可以对应多条回复，COUNT(*) 会统计回复记录数，不是工单数。
+    prevention: >
+      统计工单数使用 COUNT(DISTINCT ticket_id)，统计回复数才使用 fact_ticket_reply 的记录数。
+  - trap: >
+      计算解决时长时没有过滤 resolved_at IS NOT NULL。
+    consequence: >
+      未解决或未关闭工单的 resolved_at 为空，会导致解决时长为空或计算错误。
+    prevention: >
+      计算解决时长时使用 WHERE resolved_at IS NOT NULL，并根据 status 说明统计口径。
+  - trap: >
+      把 resolved_at 为空当作数据质量错误。
+    consequence: >
+      会误判 open / in_progress 等未解决工单。
+    prevention: >
+      resolved_at 为空通常代表尚未解决或未关闭，需要结合 status 解释。
+  - trap: >
+      把 priority 或 status 当作数值指标。
+    consequence: >
+      priority/status 是枚举维度，不能 SUM 或 AVG。
+    prevention: >
+      priority/status 只能作为分组或筛选维度。
+  - trap: >
+      JOIN dim_tenant 后直接 COUNT(*) 当作企业数。
+    consequence: >
+      COUNT(*) 是工单记录数，不是企业数。
+    prevention: >
+      统计企业数使用 COUNT(DISTINCT tenant_id)。
+
+aggregation_notes:
+  - >
+    统计工单数时使用 COUNT(DISTINCT ticket_id)。
+  - >
+    计算解决时长前必须过滤 resolved_at IS NOT NULL。
+  - >
+    与 fact_ticket_reply JOIN 后不能用 COUNT(*) 作为工单数。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_ticket_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 3922
+    column_count: 8
+    primary_key_unique: true
+    duplicate_primary_key_count: 0
+    tenant_id_fk_unmatched_count: 0
+    category_fk_unmatched_count: 0
+    category_blank_or_null_count: 0
+    priority_blank_or_null_count: 0
+    status_blank_or_null_count: 0
+    created_at_null_count: 0
+    created_at_min: "2025-04-01T02:10:05"
+    created_at_max: "2026-03-30T21:44:06"
+    resolved_at_null_count: 1253
+    resolved_at_min: "2025-04-04T09:46:21"
+    resolved_at_max: "2026-04-12T00:45:30"
+  interpretation:
+    - >
+      主键候选唯一，工单记录粒度成立。
+    - >
+      tenant_id 全部可以关联到 dim_tenant.tenant_id。
+    - >
+      category 全部可以关联到 dim_ticket_category.category_id。
+    - >
+      category、priority、status 均无空值，可作为枚举分组维度。
+    - >
+      created_at 无空值，可用于工单创建趋势。
+    - >
+      resolved_at 存在 1253 条空值，通常代表未解决或未关闭工单，不应直接视为脏数据。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - tenant_id_fk_coverage
+  - tenant_id_fk_unmatched_examples
+  - category_fk_coverage
+  - category_fk_unmatched_examples
+  - category_distribution
+  - category_null_check
+  - priority_distribution
+  - priority_null_check
+  - status_distribution
+  - status_null_check
+  - created_at_time_range_check
+  - resolved_at_time_range_check
+  - sql_pattern_time_distribution
+  - sql_pattern_enum_distribution
+  - sql_pattern_join_coverage_sample
+
+sql_patterns:
+  ticket_count_by_status: |
+    SELECT
+        status,
+        COUNT(DISTINCT ticket_id) AS ticket_count
+    FROM fact_ticket
+    GROUP BY status
+    ORDER BY ticket_count DESC, status;
+  ticket_count_by_priority: |
+    SELECT
+        priority,
+        COUNT(DISTINCT ticket_id) AS ticket_count
+    FROM fact_ticket
+    GROUP BY priority
+    ORDER BY ticket_count DESC, priority;
+  ticket_count_by_category: |
+    SELECT
+        category,
+        COUNT(DISTINCT ticket_id) AS ticket_count
+    FROM fact_ticket
+    GROUP BY category
+    ORDER BY ticket_count DESC, category;
+  ticket_created_trend_by_day: |
+    SELECT
+        CAST(created_at AS DATE) AS dt,
+        COUNT(DISTINCT ticket_id) AS ticket_count
+    FROM fact_ticket
+    GROUP BY CAST(created_at AS DATE)
+    ORDER BY dt;
+  ticket_created_trend_by_month: |
+    SELECT
+        STRFTIME(created_at, '%Y-%m') AS month_key,
+        COUNT(DISTINCT ticket_id) AS ticket_count
+    FROM fact_ticket
+    GROUP BY STRFTIME(created_at, '%Y-%m')
+    ORDER BY month_key;
+  unresolved_ticket_count: |
+    SELECT
+        COUNT(DISTINCT ticket_id) AS unresolved_ticket_count
+    FROM fact_ticket
+    WHERE resolved_at IS NULL;
+  avg_resolution_hours_by_priority: |
+    SELECT
+        priority,
+        AVG(DATEDIFF('second', created_at, resolved_at) / 3600.0) AS avg_resolution_hours
+    FROM fact_ticket
+    WHERE resolved_at IS NOT NULL
+    GROUP BY priority
+    ORDER BY avg_resolution_hours DESC, priority;
+  avg_resolution_hours_by_category: |
+    SELECT
+        category,
+        AVG(DATEDIFF('second', created_at, resolved_at) / 3600.0) AS avg_resolution_hours
+    FROM fact_ticket
+    WHERE resolved_at IS NOT NULL
+    GROUP BY category
+    ORDER BY avg_resolution_hours DESC, category;
+  ticket_count_by_tenant: |
+    SELECT
+        tenant_id,
+        COUNT(DISTINCT ticket_id) AS ticket_count
+    FROM fact_ticket
+    GROUP BY tenant_id
+    ORDER BY ticket_count DESC, tenant_id;
+  ticket_count_by_tenant_profile: |
+    SELECT
+        t.country,
+        t.industry,
+        t.size_tier,
+        COUNT(DISTINCT f.ticket_id) AS ticket_count,
+        COUNT(DISTINCT f.tenant_id) AS tenant_count
+    FROM fact_ticket f
+    JOIN dim_tenant t
+      ON f.tenant_id = t.tenant_id
+    GROUP BY t.country, t.industry, t.size_tier
+    ORDER BY ticket_count DESC, t.country, t.industry, t.size_tier;
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_ticket_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        主键候选唯一已验证。
+    - confirmed: true
+      item: >
+        tenant_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        category 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        category/priority/status 枚举正常且无空值。
+    - confirmed: true
+      item: >
+        created_at 时间范围已验证。
+    - confirmed: true
+      item: >
+        resolved_at 有空值，需要结合 status 解释。
+    - confirmed: true
+      item: >
+        计算解决时长时应过滤 resolved_at IS NOT NULL。
+    - confirmed: true
+      item: >
+        和 fact_ticket_reply JOIN 后统计工单数应使用 COUNT(DISTINCT ticket_id)。
+
+agent_usage_policy:
+  count_tickets_with_distinct_ticket_id: true
+  priority_is_enum_not_metric: true
+  status_is_enum_not_metric: true
+  use_created_at_for_ticket_creation_trends: true
+  use_resolved_at_only_for_resolved_ticket_duration: true
+  resolved_at_null_means_unresolved_or_not_closed: true
+  ticket_can_have_multiple_replies: true
+  join_to_reply_can_duplicate_ticket_rows: true
+  do_not_count_star_after_join_reply_as_ticket_count: true
+
+prompt_summary: >
+  fact_ticket 是工单主事实表，一行代表一个 ticket_id 级工单，主键已验证唯一。
+  tenant_id 可稳定关联 dim_tenant，category 可稳定关联 dim_ticket_category；ticket_id 与 fact_ticket_reply 是一对多关系。
+  关键指标包括工单数、不同状态和优先级工单数、未解决工单数和平均解决时长。
+  关键陷阱是不要在 JOIN fact_ticket_reply 后用 COUNT(*) 当作工单数，计算解决时长必须过滤 resolved_at IS NOT NULL，
+  且 priority/status 只能作为枚举维度而不是数值指标。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

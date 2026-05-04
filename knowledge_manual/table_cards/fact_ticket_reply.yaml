@@ -1,0 +1,471 @@
+table_name: fact_ticket_reply
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: F
+  name: 客服工单
+
+business_meaning: >
+  工单回复事实表，记录客服工单体系中的每一条回复记录。
+  该表适合分析工单回复量、回复者类型、回复时间趋势和回复内容长度。
+  当前验证显示该表可作为正式回复分析事实表使用。
+
+grain: >
+  一行代表一条工单回复记录。
+  当前验证显示主键候选 reply_id 唯一：row_count = 21715，
+  distinct_primary_key_count = 21715，duplicate_primary_key_count = 0。
+  同一个 ticket_id 可以对应多条回复。
+  该表适合分析工单回复量、回复者类型、回复时间趋势和回复内容长度。
+
+primary_key:
+  - reply_id
+
+natural_key_candidate:
+  - reply_id
+
+natural_key_status:
+  is_unique: true
+  tested_key:
+    - reply_id
+  duplicated_group_count: 0
+  note: >
+    当前验证显示 reply_id 唯一，可作为本表的物理主键与回复记录唯一标识。
+
+profile:
+  row_count: 21715
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/fact_ticket_reply_validation.md
+  profile_status: validated
+
+columns:
+  reply_id:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: >
+      回复记录 ID。
+      用于唯一标识一条工单回复记录。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 21715
+      distinct_rate: 1.0
+      min: TR000049e796af
+      max: TRfff985360056
+      sample_values:
+        - TR000049e796af
+        - TR00040ae3b28c
+        - TR0012c875fe86
+        - TR00166184ebe7
+        - TR001665d11c6d
+      is_possible_primary_key: true
+    notes:
+      - >
+        reply_id 已验证唯一，可直接用于统计回复记录数。
+
+  ticket_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      关联工单 ID。
+      用于将回复记录关联回工单主事实表。
+    references: fact_ticket.ticket_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 3922
+      distinct_rate: 0.1806
+      min: TK00011dfd5d95
+      max: TKfff4d6c95a3b
+      sample_values:
+        - TK00011dfd5d95
+        - TK0001ef8bfd87
+        - TK0003961c1632
+        - TK00071d1f9d91
+        - TK001259a2f61f
+      is_possible_primary_key: false
+    notes:
+      - >
+        ticket_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        统计有回复的工单数时应使用 COUNT(DISTINCT ticket_id)。
+
+  author_type:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      回复者类型。
+      用于区分人工客服、机器人和客户的回复。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3
+      distinct_rate: 0.0001
+      min: agent
+      max: customer
+      sample_values:
+        - agent
+        - bot
+        - customer
+      is_possible_primary_key: false
+    notes:
+      - >
+        author_type 无空值。
+      - >
+        author_type 是回复者类型，不是数值指标。
+
+  content_length:
+    type: bigint
+    semantic_type: metric
+    business_meaning: >
+      回复文本长度。
+      可用于分析平均回复长度或总回复文本长度。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 1991
+      distinct_rate: 0.0917
+      min: 10
+      max: 2000
+      sample_values:
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+      is_possible_primary_key: false
+    notes:
+      - >
+        content_length 范围为 10 到 2000，negative_count = 0，zero_count = 0。
+      - >
+        content_length 是回复文本长度，可用于平均回复长度或总回复字数分析，但不直接等同于服务质量。
+
+  replied_at:
+    type: timestamp
+    semantic_type: timestamp
+    business_meaning: >
+      回复发生时间。
+      适合做日、周、月回复趋势和响应时间分布相关分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 21217
+      distinct_rate: 0.9771
+      min: "2025-04-01T02:10:05"
+      max: "2026-04-06T01:42:38"
+      sample_values:
+        - "2025-04-01 02:10:05"
+        - "2025-04-01 02:24:25"
+        - "2025-04-01 05:58:43"
+        - "2025-04-01 06:10:05"
+        - "2025-04-01 06:14:46"
+      is_possible_primary_key: false
+    notes:
+      - >
+        replied_at 是回复发生时间，适合做日/月回复趋势分析。
+      - >
+        当前验证时间范围为 2025-04-01T02:10:05 到 2026-04-06T01:42:38。
+      - >
+        如做完整月份趋势，应注意 2026-04 可能是不完整月份。
+
+join_keys:
+  - column: ticket_id
+    references: fact_ticket.ticket_id
+    relationship: many_to_one
+    join_condition: fact_ticket_reply.ticket_id = fact_ticket.ticket_id
+    purpose: 将回复记录关联到工单主事实表。
+    risk_level: low
+    validation_status: passed
+    note: >
+      ticket_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+derived_join_paths:
+  reply_to_ticket_to_tenant:
+    path:
+      - fact_ticket_reply.ticket_id = fact_ticket.ticket_id
+      - fact_ticket.tenant_id = dim_tenant.tenant_id
+    purpose: 将回复记录关联到租户维度
+    risk_level: medium
+    validation_status: passed
+    note: >
+      由于一个工单可以有多条回复，JOIN 后统计工单数时必须 COUNT(DISTINCT ticket_id)。
+  reply_to_ticket_to_user:
+    path:
+      - fact_ticket_reply.ticket_id = fact_ticket.ticket_id
+      - fact_ticket.user_id = dim_user.user_id
+    purpose: 将回复记录关联到提交工单的用户维度
+    risk_level: medium
+    validation_status: passed
+    note: >
+      该路径用于分析不同用户或角色对应的工单回复情况，但不能把回复数误当作用户数。
+
+field_groups:
+  id_columns:
+    - reply_id
+    - ticket_id
+  time_columns:
+    - replied_at
+  metric_columns:
+    - content_length
+  dimension_columns:
+    - ticket_id
+    - author_type
+  enum_columns:
+    - author_type
+  json_columns: []
+  text_columns: []
+
+recommended_use_cases:
+  - 统计工单回复记录数和有回复工单数。
+  - 分析 agent、bot、customer 三类回复者的回复分布。
+  - 按日或按月分析工单回复趋势。
+  - 分析不同回复者类型的平均回复长度和总回复字数。
+  - 结合 fact_ticket、dim_tenant、dim_user 分析不同租户或用户群体的工单回复情况。
+
+preferred_metrics:
+  reply_record_count:
+    expression: COUNT(DISTINCT reply_id)
+    meaning: 工单回复记录数
+    applicable_grain: 任意分析层级
+    note: >
+      统计回复数时可使用 reply_id 去重，或在确认无重复时使用 COUNT(*)。
+  replied_ticket_count:
+    expression: COUNT(DISTINCT ticket_id)
+    meaning: 有回复的工单数
+    applicable_grain: 任意分析层级
+    note: >
+      工单数应使用 ticket_id 去重统计。
+  avg_content_length:
+    expression: AVG(content_length)
+    meaning: 平均回复文本长度
+    applicable_grain: 任意分析层级
+    note: >
+      仅表示长度，不直接代表服务质量。
+  total_content_length:
+    expression: SUM(content_length)
+    meaning: 总回复文本长度
+    applicable_grain: 任意分析层级
+    note: >
+      可用于衡量回复文本总量。
+  agent_reply_count:
+    expression: COUNT(DISTINCT CASE WHEN author_type = 'agent' THEN reply_id END)
+    meaning: 人工客服回复数
+    applicable_grain: 任意分析层级
+    note: >
+      适合区分人工与机器人回复结构。
+  bot_reply_count:
+    expression: COUNT(DISTINCT CASE WHEN author_type = 'bot' THEN reply_id END)
+    meaning: 机器人回复数
+    applicable_grain: 任意分析层级
+    note: >
+      用于分析机器人回复占比。
+  customer_reply_count:
+    expression: COUNT(DISTINCT CASE WHEN author_type = 'customer' THEN reply_id END)
+    meaning: 客户回复数
+    applicable_grain: 任意分析层级
+    note: >
+      用于分析客户追问或交互结构。
+
+known_traps:
+  - trap: >
+      JOIN fact_ticket 后直接 COUNT(*) 当作工单数。
+    consequence: >
+      一个 ticket_id 可以对应多条回复，COUNT(*) 会统计回复记录数，不是工单数。
+    prevention: >
+      统计工单数使用 COUNT(DISTINCT ticket_id)，统计回复数才使用 COUNT(*) 或 COUNT(DISTINCT 回复主键)。
+  - trap: >
+      把 author_type 当作数值指标。
+    consequence: >
+      author_type 是 agent / bot / customer 枚举，不能 SUM 或 AVG。
+    prevention: >
+      author_type 只能作为分组或筛选维度。
+  - trap: >
+      把 content_length 当作服务质量指标。
+    consequence: >
+      content_length 只是文本长度，不直接代表回复质量或客户满意度。
+    prevention: >
+      可使用 AVG(content_length) 分析回复长度，但不要直接解释为服务质量。
+  - trap: >
+      分析回复趋势时忘记使用 replied_at。
+    consequence: >
+      会把所有历史回复混在一起，无法得到时间趋势。
+    prevention: >
+      使用 replied_at 按日、周或月聚合。
+  - trap: >
+      把 2026-04 当作完整月份参与月度趋势比较。
+    consequence: >
+      当前最大回复时间为 2026-04-06，可能是不完整月份。
+    prevention: >
+      完整月度趋势优先使用 2025-04 到 2026-03；如展示 2026-04，需注明可能不完整。
+
+aggregation_notes:
+  - >
+    统计回复数使用 COUNT(DISTINCT reply_id) 或 COUNT(*)。
+  - >
+    统计工单数使用 COUNT(DISTINCT ticket_id)，避免把多条回复误当成多张工单。
+  - >
+    时间趋势分析应基于 replied_at，并优先使用完整月份区间。
+
+agent_usage_policy:
+  count_replies_with_reply_primary_key: true
+  count_tickets_with_distinct_ticket_id: true
+  author_type_is_enum_not_metric: true
+  content_length_is_length_not_quality: true
+  use_replied_at_for_reply_trends: true
+  ticket_can_have_multiple_replies: true
+  join_to_ticket_before_tenant_or_user: true
+  treat_2026_04_as_partial_month: true
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_ticket_reply_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 21715
+    column_count: 5
+    primary_key_unique: true
+    duplicate_primary_key_count: 0
+    ticket_id_fk_unmatched_count: 0
+    author_type_blank_or_null_count: 0
+    author_type_values:
+      - agent
+      - bot
+      - customer
+    replied_at_min: "2025-04-01T02:10:05"
+    replied_at_max: "2026-04-06T01:42:38"
+    content_length_min: 10
+    content_length_max: 2000
+    content_length_negative_count: 0
+    content_length_zero_count: 0
+  interpretation:
+    - >
+      主键候选唯一，工单回复记录粒度成立。
+    - >
+      ticket_id 全部可以关联到 fact_ticket.ticket_id。
+    - >
+      author_type 无空值，可用于区分 agent、bot、customer 回复。
+    - >
+      replied_at 无空值，可用于回复时间趋势分析。
+    - >
+      content_length 范围正常，可用于回复文本长度分析。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - ticket_id_fk_coverage
+  - ticket_id_fk_unmatched_examples
+  - author_type_distribution
+  - author_type_null_check
+  - replied_at_time_range_check
+  - content_length_numeric_range_check
+  - sql_pattern_time_distribution
+  - sql_pattern_enum_distribution
+  - sql_pattern_metric_trend
+  - sql_pattern_join_coverage_sample
+
+sql_patterns:
+  reply_count_by_author_type: |
+    SELECT
+        author_type,
+        COUNT(DISTINCT reply_id) AS reply_record_count
+    FROM fact_ticket_reply
+    GROUP BY author_type
+    ORDER BY reply_record_count DESC, author_type;
+  reply_trend_by_day: |
+    SELECT
+        CAST(replied_at AS DATE) AS dt,
+        COUNT(DISTINCT reply_id) AS reply_record_count,
+        COUNT(DISTINCT ticket_id) AS replied_ticket_count
+    FROM fact_ticket_reply
+    GROUP BY CAST(replied_at AS DATE)
+    ORDER BY dt;
+  reply_trend_by_month: |
+    SELECT
+        STRFTIME(replied_at, '%Y-%m') AS month_key,
+        COUNT(DISTINCT reply_id) AS reply_record_count,
+        COUNT(DISTINCT ticket_id) AS replied_ticket_count
+    FROM fact_ticket_reply
+    GROUP BY STRFTIME(replied_at, '%Y-%m')
+    ORDER BY month_key;
+  avg_content_length_by_author_type: |
+    SELECT
+        author_type,
+        AVG(content_length) AS avg_content_length,
+        SUM(content_length) AS total_content_length
+    FROM fact_ticket_reply
+    GROUP BY author_type
+    ORDER BY avg_content_length DESC, author_type;
+  reply_count_by_ticket: |
+    SELECT
+        ticket_id,
+        COUNT(DISTINCT reply_id) AS reply_record_count
+    FROM fact_ticket_reply
+    GROUP BY ticket_id
+    ORDER BY reply_record_count DESC, ticket_id;
+  reply_count_by_tenant: |
+    SELECT
+        t.tenant_id,
+        COUNT(DISTINCT r.reply_id) AS reply_record_count,
+        COUNT(DISTINCT r.ticket_id) AS replied_ticket_count
+    FROM fact_ticket_reply r
+    JOIN fact_ticket t
+      ON r.ticket_id = t.ticket_id
+    GROUP BY t.tenant_id
+    ORDER BY reply_record_count DESC, t.tenant_id;
+  bot_vs_agent_reply_share: |
+    SELECT
+        author_type,
+        COUNT(DISTINCT reply_id) AS reply_record_count,
+        ROUND(
+            100.0 * COUNT(DISTINCT reply_id)
+            / SUM(COUNT(DISTINCT reply_id)) OVER (),
+            2
+        ) AS reply_share_pct
+    FROM fact_ticket_reply
+    WHERE author_type IN ('agent', 'bot')
+    GROUP BY author_type
+    ORDER BY reply_record_count DESC, author_type;
+
+prompt_summary: >
+  fact_ticket_reply 是工单回复事实表，一行代表一条 reply_id 级回复记录，主键已验证唯一。
+  ticket_id 可稳定关联到 fact_ticket，再进一步关联租户或用户维度；但一个工单可以有多条回复。
+  关键指标包括回复记录数、有回复工单数、平均回复长度和不同 author_type 的回复分布。
+  关键陷阱是不要把 COUNT(*) 当作工单数，不要把 author_type 当成 metric，不要把 content_length 直接解释为服务质量，
+  并且月度趋势中应把 2026-04 视为可能不完整月份。
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_ticket_reply_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        主键候选唯一已验证。
+    - confirmed: true
+      item: >
+        ticket_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        author_type 枚举正常且无空值。
+    - confirmed: true
+      item: >
+        replied_at 时间范围已验证。
+    - confirmed: true
+      item: >
+        content_length 数值范围正常。
+    - confirmed: true
+      item: >
+        统计工单数时应使用 COUNT(DISTINCT ticket_id)。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

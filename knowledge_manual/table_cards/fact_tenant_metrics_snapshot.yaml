@@ -1,0 +1,652 @@
+table_name: fact_tenant_metrics_snapshot
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: A
+  name: 租户与组织
+
+business_meaning: >
+  租户指标快照事实表，记录某个租户在某个快照日期的规模、内容、存储、收入、消息量和当日活跃用户等状态指标。
+  该表适合做租户总览、租户规模趋势、租户分层分析和租户日度状态监控。
+  当前验证显示该表可作为正式快照分析事实表使用。
+
+grain: >
+  一行代表一个 tenant 在一个 snapshot_date 的指标快照。
+  当前验证显示主键候选 tenant_id + snapshot_date 唯一：
+  row_count = 141684，distinct_primary_key_count = 141684，duplicate_primary_key_count = 0。
+  该表是快照表，不是事件流水表。
+  同一个 tenant_id 可以在多个 snapshot_date 出现。
+  total_users、total_docs、total_revenue、total_messages 等字段是快照状态值，跨多个日期直接 SUM 会重复累计。
+  按日期分析时应关注每个 snapshot_date 的 tenant 覆盖数量。
+
+primary_key: []
+
+natural_key_candidate:
+  - tenant_id
+  - snapshot_date
+
+natural_key_status:
+  validation_status: passed
+  is_unique: true
+  tested_key:
+    - tenant_id
+    - snapshot_date
+  duplicated_group_count: 0
+  note: >
+    tenant_id + snapshot_date 已验证唯一，可作为该快照表的业务唯一键 / grain key。
+    但它是复合业务键，不是单列物理主键。
+
+profile:
+  row_count: 141684
+  column_count: 8
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/fact_tenant_metrics_snapshot_validation.md
+  profile_status: validated
+
+columns:
+  tenant_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      租户 ID。
+      用于将快照指标关联到租户维度，并进一步补充国家、行业、规模等租户画像信息。
+    references: dim_tenant.tenant_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 500
+      distinct_rate: 0.0035
+      min: T00001
+      max: T00500
+      sample_values:
+        - T00001
+        - T00002
+        - T00003
+        - T00004
+        - T00005
+      is_possible_primary_key: false
+    notes:
+      - >
+        tenant_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        统计租户数时应使用 COUNT(DISTINCT tenant_id)。
+
+  snapshot_date:
+    type: date
+    semantic_type: snapshot_date
+    business_meaning: >
+      快照日期。
+      表示该行租户状态指标所对应的观测日期。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 366
+      distinct_rate: 0.0026
+      min: "2025-04-01"
+      max: "2026-04-01"
+      sample_values:
+        - "2025-04-01"
+        - "2025-04-02"
+        - "2025-04-03"
+        - "2025-04-04"
+        - "2025-04-05"
+      is_possible_primary_key: false
+    notes:
+      - >
+        这是快照日期，可用于日/月趋势分析。
+      - >
+        2026-04-01 是边界日期，完整月度趋势建议使用 2025-04 到 2026-03。
+      - >
+        并非每一天都覆盖全部 500 个 tenant，按日期聚合时要关注 tenant_count。
+
+  total_users:
+    type: bigint
+    semantic_type: snapshot_metric
+    business_meaning: >
+      该租户在该快照日期的总用户数快照。
+      属于状态值，不是事件增量。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 1140
+      distinct_rate: 0.008
+      min: 5
+      max: 1146
+      sample_values:
+        - 5
+        - 6
+        - 7
+        - 9
+        - 10
+      is_possible_primary_key: false
+    notes:
+      - >
+        表示该租户在该快照日期的总用户数快照。
+      - >
+        可以在单个 snapshot_date 内 SUM。
+      - >
+        不要跨多个 snapshot_date 直接 SUM 后解释为总用户数。
+
+  total_docs:
+    type: bigint
+    semantic_type: snapshot_metric
+    business_meaning: >
+      该租户在该快照日期的总文档数快照。
+      属于状态值，不是事件增量。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 4262
+      distinct_rate: 0.0301
+      min: 19
+      max: 4527
+      sample_values:
+        - 19
+        - 21
+        - 22
+        - 23
+        - 24
+      is_possible_primary_key: false
+    notes:
+      - >
+        这是文档数量快照。
+      - >
+        不要跨多个 snapshot_date 直接 SUM 后解释为期间文档新增总量。
+
+  total_storage_mb:
+    type: bigint
+    semantic_type: snapshot_metric
+    business_meaning: >
+      该租户在该快照日期的存储使用量快照，单位 MB。
+      属于状态值，不是事件增量。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 82947
+      distinct_rate: 0.5854
+      min: 298
+      max: 143531
+      sample_values:
+        - 298
+        - 374
+        - 375
+        - 463
+        - 494
+      is_possible_primary_key: false
+    notes:
+      - >
+        这是存储使用量快照，单位 MB。
+      - >
+        趋势分析时应按 snapshot_date 分组，不要跨日期直接累加解释为期间新增存储。
+
+  total_revenue:
+    type: double
+    semantic_type: snapshot_metric
+    business_meaning: >
+      该租户在该快照日期的收入快照或累计状态指标。
+      该字段用于租户状态总览，不等同于实收收入流水。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 140798
+      distinct_rate: 0.9937
+      min: 255.59
+      max: 144732.27
+      sample_values:
+        - 255.59
+        - 572.03
+        - 718.71
+        - 754.26
+        - 789.04
+      is_possible_primary_key: false
+    notes:
+      - >
+        这是租户级收入快照或累计状态指标。
+      - >
+        不等同于 fact_actual_revenue.actual_revenue。
+      - >
+        不等同于 invoice amount 或 payment amount。
+      - >
+        不要跨多个 snapshot_date 直接 SUM 后解释为期间收入。
+
+  total_messages:
+    type: bigint
+    semantic_type: snapshot_metric
+    business_meaning: >
+      该租户在该快照日期的消息数量快照。
+      属于状态值，不是事件增量。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 106224
+      distinct_rate: 0.7497
+      min: 201
+      max: 295687
+      sample_values:
+        - 201
+        - 708
+        - 992
+        - 1112
+        - 1176
+      is_possible_primary_key: false
+    notes:
+      - >
+        这是消息数量快照。
+      - >
+        趋势分析时应按 snapshot_date 分组，不要跨日期直接累加解释为期间新增消息数。
+
+  active_users_today:
+    type: bigint
+    semantic_type: daily_metric
+    business_meaning: >
+      该租户在该快照日期当天的活跃用户数。
+      该字段是当日口径指标，不是累计状态值。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 101
+      distinct_rate: 0.0007
+      min: 0
+      max: 100
+      sample_values:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+      is_possible_primary_key: false
+    notes:
+      - >
+        这是当天活跃用户数。
+      - >
+        0 是允许值，不是异常。
+      - >
+        可按 snapshot_date 聚合分析日活趋势。
+
+join_keys:
+  - column: tenant_id
+    references: dim_tenant.tenant_id
+    relationship: many_to_one
+    join_condition: fact_tenant_metrics_snapshot.tenant_id = dim_tenant.tenant_id
+    purpose: 将租户快照指标关联到租户维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      tenant_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+derived_join_paths:
+  tenant_snapshot_to_tenant_profile:
+    path:
+      - fact_tenant_metrics_snapshot.tenant_id = dim_tenant.tenant_id
+    purpose: 将租户快照指标关联到国家、行业、规模等租户画像维度
+    risk_level: low
+    validation_status: passed
+
+field_groups:
+  id_columns:
+    - tenant_id
+    - snapshot_date
+  time_columns:
+    - snapshot_date
+  metric_columns:
+    - total_users
+    - total_docs
+    - total_storage_mb
+    - total_revenue
+    - total_messages
+    - active_users_today
+  dimension_columns:
+    - tenant_id
+  enum_columns: []
+  json_columns: []
+  text_columns: []
+
+recommended_use_cases:
+  - 按日期分析租户规模、内容量、收入快照和消息量的变化趋势。
+  - 做租户总览和最新状态分析。
+  - 结合 dim_tenant 分析不同国家、行业、规模租户的状态差异。
+  - 分析低活跃租户和活跃用户变化趋势。
+
+preferred_metrics:
+  snapshot_record_count:
+    expression: COUNT(*)
+    meaning: 快照记录数
+    applicable_grain: fact_tenant_metrics_snapshot 原子粒度
+    note: >
+      当前已验证 tenant_id + snapshot_date 唯一，因此 snapshot_record_count 可直接使用 COUNT(*)。
+  snapshot_tenant_count:
+    expression: COUNT(DISTINCT tenant_id)
+    meaning: 快照覆盖租户数
+    applicable_grain: 单日或任意聚合层级
+    note: >
+      按日期比较时应同时输出 tenant_count。
+  total_users_on_date:
+    expression: SUM(total_users)
+    meaning: 某快照日期的总用户数
+    applicable_grain: 单个 snapshot_date
+    note: >
+      仅应在单个 snapshot_date 过滤或按日期分组后使用。
+  avg_users_per_tenant:
+    expression: AVG(total_users)
+    meaning: 平均每租户用户数
+    applicable_grain: 单日或任意已分组层级
+    note: >
+      有助于在 tenant 覆盖数变化时做稳健比较。
+  total_docs_on_date:
+    expression: SUM(total_docs)
+    meaning: 某快照日期的总文档数
+    applicable_grain: 单个 snapshot_date
+    note: >
+      不要跨多个 snapshot_date 直接 SUM 后解释为期间新增文档数。
+  total_storage_mb_on_date:
+    expression: SUM(total_storage_mb)
+    meaning: 某快照日期的总存储量
+    applicable_grain: 单个 snapshot_date
+    note: >
+      单位为 MB，属于快照状态值。
+  total_revenue_snapshot_on_date:
+    expression: SUM(total_revenue)
+    meaning: 某快照日期的租户收入快照总量，不等于期间实收
+    applicable_grain: 单个 snapshot_date
+    note: >
+      问实收收入时应改用 fact_actual_revenue。
+  active_users_today:
+    expression: SUM(active_users_today)
+    meaning: 当天活跃用户数合计
+    applicable_grain: 单个 snapshot_date 或按日期趋势
+    note: >
+      0 值允许存在，不应视为异常。
+
+known_traps:
+  - trap: >
+      跨多个 snapshot_date 直接 SUM(total_users)、SUM(total_docs)、SUM(total_revenue)。
+    consequence: >
+      这些字段是快照状态值，不是事件增量。跨多个日期直接求和会重复累计，导致严重高估。
+    prevention: >
+      如果分析某一天的总规模，先筛选单个 snapshot_date 再聚合。
+      如果分析最新状态，先取每个 tenant 的最新 snapshot_date。
+      如果分析趋势，按 snapshot_date 分组，不要把多个日期合并成一个总量。
+  - trap: >
+      把 total_revenue 当作期间实收收入。
+    consequence: >
+      total_revenue 是租户级快照指标，不等同于 fact_actual_revenue.actual_revenue、fact_invoice.amount 或 fact_payment.amount。
+    prevention: >
+      问实收收入使用 fact_actual_revenue.actual_revenue。
+      问发票金额使用 fact_invoice。
+      问付款金额使用 fact_payment。
+      问租户快照状态或租户总览时才使用 total_revenue。
+  - trap: >
+      忽略 snapshot_date 的 tenant 覆盖数量。
+    consequence: >
+      某些日期只有 368 条记录，某些日期有 500 条记录。
+      直接比较总量可能混入覆盖租户数变化的影响。
+    prevention: >
+      按日期分析时同时输出 COUNT(DISTINCT tenant_id) AS tenant_count。
+      必要时比较平均值或只比较覆盖完整的日期。
+  - trap: >
+      把 active_users_today 的 0 当作异常值。
+    consequence: >
+      active_users_today = 0 是合法值，表示该租户当天无活跃用户。
+    prevention: >
+      保留 0 值，可用于活跃率或低活跃租户分析。
+  - trap: >
+      JOIN dim_tenant 后直接 COUNT(*) 当作租户总数。
+    consequence: >
+      COUNT(*) 是快照记录数，不是租户数。
+    prevention: >
+      统计租户数使用 COUNT(DISTINCT tenant_id)。
+  - trap: >
+      把 2026-04 当作完整月份参与月度趋势比较。
+    consequence: >
+      当前最大 snapshot_date 为 2026-04-01，是边界日期，2026-04 不是完整月份。
+    prevention: >
+      完整月度趋势优先使用 2025-04 到 2026-03；如展示 2026-04，需注明不完整。
+
+aggregation_notes:
+  - >
+    趋势分析必须 GROUP BY snapshot_date 或月份。
+  - >
+    按日期聚合时同时输出 COUNT(DISTINCT tenant_id) AS tenant_count。
+  - >
+    最新状态分析应先取每个 tenant 的 MAX(snapshot_date)。
+  - >
+    不要跨日期直接 SUM 快照状态字段。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_tenant_metrics_snapshot_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 141684
+    column_count: 8
+    primary_key_unique: true
+    duplicate_primary_key_count: 0
+    tenant_id_fk_unmatched_count: 0
+    snapshot_date_null_count: 0
+    snapshot_date_min: "2025-04-01"
+    snapshot_date_max: "2026-04-01"
+    total_users_min: 5
+    total_users_max: 1146
+    total_docs_min: 19
+    total_docs_max: 4527
+    total_storage_mb_min: 298
+    total_storage_mb_max: 143531
+    total_revenue_min: 255.59
+    total_revenue_max: 144732.27
+    total_messages_min: 201
+    total_messages_max: 295687
+    active_users_today_min: 0
+    active_users_today_max: 100
+    active_users_today_zero_count: 1443
+    date_coverage_note: >
+      部分 snapshot_date 有 500 条记录，部分只有 368 条记录。
+      按日期比较总量时需要同时查看 tenant_count。
+  interpretation:
+    - >
+      主键候选唯一，租户快照记录粒度成立。
+    - >
+      tenant_id 全部可以关联到 dim_tenant.tenant_id。
+    - >
+      snapshot_date 无空值，可用于快照趋势分析。
+    - >
+      数值字段均未发现负值。
+    - >
+      active_users_today 为 0 是允许值，不是异常。
+    - >
+      该表是快照表，不是事件流水表；跨日期聚合状态字段时必须谨慎。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - tenant_id_fk_coverage
+  - tenant_id_fk_unmatched_examples
+  - snapshot_date_time_range_check
+  - total_users_numeric_range_check
+  - total_docs_numeric_range_check
+  - total_storage_mb_numeric_range_check
+  - total_revenue_numeric_range_check
+  - total_messages_numeric_range_check
+  - active_users_today_numeric_range_check
+  - sql_pattern_time_distribution
+  - sql_pattern_metric_trend
+  - sql_pattern_join_coverage_sample
+
+sql_patterns:
+  latest_snapshot_per_tenant: |
+    SELECT
+        tenant_id,
+        MAX(snapshot_date) AS latest_snapshot_date
+    FROM fact_tenant_metrics_snapshot
+    GROUP BY tenant_id
+    ORDER BY tenant_id;
+  tenant_metrics_latest_snapshot: |
+    WITH latest AS (
+        SELECT
+            tenant_id,
+            MAX(snapshot_date) AS snapshot_date
+        FROM fact_tenant_metrics_snapshot
+        GROUP BY tenant_id
+    )
+    SELECT
+        s.tenant_id,
+        s.snapshot_date,
+        s.total_users,
+        s.total_docs,
+        s.total_storage_mb,
+        s.total_revenue,
+        s.total_messages,
+        s.active_users_today
+    FROM fact_tenant_metrics_snapshot s
+    JOIN latest l
+      ON s.tenant_id = l.tenant_id
+     AND s.snapshot_date = l.snapshot_date
+    ORDER BY s.tenant_id;
+  daily_snapshot_coverage: |
+    SELECT
+        snapshot_date,
+        COUNT(DISTINCT tenant_id) AS tenant_count,
+        COUNT(DISTINCT (tenant_id, snapshot_date)) AS snapshot_record_count
+    FROM fact_tenant_metrics_snapshot
+    GROUP BY snapshot_date
+    ORDER BY snapshot_date;
+  tenant_metrics_trend_by_day: |
+    SELECT
+        snapshot_date,
+        COUNT(DISTINCT tenant_id) AS tenant_count,
+        SUM(total_users) AS total_users_on_date,
+        SUM(total_docs) AS total_docs_on_date,
+        SUM(total_storage_mb) AS total_storage_mb_on_date,
+        SUM(total_revenue) AS total_revenue_snapshot_on_date,
+        SUM(total_messages) AS total_messages_on_date,
+        SUM(active_users_today) AS active_users_today
+    FROM fact_tenant_metrics_snapshot
+    GROUP BY snapshot_date
+    ORDER BY snapshot_date;
+  tenant_metrics_trend_by_month_complete_months: |
+    SELECT
+        STRFTIME(snapshot_date, '%Y-%m') AS month_key,
+        COUNT(DISTINCT tenant_id) AS tenant_count,
+        AVG(total_users) AS avg_users_per_tenant,
+        AVG(total_docs) AS avg_docs_per_tenant,
+        AVG(total_storage_mb) AS avg_storage_mb_per_tenant,
+        AVG(total_revenue) AS avg_revenue_snapshot_per_tenant,
+        AVG(total_messages) AS avg_messages_per_tenant,
+        SUM(active_users_today) AS total_active_users_today
+    FROM fact_tenant_metrics_snapshot
+    WHERE snapshot_date < DATE '2026-04-01'
+    GROUP BY STRFTIME(snapshot_date, '%Y-%m')
+    ORDER BY month_key;
+  tenant_metrics_by_country_latest_snapshot: |
+    WITH latest AS (
+        SELECT
+            tenant_id,
+            MAX(snapshot_date) AS snapshot_date
+        FROM fact_tenant_metrics_snapshot
+        GROUP BY tenant_id
+    )
+    SELECT
+        t.country,
+        COUNT(DISTINCT s.tenant_id) AS tenant_count,
+        SUM(s.total_users) AS total_users_on_date,
+        SUM(s.total_docs) AS total_docs_on_date,
+        SUM(s.total_storage_mb) AS total_storage_mb_on_date,
+        SUM(s.total_revenue) AS total_revenue_snapshot_on_date
+    FROM fact_tenant_metrics_snapshot s
+    JOIN latest l
+      ON s.tenant_id = l.tenant_id
+     AND s.snapshot_date = l.snapshot_date
+    JOIN dim_tenant t
+      ON s.tenant_id = t.tenant_id
+    GROUP BY t.country
+    ORDER BY tenant_count DESC, t.country;
+  tenant_metrics_by_industry_latest_snapshot: |
+    WITH latest AS (
+        SELECT
+            tenant_id,
+            MAX(snapshot_date) AS snapshot_date
+        FROM fact_tenant_metrics_snapshot
+        GROUP BY tenant_id
+    )
+    SELECT
+        t.industry,
+        COUNT(DISTINCT s.tenant_id) AS tenant_count,
+        SUM(s.total_users) AS total_users_on_date,
+        SUM(s.total_docs) AS total_docs_on_date,
+        SUM(s.total_storage_mb) AS total_storage_mb_on_date,
+        SUM(s.total_revenue) AS total_revenue_snapshot_on_date
+    FROM fact_tenant_metrics_snapshot s
+    JOIN latest l
+      ON s.tenant_id = l.tenant_id
+     AND s.snapshot_date = l.snapshot_date
+    JOIN dim_tenant t
+      ON s.tenant_id = t.tenant_id
+    GROUP BY t.industry
+    ORDER BY tenant_count DESC, t.industry;
+  low_active_tenants_by_day: |
+    SELECT
+        snapshot_date,
+        tenant_id,
+        active_users_today,
+        total_users
+    FROM fact_tenant_metrics_snapshot
+    WHERE active_users_today = 0
+    ORDER BY snapshot_date, tenant_id;
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_tenant_metrics_snapshot_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        主键候选唯一已验证。
+    - confirmed: true
+      item: >
+        tenant_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        snapshot_date 时间范围已验证。
+    - confirmed: true
+      item: >
+        数值字段未发现负值。
+    - confirmed: true
+      item: >
+        active_users_today = 0 是允许值。
+    - confirmed: true
+      item: >
+        该表是快照表，不能跨多个 snapshot_date 直接 SUM 状态字段。
+    - confirmed: true
+      item: >
+        按日期比较总量时应关注 tenant_count。
+
+agent_usage_policy:
+  table_is_snapshot_not_event_log: true
+  do_not_sum_snapshot_metrics_across_dates_without_grouping: true
+  filter_or_group_by_snapshot_date_before_aggregating_snapshot_metrics: true
+  use_latest_snapshot_for_current_state: true
+  include_tenant_count_when_comparing_dates: true
+  active_users_today_zero_is_valid: true
+  total_revenue_is_snapshot_metric_not_actual_revenue: true
+  use_actual_revenue_table_for_actual_income: true
+  treat_2026_04_as_partial_month: true
+
+prompt_summary: >
+  fact_tenant_metrics_snapshot 是租户日度状态快照表，一行代表一个 tenant 在一个 snapshot_date 的指标快照，
+  主键 tenant_id + snapshot_date 已验证唯一。
+  该表是快照表，不是事件流水表；total_users、total_docs、total_storage_mb、total_revenue、total_messages
+  都是状态值，跨多个日期直接 SUM 会重复累计。
+  常用路径是 tenant_id -> dim_tenant，用于补充国家、行业、规模等租户画像。
+  分析趋势时必须按 snapshot_date 或月份分组，并同时输出 tenant_count；分析最新状态时应先取每个 tenant 的最新 snapshot_date。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

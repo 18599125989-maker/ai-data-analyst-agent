@@ -1,0 +1,380 @@
+table_name: dim_feature
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: C
+  name: 产品使用
+
+business_meaning: >
+  产品功能维度表，描述 CloudWork 中各个功能模块的稳定编码、展示名称、所属模块、类别和上线时间。
+  该表适合做功能目录、功能分组、功能上线时间分析，以及为 `fact_feature_usage` 等事实表补充功能属性。
+  当前验证显示该表可作为正式功能维度表使用。
+
+grain: >
+  一行代表一个产品功能。
+  feature_key 是功能主键和稳定功能编码。
+  feature_name 是展示名称，不建议作为 JOIN key。
+  当前验证显示主键候选唯一：row_count = 12，distinct_primary_key_count = 12，
+  duplicate_primary_key_count = 0，因此功能维度粒度成立。
+
+primary_key:
+  - feature_key
+
+natural_key_candidate:
+  - feature_key
+
+natural_key_status:
+  is_unique: true
+  tested_key:
+    - feature_key
+  duplicated_group_count: 0
+  note: >
+    当前验证显示 feature_key 唯一且无空值，可作为稳定功能编码和主键使用。
+
+profile:
+  row_count: 12
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/dim_feature_validation.md
+  profile_status: validated
+
+columns:
+  feature_key:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: >
+      功能稳定编码。
+      该字段用于唯一标识产品功能，并作为功能使用事实表的标准 JOIN 键。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 12
+      distinct_rate: 1.0
+      min: approval
+      max: wiki
+      sample_values:
+        - approval
+        - base
+        - calendar
+        - docs
+        - email
+        - im
+        - minutes
+        - sheets
+        - task
+        - video_conf
+        - whiteboard
+        - wiki
+      is_possible_primary_key: true
+    notes:
+      - >
+        feature_key 已验证唯一，无空值，是 JOIN `fact_feature_usage` 的稳定键。
+      - >
+        统计功能数量时应使用 COUNT(DISTINCT feature_key)。
+
+  feature_name:
+    type: varchar
+    semantic_type: display_name
+    business_meaning: >
+      功能展示名称。
+      适合展示、报表输出和人工核对。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 12
+      distinct_rate: 1.0
+      min: Approval
+      max: Wiki
+      sample_values:
+        - Approval
+        - Bitable
+        - Calendar
+        - Cloud Documents
+        - Email
+        - Instant Messaging
+        - Meeting Minutes
+        - Spreadsheets
+        - Tasks
+        - Video Conference
+        - Whiteboard
+        - Wiki
+      is_possible_primary_key: true
+    notes:
+      - >
+        feature_name 无空值。
+      - >
+        feature_name 是展示名，不建议作为 JOIN key。
+
+  module:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      功能所属模块。
+      可用于对功能做模块层面的分组与分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 4
+      distinct_rate: 0.3333
+      min: Communication
+      max: Workflow
+      sample_values:
+        - Productivity
+        - Communication
+        - Workflow
+        - Knowledge
+      is_possible_primary_key: false
+    notes:
+      - >
+        module 无空值，可用于功能模块分组。
+      - >
+        当前分布为 Productivity: 5，Communication: 4，Workflow: 2，Knowledge: 1。
+
+  category:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      功能类别或层级。
+      可用于按功能层级或商业分层做分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3
+      distinct_rate: 0.25
+      min: advanced
+      max: premium
+      sample_values:
+        - advanced
+        - premium
+        - core
+      is_possible_primary_key: false
+    notes:
+      - >
+        category 无空值，可用于功能层级或类别分组。
+      - >
+        当前分布为 advanced: 7，premium: 3，core: 2。
+
+  launched_at:
+    type: date
+    semantic_type: date
+    business_meaning: >
+      功能上线日期。
+      可用于分析功能发布时间、功能目录演进和不同批次功能的上线节奏。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 12
+      distinct_rate: 1.0
+      min: "2023-04-20"
+      max: "2025-02-27"
+      sample_values:
+        - "2023-04-20"
+        - "2023-08-20"
+        - "2024-02-04"
+        - "2024-06-01"
+        - "2024-06-06"
+      is_possible_primary_key: true
+    notes:
+      - >
+        launched_at 无空值，时间范围为 2023-04-20 到 2025-02-27。
+      - >
+        可用于功能上线时间分析。
+
+join_keys:
+  - column: feature_key
+    references: fact_feature_usage.feature_key
+    relationship: one_to_many
+    join_condition: dim_feature.feature_key = fact_feature_usage.feature_key
+    purpose: 将功能维度补充到功能使用事实表。
+    risk_level: low
+    validation_status: passed
+    note: >
+      `fact_feature_usage.feature_key` 已验证能全部关联到 `dim_feature.feature_key`。
+
+derived_join_paths: {}
+
+field_groups:
+  id_columns:
+    - feature_key
+  time_columns:
+    - launched_at
+  metric_columns: []
+  dimension_columns:
+    - feature_key
+    - feature_name
+    - module
+    - category
+  enum_columns:
+    - module
+    - category
+  json_columns: []
+  text_columns:
+    - feature_name
+
+recommended_use_cases:
+  - 分析产品功能目录、功能数量和功能分布。
+  - 按 module 或 category 统计功能结构。
+  - 结合 `fact_feature_usage` 分析不同功能的采用度、使用量和时长。
+  - 按上线时间分析功能发布时间和功能版本节奏。
+
+preferred_metrics:
+  feature_count:
+    expression: COUNT(DISTINCT feature_key)
+    meaning: 功能数量
+    applicable_grain: 任意汇总层级
+    note: >
+      功能数量应以 feature_key 去重统计。
+  feature_module_count:
+    expression: COUNT(DISTINCT module)
+    meaning: 功能模块数量
+    applicable_grain: 任意汇总层级
+    note: >
+      可用于统计功能模块覆盖范围。
+
+known_traps:
+  - trap: >
+      使用 feature_name 作为 JOIN key。
+    consequence: >
+      feature_name 是展示名称，可能变更或存在大小写、命名差异。
+    prevention: >
+      JOIN 功能使用 feature_key。
+  - trap: >
+      JOIN fact_feature_usage 后直接 COUNT(*) 当作功能数。
+    consequence: >
+      COUNT(*) 会变成功能使用记录数，不是功能数量。
+    prevention: >
+      统计功能数使用 COUNT(DISTINCT feature_key)。
+  - trap: >
+      将 module 或 category 当作唯一功能标识。
+    consequence: >
+      module/category 是分组维度，不是功能主键。
+    prevention: >
+      唯一功能标识使用 feature_key。
+
+aggregation_notes:
+  - >
+    本表是小型功能维度表，功能数量统计优先使用 COUNT(DISTINCT feature_key)。
+  - >
+    结合 `fact_feature_usage` 时，COUNT(*) 通常表示使用记录数，不应误读为功能数量。
+  - >
+    `module` 和 `category` 适合做功能分组，不适合作为唯一键。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/dim_feature_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 12
+    column_count: 5
+    primary_key_unique: true
+    duplicate_primary_key_count: 0
+    feature_key_blank_or_null_count: 0
+    feature_name_blank_or_null_count: 0
+    module_blank_or_null_count: 0
+    category_blank_or_null_count: 0
+    launched_at_min: "2023-04-20"
+    launched_at_max: "2025-02-27"
+  interpretation:
+    - >
+      主键候选唯一，功能维度粒度成立。
+    - >
+      feature_key 无空值，可作为功能 JOIN key。
+    - >
+      feature_name 是展示名称，不建议作为 JOIN key。
+    - >
+      module 和 category 可作为功能分组维度。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - feature_key_distribution
+  - feature_key_null_check
+  - feature_name_distribution
+  - feature_name_null_check
+  - module_distribution
+  - module_null_check
+  - category_distribution
+  - category_null_check
+  - launched_at_time_range_check
+  - sql_pattern_time_distribution
+  - sql_pattern_enum_distribution
+  - sql_pattern_join_coverage_sample
+
+sql_patterns:
+  feature_count_by_module: |
+    SELECT
+        module,
+        COUNT(DISTINCT feature_key) AS feature_count
+    FROM dim_feature
+    GROUP BY module
+    ORDER BY feature_count DESC, module;
+  feature_count_by_category: |
+    SELECT
+        category,
+        COUNT(DISTINCT feature_key) AS feature_count
+    FROM dim_feature
+    GROUP BY category
+    ORDER BY feature_count DESC, category;
+  feature_launch_trend: |
+    SELECT
+        launched_at,
+        COUNT(DISTINCT feature_key) AS feature_count
+    FROM dim_feature
+    GROUP BY launched_at
+    ORDER BY launched_at;
+  feature_usage_by_feature_key: |
+    SELECT
+        f.feature_key,
+        f.feature_name,
+        COUNT(DISTINCT u.user_id) AS active_user_count,
+        ROUND(SUM(u.action_count), 2) AS total_action_count,
+        ROUND(SUM(u.duration_sec), 2) AS total_duration_sec
+    FROM dim_feature f
+    JOIN fact_feature_usage u
+      ON f.feature_key = u.feature_key
+    GROUP BY f.feature_key, f.feature_name
+    ORDER BY total_action_count DESC, f.feature_key;
+
+prompt_summary: >
+  dim_feature 是产品功能维度表，一行代表一个功能，主键是已验证唯一且无空值的 feature_key。
+  feature_key 是稳定功能编码，应作为与 `fact_feature_usage` 等事实表的标准 JOIN key；
+  feature_name 仅是展示名称，不建议作为 JOIN key。
+  常用分组维度包括 module、category 和 launched_at。
+  关键陷阱是不要把 feature_name、module 或 category 当作唯一标识，也不要在 JOIN 使用事实表后把 COUNT(*) 当成功能数量。
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/dim_feature_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        主键候选唯一已验证。
+    - confirmed: true
+      item: >
+        feature_key 无空值。
+    - confirmed: true
+      item: >
+        feature_name 无空值。
+    - confirmed: true
+      item: >
+        module/category 枚举正常。
+    - confirmed: true
+      item: >
+        launched_at 时间范围已验证。
+    - confirmed: true
+      item: >
+        feature_key 可作为 fact_feature_usage 的 JOIN key。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

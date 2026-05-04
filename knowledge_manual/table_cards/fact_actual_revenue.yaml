@@ -1,0 +1,961 @@
+table_name: fact_actual_revenue
+card_version: v1.1
+card_type: table_card
+
+domain:
+  id: E
+  name: 计费与订阅
+
+business_meaning: >
+  月度实收收入事实表，记录订阅在月份维度上的席位数、标价收入、
+  折扣率、优惠券扣减金额以及实际入账收入。
+  该表是分析“实收收入”“实际收入”“折扣后收入”“收入缺口”的核心事实表。
+  当前验证显示该表可用于 Agent 收入分析，但需要遵守两个规则：
+  第一，sub_id + month 不是严格唯一键；第二，actual_revenue 公式只适合作为近似解释，
+  不应重新计算 actual_revenue 替代表字段。
+
+grain: >
+  物理粒度：一行 = 一条 revenue_id 标识的收入记录。
+  业务分析时可以按 month、tenant_id + month、plan_tier + month、
+  tenant_id + sub_id + month 等维度聚合。
+  当前验证和人工复查显示，tenant_id + sub_id + month 存在 15 组重复。
+  这些重复组不是完全重复行，而是同一租户、同一订阅、同一月份下，
+  discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同的多条收入明细。
+  因此订阅月份级收入必须先 GROUP BY tenant_id, sub_id, month 后 SUM(actual_revenue)，
+  不能只取单条记录。
+
+primary_key:
+  - revenue_id
+
+natural_key_candidate:
+  - tenant_id
+  - sub_id
+  - month
+
+natural_key_status:
+  is_unique: false
+  tested_key:
+    - tenant_id
+    - sub_id
+    - month
+  duplicated_group_count: 15
+  exact_duplicate_row_count: 0
+  duplicate_interpretation: >
+    tenant_id + sub_id + month 存在 15 组重复。
+    人工复查显示这些重复组不是完全重复行。
+    重复组中 seats、list_price_per_seat、list_revenue 通常相同，
+    但 discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同。
+    因此这些记录更像同一订阅同月下的多条折扣/优惠收入明细，不应删除。
+  required_agent_behavior: >
+    当问题要求订阅月份级、租户月份级、套餐月份级或总收入级分析时，
+    必须 SUM(actual_revenue) 聚合 revenue_id 级记录。
+
+profile:
+  row_count: 1366
+  column_count: 11
+  source_profile_file: outputs/profiles/table_profile.json
+  validation_file: outputs/knowledge/validation/fact_actual_revenue_validation.md
+  profile_status: validated_with_warnings
+
+columns:
+  revenue_id:
+    type: string
+    semantic_type: primary_key
+    business_meaning: >
+      实收收入记录 ID，唯一标识一条月度收入记录。
+      当前验证显示 revenue_id 唯一，可作为该表物理主键。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: 1366
+      distinct_rate: 1.0
+      min: null
+      max: null
+      sample_values: []
+      is_possible_primary_key: true
+    notes:
+      - >
+        revenue_id 在 fact_actual_revenue 中唯一。
+      - >
+        当前验证中 row_count = 1366，COUNT(DISTINCT revenue_id) = 1366。
+      - >
+        用于识别收入记录本身，通常不作为业务分析维度。
+
+  tenant_id:
+    type: string
+    semantic_type: foreign_key
+    business_meaning: >
+      企业客户 ID，表示该收入记录所属的租户。
+      可用于按企业、国家、行业、规模等维度分析收入。
+    references: dim_tenant.tenant_id
+    profile:
+      null_rate: null
+      distinct_count: null
+      distinct_rate: null
+      min: null
+      max: null
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        tenant_id 可直接关联 dim_tenant.tenant_id。
+      - >
+        当前验证中 unmatched_revenue_tenant_count = 0。
+      - >
+        如果需要企业画像维度，例如 country、industry、size_tier，可 JOIN dim_tenant。
+
+  sub_id:
+    type: string
+    semantic_type: foreign_key
+    business_meaning: >
+      订阅 ID，表示该收入记录对应的订阅周期。
+      可用于关联 fact_subscription 获取 plan_tier、订阅状态、订阅起止日期等信息。
+    references: fact_subscription.sub_id
+    profile:
+      null_rate: null
+      distinct_count: null
+      distinct_rate: null
+      min: null
+      max: null
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        sub_id 全部可以关联到 fact_subscription.sub_id。
+      - >
+        一个 sub_id 可以对应多个月收入记录。
+      - >
+        当前验证发现 15 组 sub_id + month 重复，但不是完全重复行。
+      - >
+        如果分析某个订阅某个月的收入，应按 sub_id + month 聚合，并 SUM(actual_revenue)。
+      - >
+        按套餐分析实收收入时，通常通过 sub_id JOIN fact_subscription 获取 plan_tier。
+
+  month:
+    type: string
+    semantic_type: time_period
+    business_meaning: >
+      收入所属月份，格式为 YYYY-MM。
+      例如 2025-10 表示 2025 年 10 月的收入。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: 12
+      distinct_rate: null
+      min: 2025-04
+      max: 2026-03
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        month 是字符串形式的月份，不是 DATE 类型。
+      - >
+        当前验证中 month 覆盖 12 个月，范围为 2025-04 至 2026-03。
+      - >
+        做月度趋势分析时可直接 GROUP BY month。
+      - >
+        做日期运算时，可将 month || '-01' 转换为 DATE。
+
+  seats:
+    type: integer
+    semantic_type: metric
+    business_meaning: >
+      当月席位数，表示该收入记录对应的席位数量。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: null
+      distinct_rate: null
+      min: 5
+      max: 200
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        当前验证中 seats 范围为 5 到 200。
+      - >
+        未发现负席位数。
+      - >
+        可用于计算总席位数、平均席位数、每席位收入等指标。
+      - >
+        如果按 sub_id + month 分析，应使用 SUM(seats) 或结合业务语义谨慎解释席位合计。
+
+  list_price_per_seat:
+    type: double
+    semantic_type: metric
+    business_meaning: >
+      标准单席位价格，单位为 USD / seat。
+      表示未考虑折扣和优惠券前的标准单价。
+    references: dim_plan.monthly_price
+    profile:
+      null_rate: null
+      distinct_count: null
+      distinct_rate: null
+      min: 29.0
+      max: 499.0
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        当前验证中 list_price_per_seat 范围为 29.0 到 499.0。
+      - >
+        该字段可与 dim_plan.monthly_price 对照，但不必每次都 JOIN dim_plan。
+      - >
+        如果需要套餐标准价格解释，可通过 fact_subscription.plan_tier JOIN dim_plan。
+
+  list_revenue:
+    type: double
+    semantic_type: metric
+    business_meaning: >
+      标价收入，通常表示折扣和优惠券扣减前的收入。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: null
+      distinct_rate: null
+      min: 145.0
+      max: 94810.0
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        list_revenue 不是实际入账收入。
+      - >
+        当前验证中 list_revenue 范围为 145.0 到 94810.0。
+      - >
+        与 actual_revenue 的差额可用于分析折扣和优惠券影响。
+      - >
+        月度、套餐、租户等收入聚合时通常使用 SUM(list_revenue)。
+
+  discount_rate:
+    type: double
+    semantic_type: metric
+    business_meaning: >
+      折扣率，为小数比例。
+      例如 0.15 表示 15% 折扣。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: null
+      distinct_rate: null
+      min: 0.0502
+      max: 0.2
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        当前验证中 discount_rate 范围为 0.0502 到 0.2。
+      - >
+        未发现小于 0 或大于 1 的异常折扣率。
+      - >
+        简单 AVG(discount_rate) 不是收入加权折扣率。
+
+  coupon_amount:
+    type: double
+    semantic_type: metric
+    business_meaning: >
+      优惠券扣减金额，单位为 USD。
+      表示除比例折扣外的固定金额扣减。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: null
+      distinct_rate: null
+      min: 0.0
+      max: 13421.46
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        coupon_amount 是金额扣减，不是比例。
+      - >
+        当前验证中 coupon_amount 范围为 0.0 到 13421.46。
+      - >
+        未发现负优惠券金额。
+      - >
+        分析优惠券影响时可使用 SUM(coupon_amount)。
+
+  actual_revenue:
+    type: double
+    semantic_type: metric
+    business_meaning: >
+      实际入账收入，是商业实收分析时最优先使用的收入字段。
+      当前人工复查显示，actual_revenue 与 list_revenue * (1 - discount_rate) - coupon_amount
+      的平均绝对偏差为 0.3144，最大绝对偏差为 4.3867，平均相对偏差为 0.00003。
+      偏差相对极小，通常可解释为四舍五入、模拟数据噪声或精度处理差异。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: null
+      distinct_rate: null
+      min: 102.38
+      max: 86271.11
+      sample_values: []
+      is_possible_primary_key: false
+    notes:
+      - >
+        如果用户问“实收”“实际收入”“入账收入”“折扣后收入”，应优先使用 actual_revenue。
+      - >
+        actual_revenue 不等于 fact_subscription.mrr。
+      - >
+        actual_revenue 不等于 fact_invoice.amount。
+      - >
+        actual_revenue 不等于 fact_payment.amount。
+      - >
+        不应使用公式重新计算 actual_revenue 来替代表字段。
+      - >
+        公式可以用于解释收入形成逻辑，但不能作为强约束。
+
+  currency:
+    type: string
+    semantic_type: dimension
+    business_meaning: >
+      币种字段。
+      当前验证显示本表 currency 仅包含 USD。
+    references: null
+    profile:
+      null_rate: null
+      distinct_count: 1
+      distinct_rate: null
+      min: null
+      max: null
+      sample_values:
+        - USD
+      is_possible_primary_key: false
+    notes:
+      - >
+        当前验证中 currency_count = 1，currency_values = USD。
+      - >
+        当前数据版本无需做多币种换算。
+      - >
+        如果未来出现多币种，应在收入聚合前做币种过滤或汇率转换。
+
+join_keys:
+  - column: tenant_id
+    references: dim_tenant.tenant_id
+    relationship: many_to_one
+    join_condition: fact_actual_revenue.tenant_id = dim_tenant.tenant_id
+    purpose: 将月度实收收入关联到企业维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      用于按国家、行业、规模、企业等维度分析实收收入。
+      当前验证中 unmatched_revenue_tenant_count = 0。
+      由于 fact_actual_revenue 是收入记录粒度，JOIN dim_tenant 后聚合收入通常是安全的。
+
+  - column: sub_id
+    references: fact_subscription.sub_id
+    relationship: many_to_one
+    join_condition: fact_actual_revenue.sub_id = fact_subscription.sub_id
+    purpose: 获取订阅相关字段，例如 plan_tier、status、start_date、end_date。
+    risk_level: medium
+    validation_status: passed_with_grain_warning
+    note: >
+      当前验证中 unmatched_revenue_sub_count = 0。
+      JOIN fact_subscription 后按套餐聚合收入是常见用法。
+      但 sub_id + month 存在 15 组重复，按订阅月份分析时应显式聚合。
+      如果再 JOIN invoice 或 payment，需要额外注意一对多导致重复计算。
+
+  - column: sub_id
+    references: fact_invoice.sub_id
+    relationship: one_to_many_or_many_to_many_risk
+    join_condition: fact_actual_revenue.sub_id = fact_invoice.sub_id
+    purpose: 将月度实收收入与发票信息关联。
+    risk_level: high
+    validation_status: not_recommended_by_default
+    note: >
+      通常不建议直接用 fact_actual_revenue JOIN fact_invoice 后聚合金额。
+      fact_invoice 是发票粒度，fact_actual_revenue 是月度收入记录粒度，
+      直接 JOIN 可能造成金额重复或账期错位。
+      除非问题明确要求对比实收和发票，否则不要默认关联 invoice。
+
+field_groups:
+  id_columns:
+    - revenue_id
+    - tenant_id
+    - sub_id
+
+  time_columns:
+    - month
+
+  metric_columns:
+    - seats
+    - list_price_per_seat
+    - list_revenue
+    - discount_rate
+    - coupon_amount
+    - actual_revenue
+
+  dimension_columns:
+    - tenant_id
+    - sub_id
+    - month
+    - currency
+
+  enum_columns:
+    - currency
+
+  json_columns: []
+
+  text_columns: []
+
+recommended_use_cases:
+  - 按月份统计实收收入趋势
+  - 按套餐统计实收收入、标价收入和收入缺口
+  - 分析折扣率和优惠券对收入的影响
+  - 按企业、行业、国家、规模分析收入贡献
+  - 对比 list_revenue 与 actual_revenue 的差异
+  - 计算每席位实际收入
+  - 构建收入分析中的核心事实表
+
+preferred_metrics:
+  actual_revenue:
+    expression: SUM(actual_revenue)
+    meaning: 实际入账收入
+    applicable_grain: 收入记录级
+    note: >
+      用户问实收、实际收入、入账收入时优先使用。
+
+  list_revenue:
+    expression: SUM(list_revenue)
+    meaning: 标价收入
+    applicable_grain: 收入记录级
+    note: >
+      用于和 actual_revenue 对比，衡量折扣和优惠券影响。
+
+  revenue_gap:
+    expression: SUM(list_revenue - actual_revenue)
+    meaning: 标价收入与实际收入差额
+    applicable_grain: 收入记录级
+    note: >
+      可解释为折扣和优惠券导致的收入让利金额。
+      应直接使用 list_revenue - actual_revenue 的字段差额，
+      不要重新计算 actual_revenue 后再求差。
+
+  coupon_amount:
+    expression: SUM(coupon_amount)
+    meaning: 优惠券扣减金额
+    applicable_grain: 收入记录级
+    note: >
+      用于分析固定优惠券金额对收入的影响。
+
+  avg_discount_rate:
+    expression: AVG(discount_rate)
+    meaning: 平均折扣率
+    applicable_grain: 收入记录级
+    note: >
+      简单平均折扣率不一定等于收入加权折扣率。
+      如需严谨分析，可使用 list_revenue 加权折扣率。
+
+  weighted_discount_rate:
+    expression: SUM(list_revenue * discount_rate) / NULLIF(SUM(list_revenue), 0)
+    meaning: 收入加权折扣率
+    applicable_grain: 收入记录级
+    note: >
+      比 AVG(discount_rate) 更适合表达收入加权折扣水平。
+
+  total_seats:
+    expression: SUM(seats)
+    meaning: 总席位数
+    applicable_grain: 收入记录级
+    note: >
+      用于分析席位规模与收入之间的关系。
+      如果重复 sub_id + month 表示拆分收入记录，SUM(seats) 可能需要结合业务语义谨慎解释。
+
+agent_usage_policy:
+  can_use_for_revenue_analysis: true
+  ready_for_agent: true
+  use_revenue_id_as_physical_key: true
+  tenant_sub_month_requires_aggregation: true
+  monthly_revenue_should_sum_records: true
+  subscription_month_revenue_should_sum_records: true
+  actual_revenue_should_be_summed_not_selected_single_row: true
+  must_use_actual_revenue_field_for_actual_income: true
+  must_not_recalculate_actual_revenue_as_replacement: true
+  formula_is_explanatory_only: true
+  must_not_drop_duplicate_tenant_sub_month_records: true
+  avoid_direct_join_to_invoice_or_payment_by_default: true
+
+known_traps:
+  - trap: >
+      将 actual_revenue 与 MRR 混用。
+    consequence: >
+      MRR 是 fact_subscription.mrr 的确认收入口径，
+      actual_revenue 是扣除折扣和优惠券后的实际入账收入。
+      二者不能直接互相替代。
+    prevention: >
+      问 MRR 时使用 fact_subscription.mrr；
+      问实收、实际入账、折扣后收入时使用 fact_actual_revenue.actual_revenue。
+
+  - trap: >
+      将 actual_revenue 与 invoice amount 混用。
+    consequence: >
+      fact_invoice.amount 是发票金额，可能存在未支付、作废、逾期等状态。
+      actual_revenue 是月度实收收入口径。
+    prevention: >
+      问开票金额时使用 fact_invoice.amount；
+      问实际收入时使用 fact_actual_revenue.actual_revenue。
+
+  - trap: >
+      将 tenant_id + sub_id + month 当作严格唯一键。
+    consequence: >
+      当前验证发现 tenant_id + sub_id + month 存在 15 组重复。
+      如果 Agent 只取其中一条记录，会低估该订阅月份的收入。
+    prevention: >
+      使用 revenue_id 作为物理主键。
+      如果需要订阅月份级收入，应 GROUP BY tenant_id, sub_id, month，
+      并 SUM(actual_revenue)、SUM(list_revenue)、SUM(list_revenue - actual_revenue)。
+
+  - trap: >
+      把重复的 tenant_id + sub_id + month 当作脏数据删除。
+    consequence: >
+      人工复查显示这些记录不是完全重复行。
+      它们通常 discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同。
+      删除会丢失真实收入明细。
+    prevention: >
+      不删除这些记录。
+      收入分析时聚合 revenue_id 级收入记录。
+
+  - trap: >
+      强假设 actual_revenue = list_revenue * (1 - discount_rate) - coupon_amount 完全精确。
+    consequence: >
+      当前验证发现 954 条记录公式偏差超过 0.05。
+      但人工复查显示平均相对偏差约为 0.00003，属于极小偏差。
+      若 Agent 重新计算 actual_revenue，可能和表中实际字段不一致。
+    prevention: >
+      分析实际收入时直接使用 actual_revenue 字段。
+      公式只作为近似解释，不作为强校验或替代字段。
+
+  - trap: >
+      直接 JOIN fact_invoice 或 fact_payment 后聚合收入。
+    consequence: >
+      invoice 和 payment 粒度与 actual_revenue 不同，
+      可能造成重复计算或账期错位。
+    prevention: >
+      除非问题明确要求发票或付款对比，否则收入分析优先只使用 fact_actual_revenue，
+      或先对 invoice/payment 预聚合后再 JOIN。
+
+  - trap: >
+      忽略 month 是字符串。
+    consequence: >
+      如果使用日期函数时未正确转换，可能导致 SQL 报错。
+    prevention: >
+      月度趋势可直接 GROUP BY month；
+      若需要日期运算，再考虑将 month || '-01' 转换为 DATE。
+
+  - trap: >
+      按套餐分析时忘记 JOIN fact_subscription。
+    consequence: >
+      fact_actual_revenue 本身没有 plan_tier 字段，无法直接按套餐聚合。
+    prevention: >
+      通过 fact_actual_revenue.sub_id = fact_subscription.sub_id 获取 plan_tier。
+
+aggregation_notes:
+  - >
+    分析实收收入时，优先从 fact_actual_revenue 作为主事实表开始。
+  - >
+    按月份分析时，GROUP BY month，并使用 SUM(actual_revenue)。
+  - >
+    按套餐分析时，JOIN fact_subscription 获取 plan_tier。
+  - >
+    按企业画像分析时，JOIN dim_tenant 获取 country、industry、size_tier。
+  - >
+    聚合收入时使用 SUM(actual_revenue)，不要用重新计算公式替代 actual_revenue。
+  - >
+    如需计算收入缺口，使用 SUM(list_revenue - actual_revenue)。
+  - >
+    如需计算收入加权折扣率，可使用 SUM(list_revenue * discount_rate) / SUM(list_revenue)。
+  - >
+    如果分析订阅月份级粒度，应先按 tenant_id, sub_id, month 聚合，
+    避免 tenant_id + sub_id + month 重复记录影响解释。
+  - >
+    如果用户问某月份收入总额，应将该月份所有 revenue_id 对应的 actual_revenue 相加。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_actual_revenue_validation.md
+  profile_filled: true
+  grain_validated: partial
+  dq_validated: partial
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 1366
+    column_count: 11
+    revenue_id_unique: true
+    duplicate_revenue_id_count: 0
+    duplicated_sub_id_month_groups: 15
+    duplicated_tenant_sub_month_groups: 15
+    exact_duplicate_row_count: 0
+    duplicate_group_row_count_each: 2
+    duplicate_group_distinct_seats_count: 1
+    duplicate_group_distinct_price_count: 1
+    duplicate_group_distinct_list_revenue_count: 1
+    duplicate_group_distinct_discount_rate_count: 2
+    duplicate_group_distinct_actual_revenue_count: 2
+    duplicate_interpretation: >
+      重复组不是完全重复行，而是同一租户、同一订阅、同一月份下不同折扣率和实际收入的收入明细。
+    tenant_id_fk_unmatched_count: 0
+    sub_id_fk_unmatched_count: 0
+    currency_count: 1
+    currency_values: USD
+    formula_mismatch_count: 954
+    max_abs_formula_diff: 4.3867
+    avg_abs_formula_diff: 0.3144
+    avg_relative_formula_diff: 0.00003
+    negative_actual_revenue_count: 0
+    negative_list_revenue_count: 0
+    negative_seats_count: 0
+    negative_coupon_amount_count: 0
+    abnormal_discount_rate_count: 0
+    month_count: 12
+    min_month: 2025-04
+    max_month: 2026-03
+    min_seats: 5
+    max_seats: 200
+    min_list_price_per_seat: 29.0
+    max_list_price_per_seat: 499.0
+    min_list_revenue: 145.0
+    max_list_revenue: 94810.0
+    min_discount_rate: 0.0502
+    max_discount_rate: 0.2
+    min_coupon_amount: 0.0
+    max_coupon_amount: 13421.46
+    min_actual_revenue: 102.38
+    max_actual_revenue: 86271.11
+  interpretation:
+    - >
+      revenue_id 唯一，可以作为物理主键。
+    - >
+      tenant_id + sub_id + month 存在 15 组重复，因此它不是严格唯一自然键。
+    - >
+      人工复查显示这些重复组不是脏重复。
+      重复组中 seats、list_price_per_seat、list_revenue 通常相同，
+      但 discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同。
+    - >
+      因此重复记录不应删除；订阅月份级收入分析必须聚合 revenue_id 级记录。
+    - >
+      用户询问月度收入、套餐收入、租户收入或订阅月份收入时，应使用 SUM(actual_revenue)。
+    - >
+      tenant_id 和 sub_id 外键覆盖率均为 100%。
+    - >
+      currency 仅包含 USD，当前版本无需多币种换算。
+    - >
+      未发现负收入、负席位、负优惠券或异常折扣率。
+    - >
+      actual_revenue 公式存在较多小额偏差，但平均相对偏差约为 0.00003。
+      因此 actual_revenue 字段可直接用于实收分析，公式只作为解释，不作为替代。
+    - >
+      月份范围为 2025-04 至 2026-03，共 12 个月。
+
+validation_checks:
+  grain_checks:
+    - check_name: revenue_id_uniqueness
+      description: >
+        检查 revenue_id 是否唯一，验证主键是否成立。
+      sql: |
+        SELECT
+            COUNT(*) AS row_count,
+            COUNT(DISTINCT revenue_id) AS distinct_revenue_id_count,
+            COUNT(*) - COUNT(DISTINCT revenue_id) AS duplicate_revenue_id_count
+        FROM fact_actual_revenue;
+
+    - check_name: sub_id_month_uniqueness
+      description: >
+        检查 sub_id + month 是否唯一，验证自然业务粒度是否成立。
+      sql: |
+        SELECT
+            COUNT(*) AS duplicated_key_groups
+        FROM (
+            SELECT
+                sub_id,
+                month,
+                COUNT(*) AS duplicate_count
+            FROM fact_actual_revenue
+            GROUP BY sub_id, month
+            HAVING COUNT(*) > 1
+        );
+
+    - check_name: tenant_sub_id_month_uniqueness
+      description: >
+        检查 tenant_id + sub_id + month 是否唯一，验证订阅月份级自然键是否严格成立。
+      sql: |
+        SELECT
+            COUNT(*) AS duplicated_key_groups
+        FROM (
+            SELECT
+                tenant_id,
+                sub_id,
+                month,
+                COUNT(*) AS duplicate_count
+            FROM fact_actual_revenue
+            GROUP BY tenant_id, sub_id, month
+            HAVING COUNT(*) > 1
+        );
+
+    - check_name: exact_duplicate_row_check
+      description: >
+        检查重复的 tenant_id + sub_id + month 是否存在完全重复行。
+      sql: |
+        SELECT
+            tenant_id,
+            sub_id,
+            month,
+            seats,
+            list_price_per_seat,
+            list_revenue,
+            discount_rate,
+            coupon_amount,
+            actual_revenue,
+            currency,
+            COUNT(*) AS duplicate_count
+        FROM fact_actual_revenue
+        GROUP BY
+            tenant_id,
+            sub_id,
+            month,
+            seats,
+            list_price_per_seat,
+            list_revenue,
+            discount_rate,
+            coupon_amount,
+            actual_revenue,
+            currency
+        HAVING COUNT(*) > 1
+        ORDER BY duplicate_count DESC;
+
+  dq_checks:
+    - check_name: tenant_id_fk_coverage
+      description: >
+        检查 fact_actual_revenue.tenant_id 是否都能关联到 dim_tenant.tenant_id。
+      sql: |
+        SELECT
+            COUNT(*) AS unmatched_revenue_tenant_count
+        FROM fact_actual_revenue r
+        LEFT JOIN dim_tenant t
+            ON r.tenant_id = t.tenant_id
+        WHERE t.tenant_id IS NULL;
+
+    - check_name: sub_id_fk_coverage
+      description: >
+        检查 fact_actual_revenue.sub_id 是否都能关联到 fact_subscription.sub_id。
+      sql: |
+        SELECT
+            COUNT(*) AS unmatched_revenue_sub_count
+        FROM fact_actual_revenue r
+        LEFT JOIN fact_subscription s
+            ON r.sub_id = s.sub_id
+        WHERE s.sub_id IS NULL;
+
+    - check_name: currency_distribution
+      description: >
+        检查 currency 的取值分布。
+      sql: |
+        SELECT
+            currency,
+            COUNT(*) AS row_count
+        FROM fact_actual_revenue
+        GROUP BY currency
+        ORDER BY row_count DESC;
+
+    - check_name: revenue_formula_relative_diff
+      description: >
+        检查 actual_revenue 与近似公式之间的平均绝对偏差、最大绝对偏差和平均相对偏差。
+      sql: |
+        SELECT
+            COUNT(*) AS row_count,
+            ROUND(
+                AVG(
+                    ABS(actual_revenue - (list_revenue * (1 - discount_rate) - coupon_amount))
+                ),
+                4
+            ) AS avg_abs_diff,
+            ROUND(
+                MAX(
+                    ABS(actual_revenue - (list_revenue * (1 - discount_rate) - coupon_amount))
+                ),
+                4
+            ) AS max_abs_diff,
+            ROUND(
+                AVG(
+                    ABS(actual_revenue - (list_revenue * (1 - discount_rate) - coupon_amount))
+                    / NULLIF(actual_revenue, 0)
+                ),
+                6
+            ) AS avg_relative_diff
+        FROM fact_actual_revenue;
+
+    - check_name: negative_and_abnormal_value_check
+      description: >
+        检查是否存在负收入、负席位、负优惠券或异常折扣率。
+      sql: |
+        SELECT
+            SUM(CASE WHEN actual_revenue < 0 THEN 1 ELSE 0 END) AS negative_actual_revenue_count,
+            SUM(CASE WHEN list_revenue < 0 THEN 1 ELSE 0 END) AS negative_list_revenue_count,
+            SUM(CASE WHEN seats < 0 THEN 1 ELSE 0 END) AS negative_seats_count,
+            SUM(CASE WHEN coupon_amount < 0 THEN 1 ELSE 0 END) AS negative_coupon_amount_count,
+            SUM(CASE WHEN discount_rate < 0 OR discount_rate > 1 THEN 1 ELSE 0 END) AS abnormal_discount_rate_count
+        FROM fact_actual_revenue;
+
+    - check_name: month_distribution
+      description: >
+        检查 month 的取值范围和每月记录数。
+      sql: |
+        SELECT
+            month,
+            COUNT(*) AS row_count,
+            COUNT(DISTINCT sub_id) AS subscription_count,
+            ROUND(SUM(list_revenue), 2) AS list_revenue,
+            ROUND(SUM(actual_revenue), 2) AS actual_revenue,
+            ROUND(SUM(list_revenue - actual_revenue), 2) AS revenue_gap
+        FROM fact_actual_revenue
+        GROUP BY month
+        ORDER BY month;
+
+sql_patterns:
+  monthly_actual_revenue_trend: |
+    SELECT
+        month,
+        COUNT(DISTINCT revenue_id) AS revenue_record_count,
+        ROUND(SUM(list_revenue), 2) AS list_revenue,
+        ROUND(SUM(actual_revenue), 2) AS actual_revenue,
+        ROUND(SUM(list_revenue - actual_revenue), 2) AS revenue_gap
+    FROM fact_actual_revenue
+    GROUP BY month
+    ORDER BY month;
+
+  actual_revenue_by_plan_month: |
+    SELECT
+        s.plan_tier,
+        r.month,
+        COUNT(DISTINCT r.sub_id) AS subscription_count,
+        COUNT(DISTINCT r.revenue_id) AS revenue_record_count,
+        SUM(r.seats) AS total_seats,
+        ROUND(SUM(r.list_revenue), 2) AS list_revenue,
+        ROUND(SUM(r.actual_revenue), 2) AS actual_revenue,
+        ROUND(SUM(r.list_revenue - r.actual_revenue), 2) AS revenue_gap
+    FROM fact_actual_revenue r
+    LEFT JOIN fact_subscription s
+        ON r.sub_id = s.sub_id
+    WHERE r.month = '2025-10'
+    GROUP BY s.plan_tier, r.month
+    ORDER BY actual_revenue DESC;
+
+  discount_impact_by_plan_month: |
+    SELECT
+        s.plan_tier,
+        r.month,
+        ROUND(SUM(r.list_revenue), 2) AS list_revenue,
+        ROUND(SUM(r.coupon_amount), 2) AS coupon_amount,
+        ROUND(SUM(r.list_revenue * r.discount_rate), 2) AS estimated_discount_amount,
+        ROUND(SUM(r.list_revenue - r.actual_revenue), 2) AS total_revenue_gap,
+        ROUND(
+            SUM(r.list_revenue - r.actual_revenue) / NULLIF(SUM(r.list_revenue), 0),
+            4
+        ) AS revenue_gap_rate
+    FROM fact_actual_revenue r
+    LEFT JOIN fact_subscription s
+        ON r.sub_id = s.sub_id
+    WHERE r.month = '2025-10'
+    GROUP BY s.plan_tier, r.month
+    ORDER BY total_revenue_gap DESC;
+
+  actual_revenue_by_tenant_profile: |
+    SELECT
+        t.country,
+        t.industry,
+        t.size_tier,
+        r.month,
+        COUNT(DISTINCT r.tenant_id) AS tenant_count,
+        COUNT(DISTINCT r.revenue_id) AS revenue_record_count,
+        ROUND(SUM(r.actual_revenue), 2) AS actual_revenue
+    FROM fact_actual_revenue r
+    LEFT JOIN dim_tenant t
+        ON r.tenant_id = t.tenant_id
+    WHERE r.month = '2025-10'
+    GROUP BY t.country, t.industry, t.size_tier, r.month
+    ORDER BY actual_revenue DESC;
+
+  subscription_month_level_revenue: |
+    SELECT
+        tenant_id,
+        sub_id,
+        month,
+        COUNT(DISTINCT revenue_id) AS revenue_record_count,
+        SUM(seats) AS total_seats,
+        ROUND(SUM(list_revenue), 2) AS list_revenue,
+        ROUND(SUM(actual_revenue), 2) AS actual_revenue,
+        ROUND(SUM(list_revenue - actual_revenue), 2) AS revenue_gap
+    FROM fact_actual_revenue
+    GROUP BY tenant_id, sub_id, month
+    ORDER BY month, tenant_id, sub_id;
+
+prompt_summary: >
+  fact_actual_revenue 是月度实收收入事实表。revenue_id 是唯一物理主键。
+  actual_revenue 是实际入账收入；list_revenue 是标价收入；
+  revenue_gap 可用 list_revenue - actual_revenue 计算。
+  如果用户问实收、实际收入、入账收入，应优先使用 actual_revenue。
+  如果按套餐分析，需要通过 sub_id JOIN fact_subscription 获取 plan_tier。
+  不要将 actual_revenue 与 MRR、发票金额或付款金额混用。
+  当前验证发现 tenant_id + sub_id + month 有 15 组重复，但这些不是脏重复；
+  它们是同一订阅同月下不同 discount_rate / actual_revenue 的收入明细。
+  因此 Agent 不能删除这些记录，也不能只取一条；
+  订阅月份级和月度收入分析必须 SUM(actual_revenue)。
+  当前验证还发现 actual_revenue 公式有极小相对偏差，
+  因此不要重新计算 actual_revenue 替代表字段。
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_actual_revenue_validation.md
+  additional_review_source: manual_sql_checks
+  checklist:
+    - confirmed: true
+      item: >
+        fact_actual_revenue 行数为 1366，字段数为 11。
+    - confirmed: true
+      item: >
+        revenue_id 唯一，可以作为物理主键。
+    - confirmed: true
+      item: >
+        sub_id + month 不唯一，存在 15 组重复。
+    - confirmed: true
+      item: >
+        人工复查确认 tenant_id + sub_id + month 存在 15 组重复。
+    - confirmed: true
+      item: >
+        重复的 sub_id + month 不是完全重复行，不应删除。
+    - confirmed: true
+      item: >
+        人工复查确认这些重复组不是完全重复行。
+    - confirmed: true
+      item: >
+        人工复查确认重复组通常 seats、list_price_per_seat、list_revenue 相同，
+        但 discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同。
+    - confirmed: true
+      item: >
+        人工确认这些重复记录不应删除；订阅月份级收入应聚合 revenue_id 级记录。
+    - confirmed: true
+      item: >
+        tenant_id 全部能关联到 dim_tenant.tenant_id。
+    - confirmed: true
+      item: >
+        sub_id 全部能关联到 fact_subscription.sub_id。
+    - confirmed: true
+      item: >
+        currency 仅包含 USD。
+    - confirmed: true
+      item: >
+        actual_revenue 公式平均绝对偏差为 0.3144，最大绝对偏差为 4.3867，
+        平均相对偏差为 0.00003，属于极小偏差。
+    - confirmed: true
+      item: >
+        未发现负收入、负席位、负优惠券或异常折扣率。
+    - confirmed: true
+      item: >
+        主要 SQL patterns 均可在 DuckDB 中执行。
+
+status:
+  authoring_status: validated_with_warnings
+  profile_filled: true
+  grain_validated: partial
+  dq_validated: partial
+  ready_for_agent: true
