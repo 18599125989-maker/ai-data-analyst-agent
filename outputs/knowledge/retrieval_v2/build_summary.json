@@ -21,6 +21,7 @@
     "trap_index": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/trap_index.json",
     "policy_index": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/policy_index.json",
     "recipe_index": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/recipe_index.json",
+    "recipes": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/recipes.json",
     "compact_table_cards": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/compact_table_cards.md",
     "build_summary": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/build_summary.json"
   }

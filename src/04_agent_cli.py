@@ -23,6 +23,7 @@ python3 src/03_7_build_visualization_knowledge.py
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import re
@@ -49,7 +50,6 @@ TABLE_CARDS_PATH = KNOWLEDGE_DIR / "table_cards.json"
 COLUMN_CARDS_PATH = KNOWLEDGE_DIR / "column_cards.json"
 DQ_RULES_PATH = KNOWLEDGE_DIR / "dq_rules.json"
 GRAIN_RULES_PATH = KNOWLEDGE_DIR / "grain_rules.json"
-RECIPES_PATH = KNOWLEDGE_DIR / "recipes.json"
 VISUALIZATION_RULES_PATH = KNOWLEDGE_DIR / "visualization_rules.json"
 
 TABLE_INDEX_PATH = RETRIEVAL_V2_DIR / "table_index.json"
@@ -59,6 +59,7 @@ JOIN_INDEX_PATH = RETRIEVAL_V2_DIR / "join_index.json"
 TRAP_INDEX_PATH = RETRIEVAL_V2_DIR / "trap_index.json"
 POLICY_INDEX_PATH = RETRIEVAL_V2_DIR / "policy_index.json"
 RECIPE_INDEX_PATH = RETRIEVAL_V2_DIR / "recipe_index.json"
+FULL_RECIPES_PATH = RETRIEVAL_V2_DIR / "recipes.json"
 
 DEFAULT_SILICONFLOW_API_URL = "https://api.siliconflow.cn/v1/chat/completions"
 DEFAULT_MODEL = "Qwen/Qwen2.5-72B-Instruct"
@@ -72,6 +73,22 @@ MAX_CONTEXT_POLICIES = 16
 MAX_CONTEXT_RECIPES = 5
 MAX_RESULT_ROWS = 30
 MAX_REPAIR_ATTEMPTS = 1
+
+
+def load_lineage_builder():
+    lineage_path = PROJECT_ROOT / "src" / "06_lineage.py"
+    spec = importlib.util.spec_from_file_location("lineage_module", lineage_path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module.build_lineage
+
+
+def get_lineage_builder():
+    try:
+        return load_lineage_builder()
+    except Exception:
+        return lambda *args, **kwargs: {}
 
 
 def ensure_dir(path: Path) -> None:
@@ -129,6 +146,10 @@ def safe_to_string(value: Any) -> str:
     return str(value)
 
 
+def unique_keep_order(items: List[str]) -> List[str]:
+    return list(dict.fromkeys(item for item in items if item))
+
+
 def to_ascii_label(text: str) -> str:
     """
     图表标题尽量使用 ASCII，避免无中文字体环境下 matplotlib 发出大量 glyph warning。
@@ -181,13 +202,23 @@ def load_visualization_rules() -> Dict[str, Any]:
 
 
 def load_knowledge_base() -> Dict[str, Any]:
+    recipes = read_json(FULL_RECIPES_PATH)
+    recipe_lookup = {}
+    for item in recipes:
+        if not isinstance(item, dict):
+            continue
+        recipe_id = safe_to_string(item.get("recipe_id"))
+        if recipe_id:
+            recipe_lookup[recipe_id] = item
+
     return {
         "legacy": {
             "table_cards": read_json(TABLE_CARDS_PATH),
             "column_cards": read_json(COLUMN_CARDS_PATH),
             "dq_rules": read_json(DQ_RULES_PATH),
             "grain_rules": read_json(GRAIN_RULES_PATH),
-            "recipes": read_json(RECIPES_PATH),
+            "recipes": recipes,
+            "recipe_lookup": recipe_lookup,
         },
         "retrieval_v2": {
             "table_index": read_json(TABLE_INDEX_PATH),
@@ -213,7 +244,6 @@ def check_required_files() -> None:
         COLUMN_CARDS_PATH,
         DQ_RULES_PATH,
         GRAIN_RULES_PATH,
-        RECIPES_PATH,
         TABLE_INDEX_PATH,
         FIELD_INDEX_PATH,
         METRIC_INDEX_PATH,
@@ -221,6 +251,7 @@ def check_required_files() -> None:
         TRAP_INDEX_PATH,
         POLICY_INDEX_PATH,
         RECIPE_INDEX_PATH,
+        FULL_RECIPES_PATH,
     ]
 
     for file_path in required_files:
@@ -270,11 +301,40 @@ def format_recipe_for_search(recipe: Dict[str, Any]) -> str:
             safe_to_string(recipe.get("description")),
             safe_to_string(recipe.get("analysis_type")),
             " ".join(recipe.get("main_tables", [])),
-            safe_to_string(recipe.get("query_sql")),
-            safe_to_string(recipe.get("insight")),
-            safe_to_string(recipe.get("sql_skeleton")),
+            " ".join(recipe.get("required_tables", [])),
+            " ".join(recipe.get("metrics", [])),
+            safe_to_string(recipe.get("source")),
+            " ".join(recipe.get("keywords", [])),
         ]
     )
+
+
+def enrich_recipe_hits(
+    recipe_hits: List[Dict[str, Any]],
+    recipe_lookup: Dict[str, Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    enriched = []
+    for hit in recipe_hits:
+        recipe_id = safe_to_string(hit.get("recipe_id"))
+        full_recipe = recipe_lookup.get(recipe_id, {})
+        merged = dict(full_recipe) if isinstance(full_recipe, dict) else {}
+        merged.update(
+            {
+                "recipe_id": recipe_id,
+                "recipe_index_hit": hit,
+                "_score": hit.get("_score", 0),
+            }
+        )
+        if "name" not in merged or not merged.get("name"):
+            merged["name"] = safe_to_string(hit.get("name") or merged.get("title"))
+        if "description" not in merged or not merged.get("description"):
+            merged["description"] = safe_to_string(
+                hit.get("description") or merged.get("insight")
+            )
+        if "required_tables" not in merged or not merged.get("required_tables"):
+            merged["required_tables"] = hit.get("required_tables", [])
+        enriched.append(merged)
+    return enriched
 
 
 def retrieve_ranked_items(
@@ -430,29 +490,13 @@ def agent2_knowledge_retriever(question: str, kb: Dict[str, Any], task: Dict[str
         boost_tables=selected_table_names,
     )
 
-    recipe_index = retrieve_ranked_items(
+    recipe_index_hits = retrieve_ranked_items(
         question=question,
         items=retrieval["recipe_index"],
         text_builder=format_recipe_for_search,
         limit=MAX_CONTEXT_RECIPES,
     )
-
-    legacy_recipes = retrieve_ranked_items(
-        question=question,
-        items=legacy["recipes"],
-        text_builder=format_recipe_for_search,
-        limit=MAX_CONTEXT_RECIPES,
-    )
-
-    combined_recipes = recipe_index[:]
-    existing_ids = {safe_to_string(item.get("recipe_id")) for item in combined_recipes}
-    for recipe in legacy_recipes:
-        recipe_id = safe_to_string(recipe.get("recipe_id"))
-        if recipe_id not in existing_ids:
-            combined_recipes.append(recipe)
-            existing_ids.add(recipe_id)
-        if len(combined_recipes) >= MAX_CONTEXT_RECIPES:
-            break
+    full_recipes = enrich_recipe_hits(recipe_index_hits, legacy["recipe_lookup"])
 
     return {
         "task": task,
@@ -462,7 +506,8 @@ def agent2_knowledge_retriever(question: str, kb: Dict[str, Any], task: Dict[str
         "candidate_joins": joins,
         "candidate_traps": traps,
         "candidate_policies": policies,
-        "candidate_recipes": combined_recipes,
+        "candidate_recipe_hits": recipe_index_hits,
+        "candidate_recipes": full_recipes,
         "selected_table_names": sorted(selected_table_names),
     }
 
@@ -600,12 +645,115 @@ def compact_recipe_context(items: List[Dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def build_analysis_context(result: Dict[str, Any]) -> Dict[str, Any]:
+    result = result or {}
+    result_json = result.get("result_json", {}) or {}
+    df = result.get("dataframe")
+
+    previous_result_columns: List[str] = []
+    previous_result_preview: List[Dict[str, Any]] = []
+    if df is not None:
+        try:
+            previous_result_columns = [str(col) for col in df.columns]
+            previous_result_preview = df.head(10).to_dict(orient="records")
+        except Exception:
+            previous_result_columns = []
+            previous_result_preview = []
+
+    return {
+        "previous_question": safe_to_string(result.get("question")),
+        "previous_analysis_plan": safe_to_string(result_json.get("analysis_plan")),
+        "previous_sql": safe_to_string(result.get("executed_sql")),
+        "previous_used_tables": list(result_json.get("used_tables", []) or []),
+        "previous_used_columns": list(result_json.get("used_columns", []) or []),
+        "previous_result_columns": previous_result_columns,
+        "previous_result_preview": previous_result_preview,
+        "previous_visualization_spec": result.get("visualization_spec", {}) or {},
+        "previous_lineage": result.get("lineage", {}) or {},
+        "previous_log_path": safe_to_string(result.get("log_path")),
+    }
+
+
+def compact_previous_context(previous_context: Dict[str, Any] | None) -> str:
+    if not previous_context:
+        return ""
+
+    preview_rows = previous_context.get("previous_result_preview", []) or []
+    preview_rows = preview_rows[:10]
+    lineage = previous_context.get("previous_lineage", {}) or {}
+    lineage_summary = lineage.get("lineage_summary", []) if isinstance(lineage, dict) else []
+
+    sections = [
+        f"上一轮问题：{safe_to_string(previous_context.get('previous_question'))}",
+        f"上一轮分析计划：{safe_to_string(previous_context.get('previous_analysis_plan'))}",
+        f"上一轮 SQL：\n{safe_to_string(previous_context.get('previous_sql'))}",
+        f"上一轮使用表：{', '.join(previous_context.get('previous_used_tables', []) or [])}",
+        f"上一轮使用字段：{', '.join(previous_context.get('previous_used_columns', []) or [])}",
+        f"上一轮结果列：{', '.join(previous_context.get('previous_result_columns', []) or [])}",
+        f"上一轮结果预览（最多10行）：\n{json.dumps(preview_rows, ensure_ascii=False, indent=2)}",
+        f"上一轮图表配置：\n{json.dumps(previous_context.get('previous_visualization_spec', {}) or {}, ensure_ascii=False, indent=2)}",
+    ]
+    if lineage_summary:
+        sections.append("上一轮 lineage 摘要：\n" + "\n".join(f"- {x}" for x in lineage_summary[:6]))
+    return "\n\n".join(sections).strip()
+
+
+def infer_followup_edit_type(question: str) -> List[str]:
+    question_norm = normalize_text(question)
+    edit_types: List[str] = []
+
+    filter_keywords = ["只看", "过滤", "限定", "仅看", "保留", "排除"]
+    topn_keywords = ["前 ", "前10", "前20", "top", "top ", "limit"]
+    sort_keywords = ["升序", "降序", "从高到低", "从低到高", "排序"]
+    chart_keywords = ["折线图", "柱状图", "表格", "换成图", "换成折线", "换成柱状", "图表"]
+    dimension_keywords = ["按", "拆", "拆分", "细分", "分组", "再按"]
+    time_keywords = ["月份", "月", "日期", "时间", "最近", "天", "周", "2025", "2026", "这个月"]
+
+    if any(x in question_norm for x in filter_keywords):
+        edit_types.append("filter_condition")
+    if any(x in question_norm for x in topn_keywords):
+        edit_types.append("topn_change")
+    if any(x in question_norm for x in sort_keywords):
+        edit_types.append("sort_change")
+    if any(x in question_norm for x in chart_keywords):
+        edit_types.append("chart_change")
+    if any(x in question_norm for x in dimension_keywords):
+        edit_types.append("dimension_split")
+    if any(x in question_norm for x in time_keywords):
+        edit_types.append("time_filter_or_time_dimension")
+
+    return unique_keep_order(edit_types)
+
+
 def build_sql_generation_prompt(
     question: str,
     task: Dict[str, Any],
     retrieval_context: Dict[str, Any],
     guard: Dict[str, Any],
+    previous_context: Dict[str, Any] | None = None,
 ) -> str:
+    previous_context_block = ""
+    if previous_context:
+        previous_context_block = f"""
+上一轮分析上下文（仅供参考）：
+{compact_previous_context(previous_context)}
+
+当前问题如果是在上一轮基础上的追问，请优先复用上一轮已验证的表、字段、SQL 口径与图表配置，再按本轮需求做最小修改。
+识别到的可能修改类型：
+{", ".join(infer_followup_edit_type(question)) or "未识别到明确修改类型"}
+
+追问处理规则：
+1. `filter_condition`：优先增加或调整 WHERE 条件。
+2. `topn_change`：优先调整 LIMIT。
+3. `sort_change`：优先调整 ORDER BY。
+4. `chart_change`：SQL 可以不变，优先调整 visualization_recommendation。
+5. `dimension_split`：增加或调整 GROUP BY 维度，并确认字段存在。
+6. `time_filter_or_time_dimension`：增加时间过滤或时间分组，并确认时间字段存在。
+
+如果当前问题其实是新问题，或上一轮上下文与当前问题冲突，请忽略上一轮上下文，按当前问题重新分析。
+不要因为上一轮上下文而编造表、字段、JOIN 或指标。
+""".strip()
+
     return f"""
 你是 Agent4：SQL 规划与生成专家，服务于一个中文数据分析项目。
 
@@ -652,9 +800,13 @@ Agent1 task understanding:
 - needs_visualization: {task.get("needs_visualization")}
 - result_shape: {task.get("result_shape")}
 - time_hints: {task.get("time_hints")}
+- previous_context_available: {task.get("previous_context_available")}
+- followup_edit_types: {task.get("followup_edit_types")}
 
 用户问题：
 {question}
+
+{previous_context_block}
 
 候选表：
 {compact_table_context(retrieval_context["candidate_tables"])}
@@ -692,8 +844,15 @@ def build_sql_repair_prompt(
     guard: Dict[str, Any],
     bad_sql: str,
     error_message: str,
+    previous_context: Dict[str, Any] | None = None,
 ) -> str:
-    base_prompt = build_sql_generation_prompt(question, task, retrieval_context, guard)
+    base_prompt = build_sql_generation_prompt(
+        question,
+        task,
+        retrieval_context,
+        guard,
+        previous_context=previous_context,
+    )
     return f"""
 {base_prompt}
 
@@ -833,8 +992,18 @@ def build_query_log_payload(
     executed_sql: str = "",
     visualization_spec: Dict[str, Any] | None = None,
     visualization_path: str = "",
+    lineage: Dict[str, Any] | None = None,
     df: pd.DataFrame | None = None,
+    previous_context: Dict[str, Any] | None = None,
+    followup_edit_types: List[str] | None = None,
 ) -> Dict[str, Any]:
+    previous_context = previous_context or {}
+    previous_context_summary = {
+        "previous_question": safe_to_string(previous_context.get("previous_question")),
+        "previous_used_tables": list(previous_context.get("previous_used_tables", []) or []),
+        "previous_result_columns": list(previous_context.get("previous_result_columns", []) or []),
+        "previous_result_preview": list(previous_context.get("previous_result_preview", []) or [])[:10],
+    }
     payload = {
         "question": question,
         "task_understanding": task,
@@ -852,6 +1021,9 @@ def build_query_log_payload(
         },
         "guard": guard,
         "success": success,
+        "previous_context_used": bool(previous_context),
+        "followup_edit_types": list(followup_edit_types or []),
+        "previous_context_summary": previous_context_summary,
     }
 
     if success:
@@ -865,6 +1037,7 @@ def build_query_log_payload(
                 "warnings": (result_json or {}).get("warnings", []),
                 "visualization_spec": visualization_spec or {},
                 "visualization_path": visualization_path,
+                "lineage": lineage or {},
                 "result_row_count": len(df) if df is not None else 0,
                 "result_preview": (
                     df.head(MAX_RESULT_ROWS).to_dict(orient="records")
@@ -1025,6 +1198,7 @@ def print_answer(
     executed_sql: str,
     visualization_spec: Dict[str, Any],
     visualization_path: str,
+    lineage: Dict[str, Any] | None = None,
 ) -> None:
     print("\n[Agent4: Analysis Plan]")
     print(result_json.get("analysis_plan", ""))
@@ -1055,17 +1229,49 @@ def print_answer(
     if visualization_path:
         print(f"图表文件: {visualization_path}")
 
+    lineage = lineage or {}
+    if lineage:
+        sql_path = lineage.get("sql_path", {})
+        result_columns = [
+            item.get("column")
+            for item in lineage.get("result_schema", [])
+            if isinstance(item, dict) and item.get("column")
+        ]
+        print("\n[Lineage: 数据血缘]")
+        print("使用表：", ", ".join(lineage.get("used_tables", [])) or "无")
+        print("结果列：", ", ".join(result_columns) if result_columns else "无")
+        features = []
+        if sql_path.get("has_join"):
+            features.append("JOIN")
+        if sql_path.get("has_group_by"):
+            features.append("GROUP BY")
+        if sql_path.get("has_order_by"):
+            features.append("ORDER BY")
+        if sql_path.get("has_limit"):
+            features.append("LIMIT")
+        print("SQL 特征：", ", ".join(features) if features else "基础 SELECT")
+
 
 def run_question_pipeline(
     question: str,
     kb: Dict[str, Any],
     conn: duckdb.DuckDBPyConnection,
+    previous_context: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
+    build_lineage = get_lineage_builder()
     task = agent1_task_understanding(question)
+    task["previous_context_available"] = previous_context is not None
+    task["followup_edit_types"] = infer_followup_edit_type(question)
     retrieval_context = agent2_knowledge_retriever(question, kb, task)
     guard = agent3_grain_dq_guard(retrieval_context)
 
-    prompt = build_sql_generation_prompt(question, task, retrieval_context, guard)
+    prompt = build_sql_generation_prompt(
+        question,
+        task,
+        retrieval_context,
+        guard,
+        previous_context=previous_context,
+    )
     raw_output = call_siliconflow(prompt)
     result_json = extract_json_from_llm_output(raw_output)
 
@@ -1085,6 +1291,7 @@ def run_question_pipeline(
             guard=guard,
             bad_sql=sql,
             error_message=err,
+            previous_context=previous_context,
         )
         raw_repair_output = call_siliconflow(repair_prompt)
         repair_output = extract_json_from_llm_output(raw_repair_output)
@@ -1105,6 +1312,8 @@ def run_question_pipeline(
             result_json=result_json,
             repair_output=repair_output,
             error_message=err,
+            previous_context=previous_context,
+            followup_edit_types=task.get("followup_edit_types", []),
         )
         log_path = save_query_log(log_payload)
         return {
@@ -1116,6 +1325,8 @@ def run_question_pipeline(
             "result_json": result_json,
             "repair_output": repair_output,
             "error": err,
+            "previous_context_used": previous_context is not None,
+            "previous_context": previous_context or {},
             "log_path": str(log_path),
         }
 
@@ -1125,6 +1336,14 @@ def run_question_pipeline(
         df,
     )
     visualization_path = render_visualization(df, visualization_spec)
+    lineage = build_lineage(
+        question=question,
+        result_json=result_json,
+        retrieval_context=retrieval_context,
+        executed_sql=executed_sql,
+        df=df,
+        visualization_spec=visualization_spec,
+    )
 
     log_payload = build_query_log_payload(
         question=question,
@@ -1137,7 +1356,10 @@ def run_question_pipeline(
         executed_sql=executed_sql,
         visualization_spec=visualization_spec,
         visualization_path=visualization_path,
+        lineage=lineage,
         df=df,
+        previous_context=previous_context,
+        followup_edit_types=task.get("followup_edit_types", []),
     )
     log_path = save_query_log(log_payload)
 
@@ -1153,6 +1375,9 @@ def run_question_pipeline(
         "dataframe": df,
         "visualization_spec": visualization_spec,
         "visualization_path": visualization_path,
+        "lineage": lineage,
+        "previous_context_used": previous_context is not None,
+        "previous_context": previous_context or {},
         "log_path": str(log_path),
     }
 
@@ -1173,6 +1398,7 @@ def answer_question(question: str, kb: Dict[str, Any], conn: duckdb.DuckDBPyConn
         result["executed_sql"],
         result["visualization_spec"],
         result["visualization_path"],
+        result.get("lineage", {}),
     )
     print(f"\n查询日志已保存：{result['log_path']}")
 
@@ -1199,7 +1425,7 @@ def main() -> None:
     print("")
     print("知识库使用方式:")
     print("- Agent2 / Agent3 / Agent4 默认使用 outputs/knowledge/retrieval_v2")
-    print("- Recipe 支持未来继续扩充 outputs/knowledge/recipes.json")
+    print("- Recipe 运行时使用 outputs/knowledge/retrieval_v2/recipes.json")
     print("- Visualization 优先读取 outputs/knowledge/visualization_rules.json")
     print("")
     print("输入 exit / quit / q 退出。")

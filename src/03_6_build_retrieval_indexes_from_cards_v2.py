@@ -25,6 +25,7 @@
 - outputs/knowledge/retrieval_v2/trap_index.json
 - outputs/knowledge/retrieval_v2/policy_index.json
 - outputs/knowledge/retrieval_v2/recipe_index.json
+- outputs/knowledge/retrieval_v2/recipes.json
 - outputs/knowledge/retrieval_v2/compact_table_cards.md
 - outputs/knowledge/retrieval_v2/build_summary.json
 
@@ -679,24 +680,46 @@ def build_recipe_index(cards: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     result = []
     seen = {}
     for item in raw:
-        rid = safe_str(item.get("recipe_id") or slugify(item.get("name")))
+        rid = safe_str(item.get("recipe_id") or slugify(item.get("name") or item.get("title")))
         seen[rid] = seen.get(rid, 0) + 1
         if seen[rid] > 1:
             rid = f"{rid}_{seen[rid]}"
+
+        name = safe_str(item.get("name") or item.get("title"))
+        description = safe_str(item.get("description") or item.get("insight"))
+        required_tables = [
+            safe_str(x)
+            for x in as_list(item.get("required_tables") or item.get("main_tables"))
+        ]
+        sql_skeleton = safe_str(
+            item.get("sql_skeleton") or item.get("sql") or item.get("query_sql")
+        )
+        source = safe_str(item.get("source") or item.get("source_dir") or "recipes_json")
+        confidence = safe_str(item.get("confidence") or "medium")
+        metrics = [safe_str(x) for x in as_list(item.get("metrics"))]
+        dimensions = [safe_str(x) for x in as_list(item.get("dimensions"))]
+        required_fields = [safe_str(x) for x in as_list(item.get("required_fields"))]
+        join_paths = as_list(item.get("join_paths"))
+        grain_rules = [safe_str(x) for x in as_list(item.get("grain_rules"))]
+        dq_rules = [safe_str(x) for x in as_list(item.get("dq_rules"))]
+
+        analysis_type = safe_str(item.get("analysis_type"))
+        if analysis_type and analysis_type not in metrics:
+            metrics.append(analysis_type)
+
         normalized = {
             "recipe_id": rid,
-            "name": safe_str(item.get("name")),
-            "description": safe_str(item.get("description")),
-            "required_tables": [safe_str(x) for x in as_list(item.get("required_tables"))],
-            "required_fields": [safe_str(x) for x in as_list(item.get("required_fields"))],
-            "metrics": [safe_str(x) for x in as_list(item.get("metrics"))],
-            "dimensions": [safe_str(x) for x in as_list(item.get("dimensions"))],
-            "join_paths": as_list(item.get("join_paths")),
-            "grain_rules": [safe_str(x) for x in as_list(item.get("grain_rules"))],
-            "dq_rules": [safe_str(x) for x in as_list(item.get("dq_rules"))],
-            "sql_skeleton": safe_str(item.get("sql_skeleton") or item.get("sql")),
-            "source": safe_str(item.get("source")),
-            "confidence": safe_str(item.get("confidence")),
+            "name": name,
+            "description": compact_text(description, 500),
+            "required_tables": required_tables,
+            "required_fields": required_fields[:12],
+            "metrics": metrics[:8],
+            "dimensions": dimensions[:8],
+            "join_paths": join_paths[:8],
+            "grain_rules": grain_rules[:6],
+            "dq_rules": dq_rules[:6],
+            "source": source,
+            "confidence": confidence,
         }
         normalized["keywords"] = make_keywords(
             normalized["recipe_id"],
@@ -709,10 +732,17 @@ def build_recipe_index(cards: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             normalized["join_paths"],
             normalized["grain_rules"],
             normalized["dq_rules"],
-            normalized["sql_skeleton"],
+            analysis_type,
         )
         result.append(normalized)
     return result
+
+
+def build_full_recipe_store() -> List[Dict[str, Any]]:
+    raw = load_recipes_json()
+    if raw:
+        return raw
+    return load_recipes_md()
 
 
 def build_compact_markdown(cards: List[Dict[str, Any]]) -> str:
@@ -805,6 +835,7 @@ def build_summary(
             "trap_index": str(OUTPUT_DIR / "trap_index.json"),
             "policy_index": str(OUTPUT_DIR / "policy_index.json"),
             "recipe_index": str(OUTPUT_DIR / "recipe_index.json"),
+            "recipes": str(OUTPUT_DIR / "recipes.json"),
             "compact_table_cards": str(OUTPUT_DIR / "compact_table_cards.md"),
             "build_summary": str(OUTPUT_DIR / "build_summary.json"),
         },
@@ -823,6 +854,7 @@ def main() -> None:
     trap_index = build_trap_index(ready_cards)
     policy_index = build_policy_index(ready_cards)
     recipe_index = build_recipe_index(ready_cards)
+    full_recipes = build_full_recipe_store()
     compact_md = build_compact_markdown(ready_cards)
 
     dump_json(OUTPUT_DIR / "table_index.json", table_index)
@@ -832,6 +864,7 @@ def main() -> None:
     dump_json(OUTPUT_DIR / "trap_index.json", trap_index)
     dump_json(OUTPUT_DIR / "policy_index.json", policy_index)
     dump_json(OUTPUT_DIR / "recipe_index.json", recipe_index)
+    dump_json(OUTPUT_DIR / "recipes.json", full_recipes)
     (OUTPUT_DIR / "compact_table_cards.md").write_text(compact_md, encoding="utf-8")
 
     summary = build_summary(

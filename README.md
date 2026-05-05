@@ -139,7 +139,11 @@
   - 粒度与聚合风险规则
 
 - `recipes.json`
-  - 参考问答 / SQL 样例，用于 few-shot 与检索
+  - 上游 recipe 构建产物
+
+- `retrieval_v2/recipes.json`
+  - Agent 运行时使用的完整 recipe 集合
+  - 与 `recipe_index.json` 配合使用：先检索索引，再按 `recipe_id` 回填完整 recipe
 
 - `retrieval_v2/`
   - 面向 Agent 的核心检索底座
@@ -151,6 +155,7 @@
     - `trap_index.json`
     - `policy_index.json`
     - `recipe_index.json`
+    - `recipes.json`
 
 - `visualization_rules.json`
   - 可视化推荐规则
@@ -316,3 +321,64 @@ streamlit run src/05_streamlit_app.py
 如果只用一句话概括本项目：
 
 **这是一个以知识库为核心、面向中文业务分析的可解释 Text-to-SQL Agent 系统。**
+
+---
+
+## Good-to-have Extensions
+
+### 1. 数据血缘溯源 Lineage Tracking
+
+当前项目已实现基础版数据血缘溯源能力，可在每次分析后：
+- 展示本次分析使用的表和字段
+- 展示 SQL 执行路径
+- 展示 JOIN / GROUP BY / LIMIT 等 SQL 特征
+- 展示结果列 schema
+- 展示图表 x / y 映射
+- 将 lineage 写入 query log，便于复盘和审计
+
+后续可继续扩展：
+- 更精确的 SQL parser
+- 字段级 lineage
+- 指标级来源追踪
+- 可视化 DAG / ER 图
+- 点击结论查看来源 SQL 和字段
+
+### 2. 全局 ER 图 / 知识图谱可视化
+
+系统支持基于知识库自动生成全局 ER / Knowledge Graph。
+- 表作为节点，JOIN 关系作为边。
+- 节点展示表类型、grain、字段数量、关键字段和风险级别。
+- 边展示 join_condition、relationship 和 risk_level。
+- 该图不是写死的，而是由 `table_index.json`、`join_index.json`、`field_index.json`、`table_cards.json`、`column_cards.json` 自动生成。
+- 前端提供“显示全局 ER 图 / 知识图谱”入口，点击后可查看整体数据结构。
+- 如果 pyvis 可用，展示交互式 HTML 图；否则展示 JSON summary fallback。
+
+运行方式：
+
+```bash
+python src/08_build_knowledge_graph.py
+```
+
+然后：
+
+```bash
+streamlit run src/05_streamlit_app.py
+```
+
+在侧边栏勾选：
+
+`显示全局 ER 图 / 知识图谱`
+
+### 3. 多轮追问与上下文记忆 Follow-up Context
+
+系统支持基础版多轮追问能力。
+- 在同一 Streamlit session 中，系统会保存上一轮成功分析的问题、SQL、使用表、使用字段、结果列、结果预览、图表配置和 lineage。
+- 用户可以手动勾选“将本次问题作为上一轮结果的追问处理”，基于上一轮结果继续提问。
+- 当前支持的追问修改类型包括：
+  - 过滤条件：只看某国家、某状态、某客户
+  - Top N 修改：前 10 改前 20
+  - 排序修改：升序、降序
+  - 图表类型修改：柱状图、折线图、表格
+  - 维度拆分：按行业、套餐、国家等维度重新分组
+  - 时间条件 / 时间维度：只看某个月、按月 / 按天、最近 30 天
+- 第一版只保存上一轮上下文，避免长期历史污染 SQL 生成。

@@ -1,0 +1,1465 @@
+{
+  "nodes": [
+    {
+      "id": "dim_channel",
+      "label": "dim_channel",
+      "type": "dimension",
+      "grain": "数据字典说明粒度：一行 = 一个频道。 数据字典说明主键：`channel_id`。",
+      "business_meaning": "群聊/频道维度。\n数据字典将该表归入“协作与内容”域。\n数据字典行数说明为：~5.6k。",
+      "field_count": 5,
+      "key_fields": [
+        "channel_id",
+        "tenant_id",
+        "channel_type"
+      ],
+      "warning_level": "low",
+      "title": "table: dim_channel\ntype: dimension\ngrain: 数据字典说明粒度：一行 = 一个频道。 数据字典说明主键：`channel_id`。\nfield_count: 5\nkey_fields: channel_id, tenant_id, channel_type\nwarning_level: low\nbusiness_meaning: 群聊/频道维度。\n数据字典将该表归入“协作与内容”域。\n数据字典行数说明为：~5.6k。"
+    },
+    {
+      "id": "dim_department",
+      "label": "dim_department",
+      "type": "dimension",
+      "grain": "一行 = 一个部门。 每个部门属于一个 tenant。 一个 tenant 可以有多个部门。 parent_dept_id 表示上级部门，空值表示顶级部门。",
+      "business_meaning": "部门维度表，描述每个企业 tenant 下的部门信息，以及部门之间的上下级关系。 该表用于组织结构分析、部门分布分析，也可以作为用户分析中的部门维度表。\n",
+      "field_count": 4,
+      "key_fields": [
+        "dept_id",
+        "tenant_id",
+        "parent_dept_id"
+      ],
+      "warning_level": "low",
+      "title": "table: dim_department\ntype: dimension\ngrain: 一行 = 一个部门。 每个部门属于一个 tenant。 一个 tenant 可以有多个部门。 parent_dept_id 表示上级部门，空值表示顶级部门。\nfield_count: 4\nkey_fields: dept_id, tenant_id, parent_dept_id\nwarning_level: low\nbusiness_meaning: 部门维度表，描述每个企业 tenant 下的部门信息，以及部门之间的上下级关系。 该表用于组织结构分析、部门分布分析，也可以作为用户分析中的部门维度表。\n"
+    },
+    {
+      "id": "dim_feature",
+      "label": "dim_feature",
+      "type": "dimension",
+      "grain": "一行代表一个产品功能。 feature_key 是功能主键和稳定功能编码。 feature_name 是展示名称，不建议作为 JOIN key。 当前验证显示主键候选唯一：row_count = 12，distinct_primary_key_count = 12， duplicate_primary_key_count = 0，因此功能维度粒度成立。",
+      "business_meaning": "产品功能维度表，描述 CloudWork 中各个功能模块的稳定编码、展示名称、所属模块、类别和上线时间。 该表适合做功能目录、功能分组、功能上线时间分析，以及为 `fact_feature_usage` 等事实表补充功能属性。 当前验证显示该表可作为正式功能维度表使用。\n",
+      "field_count": 5,
+      "key_fields": [
+        "feature_key"
+      ],
+      "warning_level": "low",
+      "title": "table: dim_feature\ntype: dimension\ngrain: 一行代表一个产品功能。 feature_key 是功能主键和稳定功能编码。 feature_name 是展示名称，不建议作为 JOIN key。 当前验证显示主键候选唯一：row_count = 12，distinct_primary_key_count = 12， duplicate_primary_key_count = 0，因此功能维度粒度成立。\nfield_count: 5\nkey_fields: feature_key\nwarning_level: low\nbusiness_meaning: 产品功能维度表，描述 CloudWork 中各个功能模块的稳定编码、展示名称、所属模块、类别和上线时间。 该表适合做功能目录、功能分组、功能上线时间分析，以及为 `fact_feature_usage` 等事实表补充功能属性。 当前验证显示该表可作为正式功能维度表使用。\n"
+    },
+    {
+      "id": "dim_org_structure",
+      "label": "dim_org_structure",
+      "type": "dimension",
+      "grain": "数据字典说明粒度：一行 = 一个组织节点；只覆盖前 200 个 tenant。 数据字典说明主键：`node_id`。",
+      "business_meaning": "组织节点（团队/虚拟组）。\n数据字典将该表归入“租户与组织”域。\n数据字典行数说明为：~1.9k。",
+      "field_count": 5,
+      "key_fields": [
+        "node_id",
+        "parent_node_id",
+        "tenant_id",
+        "node_type"
+      ],
+      "warning_level": "low",
+      "title": "table: dim_org_structure\ntype: dimension\ngrain: 数据字典说明粒度：一行 = 一个组织节点；只覆盖前 200 个 tenant。 数据字典说明主键：`node_id`。\nfield_count: 5\nkey_fields: node_id, parent_node_id, tenant_id, node_type\nwarning_level: low\nbusiness_meaning: 组织节点（团队/虚拟组）。\n数据字典将该表归入“租户与组织”域。\n数据字典行数说明为：~1.9k。"
+    },
+    {
+      "id": "dim_plan",
+      "label": "dim_plan",
+      "type": "dimension",
+      "grain": "数据字典说明主键：`plan_tier`。",
+      "business_meaning": "套餐维度。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：5。",
+      "field_count": 6,
+      "key_fields": [
+        "plan_tier",
+        "monthly_price"
+      ],
+      "warning_level": "low",
+      "title": "table: dim_plan\ntype: dimension\ngrain: 数据字典说明主键：`plan_tier`。\nfield_count: 6\nkey_fields: plan_tier, monthly_price\nwarning_level: low\nbusiness_meaning: 套餐维度。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：5。"
+    },
+    {
+      "id": "dim_tenant",
+      "label": "dim_tenant",
+      "type": "dimension",
+      "grain": "一行 = 一个企业。 当前验证显示 tenant_id 唯一，row_count = 500，distinct_tenant_id_count = 500， 因此“一个 tenant 一行”的粒度成立。",
+      "business_meaning": "企业客户维度表，描述 CloudWork 中每个 tenant 的基础企业画像信息。 该表是一切租户级分析的核心维度表，可用于补充企业名称、行业、规模、国家和创建时间。 当前验证显示该表可作为企业实体统计和企业画像分析的正式维度表使用。\n",
+      "field_count": 6,
+      "key_fields": [
+        "tenant_id",
+        "size_tier",
+        "country"
+      ],
+      "warning_level": "low",
+      "title": "table: dim_tenant\ntype: dimension\ngrain: 一行 = 一个企业。 当前验证显示 tenant_id 唯一，row_count = 500，distinct_tenant_id_count = 500， 因此“一个 tenant 一行”的粒度成立。\nfield_count: 6\nkey_fields: tenant_id, size_tier, country\nwarning_level: low\nbusiness_meaning: 企业客户维度表，描述 CloudWork 中每个 tenant 的基础企业画像信息。 该表是一切租户级分析的核心维度表，可用于补充企业名称、行业、规模、国家和创建时间。 当前验证显示该表可作为企业实体统计和企业画像分析的正式维度表使用。\n"
+    },
+    {
+      "id": "dim_tenant_config",
+      "label": "dim_tenant_config",
+      "type": "dimension",
+      "grain": "一行代表一个 tenant_id 对一个 feature_key 的配置记录。 tenant_id + feature_key 是业务自然键/配置粒度。",
+      "business_meaning": "租户功能开关与配置维度表。 用于记录每个 tenant 对各 feature 的启用状态和可选配置， 适合分析功能启用率、租户功能覆盖情况和配置分布。\n",
+      "field_count": 4,
+      "key_fields": [
+        "tenant_id",
+        "feature_key"
+      ],
+      "warning_level": "medium",
+      "title": "table: dim_tenant_config\ntype: dimension\ngrain: 一行代表一个 tenant_id 对一个 feature_key 的配置记录。 tenant_id + feature_key 是业务自然键/配置粒度。\nfield_count: 4\nkey_fields: tenant_id, feature_key\nwarning_level: medium\nbusiness_meaning: 租户功能开关与配置维度表。 用于记录每个 tenant 对各 feature 的启用状态和可选配置， 适合分析功能启用率、租户功能覆盖情况和配置分布。\n"
+    },
+    {
+      "id": "dim_tenant_plan",
+      "label": "dim_tenant_plan",
+      "type": "dimension",
+      "grain": "数据字典说明粒度：一行 = 一个租户在某个时间区间使用的套餐。 数据字典说明主键：`tenant_id` + `effective_from`。",
+      "business_meaning": "租户套餐历史（SCD2）。\n数据字典将该表归入“租户与组织”域。\n数据字典行数说明为：~2.3k。",
+      "field_count": 5,
+      "key_fields": [
+        "tenant_id",
+        "plan_tier"
+      ],
+      "warning_level": "low",
+      "title": "table: dim_tenant_plan\ntype: dimension\ngrain: 数据字典说明粒度：一行 = 一个租户在某个时间区间使用的套餐。 数据字典说明主键：`tenant_id` + `effective_from`。\nfield_count: 5\nkey_fields: tenant_id, plan_tier\nwarning_level: low\nbusiness_meaning: 租户套餐历史（SCD2）。\n数据字典将该表归入“租户与组织”域。\n数据字典行数说明为：~2.3k。"
+    },
+    {
+      "id": "dim_ticket_category",
+      "label": "dim_ticket_category",
+      "type": "dimension",
+      "grain": "数据字典说明主键：`category_id`。",
+      "business_meaning": "工单分类。\n数据字典将该表归入“客服工单”域。\n数据字典行数说明为：12，**含两级层级**（通过 `parent_category_id` 构建）。",
+      "field_count": 4,
+      "key_fields": [
+        "category_id",
+        "parent_category_id"
+      ],
+      "warning_level": "low",
+      "title": "table: dim_ticket_category\ntype: dimension\ngrain: 数据字典说明主键：`category_id`。\nfield_count: 4\nkey_fields: category_id, parent_category_id\nwarning_level: low\nbusiness_meaning: 工单分类。\n数据字典将该表归入“客服工单”域。\n数据字典行数说明为：12，**含两级层级**（通过 `parent_category_id` 构建）。"
+    },
+    {
+      "id": "dim_user",
+      "label": "dim_user",
+      "type": "dimension",
+      "grain": "数据字典说明粒度：一行 = 一个用户。 数据字典说明主键：`user_id`。",
+      "business_meaning": "用户维度。\n数据字典将该表归入“用户”域。\n数据字典行数说明为：50,000。",
+      "field_count": 7,
+      "key_fields": [
+        "user_id",
+        "tenant_id",
+        "dept_id",
+        "status"
+      ],
+      "warning_level": "low",
+      "title": "table: dim_user\ntype: dimension\ngrain: 数据字典说明粒度：一行 = 一个用户。 数据字典说明主键：`user_id`。\nfield_count: 7\nkey_fields: user_id, tenant_id, dept_id, status\nwarning_level: low\nbusiness_meaning: 用户维度。\n数据字典将该表归入“用户”域。\n数据字典行数说明为：50,000。"
+    },
+    {
+      "id": "dim_user_id_mapping",
+      "label": "dim_user_id_mapping",
+      "type": "dimension",
+      "grain": "一行代表一个 user_id_hash 与明文 user_id 的映射关系。 当前验证显示主键候选已唯一：row_count = 40016，distinct_primary_key_count = 40016， duplicate_primary_key_count = 0，因此映射关系粒度成立。 该表用于把隐私保护后的 user_id_hash 映射回 dim_user.user_id。",
+      "business_meaning": "用户 ID 哈希映射表，用于把隐私保护场景中的哈希用户 ID 映射回明文 user_id。 该表是 `fact_ai_usage_log.user_id_hash` 与 `dim_user.user_id` 之间的桥接维度。 当前验证显示该表可作为正式桥接表使用。\n",
+      "field_count": 2,
+      "key_fields": [
+        "user_id_hash",
+        "user_id"
+      ],
+      "warning_level": "low",
+      "title": "table: dim_user_id_mapping\ntype: dimension\ngrain: 一行代表一个 user_id_hash 与明文 user_id 的映射关系。 当前验证显示主键候选已唯一：row_count = 40016，distinct_primary_key_count = 40016， duplicate_primary_key_count = 0，因此映射关系粒度成立。 该表用于把隐私保护后的 user_id_hash 映射回 dim_user.user_id。\nfield_count: 2\nkey_fields: user_id_hash, user_id\nwarning_level: low\nbusiness_meaning: 用户 ID 哈希映射表，用于把隐私保护场景中的哈希用户 ID 映射回明文 user_id。 该表是 `fact_ai_usage_log.user_id_hash` 与 `dim_user.user_id` 之间的桥接维度。 当前验证显示该表可作为正式桥接表使用。\n"
+    },
+    {
+      "id": "dim_user_profile",
+      "label": "dim_user_profile",
+      "type": "dimension",
+      "grain": "一行代表一个用户的一条 profile/device preference 记录。 user_id 不唯一，不能把该表当作一人一行的用户维表。 重复 user_id 多数是 device_os 不同，可能表示一人多设备。 也存在部分完全重复 profile 行。 当前缺少 updated_at / version / is_primary_device 字段，无法判断最新画像或主设备。",
+      "business_meaning": "用户 profile / device preference 记录表。 用于描述用户的语言偏好、时区、设备系统和客户端版本分布， 更适合做用户画像分层和设备偏好分析，而不是作为唯一用户维表。\n",
+      "field_count": 5,
+      "key_fields": [
+        "user_id"
+      ],
+      "warning_level": "high",
+      "title": "table: dim_user_profile\ntype: dimension\ngrain: 一行代表一个用户的一条 profile/device preference 记录。 user_id 不唯一，不能把该表当作一人一行的用户维表。 重复 user_id 多数是 device_os 不同，可能表示一人多设备。 也存在部分完全重复 profile 行。 当前缺少 updated_at / version / is_primary_device 字段，无法判断最新画像或主设备。\nfield_count: 5\nkey_fields: user_id\nwarning_level: high\nbusiness_meaning: 用户 profile / device preference 记录表。 用于描述用户的语言偏好、时区、设备系统和客户端版本分布， 更适合做用户画像分层和设备偏好分析，而不是作为唯一用户维表。\n"
+    },
+    {
+      "id": "dim_user_role_history",
+      "label": "dim_user_role_history",
+      "type": "dimension",
+      "grain": "数据字典说明粒度：一行 = 一次角色变更。 数据字典说明主键：无业务主键。",
+      "business_meaning": "角色变更流水。\n数据字典将该表归入“用户”域。\n数据字典行数说明为：~1.5 万。",
+      "field_count": 5,
+      "key_fields": [
+        "user_id"
+      ],
+      "warning_level": "low",
+      "title": "table: dim_user_role_history\ntype: dimension\ngrain: 数据字典说明粒度：一行 = 一次角色变更。 数据字典说明主键：无业务主键。\nfield_count: 5\nkey_fields: user_id\nwarning_level: low\nbusiness_meaning: 角色变更流水。\n数据字典将该表归入“用户”域。\n数据字典行数说明为：~1.5 万。"
+    },
+    {
+      "id": "fact_actual_revenue",
+      "label": "fact_actual_revenue",
+      "type": "fact",
+      "grain": "物理粒度：一行 = 一条 revenue_id 标识的收入记录。 业务分析时可以按 month、tenant_id + month、plan_tier + month、 tenant_id + sub_id + month 等维度聚合。 当前验证和人工复查显示，tenant_id + sub_id + month 存在 15 组重复。 这些重复组不是完全重复行，而是同一租户、同一订阅、同一月份下， discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同的多条收入明细。 因此订阅月份级收入必须先 GROUP BY tenant_id, sub_id, month 后 SUM(actual_revenue)， 不能只取单条记录。",
+      "business_meaning": "月度实收收入事实表，记录订阅在月份维度上的席位数、标价收入、 折扣率、优惠券扣减金额以及实际入账收入。 该表是分析“实收收入”“实际收入”“折扣后收入”“收入缺口”的核心事实表。 当前验证显示该表可用于 Agent 收入分析，但需要遵守两个规则： 第一，sub_id + month 不是严格唯一键；第二，actual_revenue 公式只适合作为近似解释， 不应重新计算 actual_revenue 替代表字段。\n",
+      "field_count": 11,
+      "key_fields": [
+        "revenue_id",
+        "tenant_id",
+        "sub_id",
+        "month",
+        "list_revenue",
+        "coupon_amount",
+        "actual_revenue"
+      ],
+      "warning_level": "high",
+      "title": "table: fact_actual_revenue\ntype: fact\ngrain: 物理粒度：一行 = 一条 revenue_id 标识的收入记录。 业务分析时可以按 month、tenant_id + month、plan_tier + month、 tenant_id + sub_id + month 等维度聚合。 当前验证和人工复查显示，tenant_id + sub_id + month 存在 15 组重复。 这些重复组不是完全重复行，而是同一租户、同一订阅、同一月份下， discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同的多条收入明细。 因此订阅月份级收入必须先 GROUP BY tenant_id, sub_id, month 后 SUM(actual_revenue)， 不能只取单条记录。\nfield_count: 11\nkey_fields: revenue_id, tenant_id, sub_id, month, list_revenue, coupon_amount, actual_revenue\nwarning_level: high\nbusiness_meaning: 月度实收收入事实表，记录订阅在月份维度上的席位数、标价收入、 折扣率、优惠券扣减金额以及实际入账收入。 该表是分析“实收收入”“实际收入”“折扣后收入”“收入缺口”的核心事实表。 当前验证显示该表可用于 Agent 收入分析，但需要遵守两个规则： 第一，sub_id + month 不是严格唯一键；第二，actual_revenue 公式只适合作为近似解释， 不应重新计算 actual_revenue 替代表字段。\n"
+    },
+    {
+      "id": "fact_ai_usage_log",
+      "label": "fact_ai_usage_log",
+      "type": "fact",
+      "grain": "一行 = 一次 AI credits 操作或 AI 使用日志。 log_id 唯一标识一条 AI 使用日志。 operation_type 表示本次 credits 是扣减、赠送还是退款。 当前验证显示 log_id 唯一，因此“一行 = 一次 AI 操作”的粒度成立。",
+      "business_meaning": "AI 调用日志事实表，记录用户发生的一次 AI credits 操作，例如扣减、赠送或退款。 该表是分析 AI 使用量、AI credits 消耗、不同模型使用情况、AI 使用用户画像 和租户级 AI 使用强度的核心事实表。 由于该表出于隐私考虑只存储 user_id_hash，不直接存储明文 user_id， 因此如需关联用户、租户、部门、角色等维度，必须通过 dim_user_id_mapping 做 ID 映射。\n",
+      "field_count": 7,
+      "key_fields": [
+        "log_id",
+        "user_id_hash",
+        "operation_type",
+        "credits_amount"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_ai_usage_log\ntype: fact\ngrain: 一行 = 一次 AI credits 操作或 AI 使用日志。 log_id 唯一标识一条 AI 使用日志。 operation_type 表示本次 credits 是扣减、赠送还是退款。 当前验证显示 log_id 唯一，因此“一行 = 一次 AI 操作”的粒度成立。\nfield_count: 7\nkey_fields: log_id, user_id_hash, operation_type, credits_amount\nwarning_level: low\nbusiness_meaning: AI 调用日志事实表，记录用户发生的一次 AI credits 操作，例如扣减、赠送或退款。 该表是分析 AI 使用量、AI credits 消耗、不同模型使用情况、AI 使用用户画像 和租户级 AI 使用强度的核心事实表。 由于该表出于隐私考虑只存储 user_id_hash，不直接存储明文 user_id， 因此如需关联用户、租户、部门、角色等维度，必须通过 dim_user_id_mapping 做 ID 映射。\n"
+    },
+    {
+      "id": "fact_campaign",
+      "label": "fact_campaign",
+      "type": "fact",
+      "grain": "数据字典说明主键：`campaign_id`。",
+      "business_meaning": "营销活动。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：30。",
+      "field_count": 7,
+      "key_fields": [
+        "campaign_id",
+        "start_date",
+        "end_date"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_campaign\ntype: fact\ngrain: 数据字典说明主键：`campaign_id`。\nfield_count: 7\nkey_fields: campaign_id, start_date, end_date\nwarning_level: low\nbusiness_meaning: 营销活动。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：30。"
+    },
+    {
+      "id": "fact_campaign_attribution",
+      "label": "fact_campaign_attribution",
+      "type": "fact",
+      "grain": "一行代表一次 campaign attribution / marketing touch 记录。 当前验证显示主键候选 user_id + campaign_id + touch_type + touch_at 唯一： row_count = 78414，distinct_primary_key_count = 78414，duplicate_primary_key_count = 0。 同一个 user_id 可以有多条 campaign touch。 同一个 campaign_id 可以对应多个 user_id 和多种 touch_type。 该表适合分析营销触点、转化触点、转化率、campaign 归因路径和用户转化行为。",
+      "business_meaning": "营销归因触点事实表，记录用户与营销活动之间的一次触点或归因记录。 该表适合分析营销触点、转化触点、转化率、campaign 归因路径和用户转化行为。 当前验证显示该表可作为正式营销归因分析事实表使用。\n",
+      "field_count": 5,
+      "key_fields": [
+        "user_id",
+        "campaign_id",
+        "touch_type"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_campaign_attribution\ntype: fact\ngrain: 一行代表一次 campaign attribution / marketing touch 记录。 当前验证显示主键候选 user_id + campaign_id + touch_type + touch_at 唯一： row_count = 78414，distinct_primary_key_count = 78414，duplicate_primary_key_count = 0。 同一个 user_id 可以有多条 campaign touch。 同一个 campaign_id 可以对应多个 user_id 和多种 touch_type。 该表适合分析营销触点、转化触点、转化率、campaign 归因路径和用户转化行为。\nfield_count: 5\nkey_fields: user_id, campaign_id, touch_type\nwarning_level: low\nbusiness_meaning: 营销归因触点事实表，记录用户与营销活动之间的一次触点或归因记录。 该表适合分析营销触点、转化触点、转化率、campaign 归因路径和用户转化行为。 当前验证显示该表可作为正式营销归因分析事实表使用。\n"
+    },
+    {
+      "id": "fact_credit_usage",
+      "label": "fact_credit_usage",
+      "type": "fact",
+      "grain": "一行代表一个 tenant 在某个 dt 对某类 resource_type 的资源用量或计费记录。 当前验证显示主键候选 usage_id 唯一：row_count = 64456， distinct_primary_key_count = 64456，duplicate_primary_key_count = 0。 同一个 tenant_id 可以在多个 dt、多个 resource_type 下出现。 该表适合分析资源消耗、信用额度使用、资源成本和租户级资源使用趋势。",
+      "business_meaning": "资源消耗与信用使用事实表，记录租户在某一天对某类资源的使用数量及其单位成本。 该表适合分析资源消耗、信用额度使用、资源成本和租户级资源使用趋势。 当前验证显示该表可作为正式资源消耗分析事实表使用。\n",
+      "field_count": 6,
+      "key_fields": [
+        "usage_id",
+        "tenant_id",
+        "resource_type",
+        "dt"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_credit_usage\ntype: fact\ngrain: 一行代表一个 tenant 在某个 dt 对某类 resource_type 的资源用量或计费记录。 当前验证显示主键候选 usage_id 唯一：row_count = 64456， distinct_primary_key_count = 64456，duplicate_primary_key_count = 0。 同一个 tenant_id 可以在多个 dt、多个 resource_type 下出现。 该表适合分析资源消耗、信用额度使用、资源成本和租户级资源使用趋势。\nfield_count: 6\nkey_fields: usage_id, tenant_id, resource_type, dt\nwarning_level: low\nbusiness_meaning: 资源消耗与信用使用事实表，记录租户在某一天对某类资源的使用数量及其单位成本。 该表适合分析资源消耗、信用额度使用、资源成本和租户级资源使用趋势。 当前验证显示该表可作为正式资源消耗分析事实表使用。\n"
+    },
+    {
+      "id": "fact_daily_usage",
+      "label": "fact_daily_usage",
+      "type": "fact",
+      "grain": "一行代表一个 user_id 在一个 dt 的日级使用汇总记录。 user_id + dt 已验证唯一，可以作为该表的业务自然键 / grain key。 该表没有单列物理主键；不要把 user_id 单独当主键。 同一个 user_id 可以在多个 dt 出现。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。",
+      "business_meaning": "用户日级使用汇总事实表，记录用户在某一天的 session 数、活跃时长和功能使用摘要。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。 当前验证显示该表可作为正式用户日活分析事实表使用。\n",
+      "field_count": 5,
+      "key_fields": [
+        "user_id",
+        "dt"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_daily_usage\ntype: fact\ngrain: 一行代表一个 user_id 在一个 dt 的日级使用汇总记录。 user_id + dt 已验证唯一，可以作为该表的业务自然键 / grain key。 该表没有单列物理主键；不要把 user_id 单独当主键。 同一个 user_id 可以在多个 dt 出现。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。\nfield_count: 5\nkey_fields: user_id, dt\nwarning_level: low\nbusiness_meaning: 用户日级使用汇总事实表，记录用户在某一天的 session 数、活跃时长和功能使用摘要。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。 当前验证显示该表可作为正式用户日活分析事实表使用。\n"
+    },
+    {
+      "id": "fact_doc_collaboration",
+      "label": "fact_doc_collaboration",
+      "type": "fact",
+      "grain": "一行代表一个用户对一个文档的一条协作明细记录。 doc_id + user_id 不唯一；同一用户可以在多天协作同一文档。 doc_id + user_id + dt 也不是严格唯一；人工检查发现仍有 33 组重复。 完全重复行不存在，因此重复不是整行脏重复，不应删除。 如果要分析文档-用户-日期级协作，应先 GROUP BY doc_id, user_id, dt，并 SUM(edit_duration_sec)、SUM(comment_count)。 如果要分析文档级协作，应按 doc_id 聚合。 如果要分析用户级协作，应按 user_id 聚合。",
+      "business_meaning": "文档协作明细事实表。 用于记录用户对文档的协作行为明细，可用于分析协作文档数、协作用户数、 编辑时长、评论数量以及协作时间趋势。\n",
+      "field_count": 5,
+      "key_fields": [
+        "doc_id",
+        "user_id",
+        "dt"
+      ],
+      "warning_level": "high",
+      "title": "table: fact_doc_collaboration\ntype: fact\ngrain: 一行代表一个用户对一个文档的一条协作明细记录。 doc_id + user_id 不唯一；同一用户可以在多天协作同一文档。 doc_id + user_id + dt 也不是严格唯一；人工检查发现仍有 33 组重复。 完全重复行不存在，因此重复不是整行脏重复，不应删除。 如果要分析文档-用户-日期级协作，应先 GROUP BY doc_id, user_id, dt，并 SUM(edit_duration_sec)、SUM(comment_count)。 如果要分析文档级协作，应按 doc_id 聚合。 如果要分析用户级协作，应按 user_id 聚合。\nfield_count: 5\nkey_fields: doc_id, user_id, dt\nwarning_level: high\nbusiness_meaning: 文档协作明细事实表。 用于记录用户对文档的协作行为明细，可用于分析协作文档数、协作用户数、 编辑时长、评论数量以及协作时间趋势。\n"
+    },
+    {
+      "id": "fact_document",
+      "label": "fact_document",
+      "type": "fact",
+      "grain": "数据字典说明粒度：一行 = 一个文档。 数据字典说明主键：`doc_id`。",
+      "business_meaning": "文档。\n数据字典将该表归入“协作与内容”域。\n数据字典行数说明为：80,000。",
+      "field_count": 7,
+      "key_fields": [
+        "doc_id",
+        "creator_id",
+        "tenant_id",
+        "doc_type"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_document\ntype: fact\ngrain: 数据字典说明粒度：一行 = 一个文档。 数据字典说明主键：`doc_id`。\nfield_count: 7\nkey_fields: doc_id, creator_id, tenant_id, doc_type\nwarning_level: low\nbusiness_meaning: 文档。\n数据字典将该表归入“协作与内容”域。\n数据字典行数说明为：80,000。"
+    },
+    {
+      "id": "fact_event_log",
+      "label": "fact_event_log",
+      "type": "fact",
+      "grain": "数据字典说明粒度：一行 = 一次用户行为事件。 数据字典说明主键：`event_id`。",
+      "business_meaning": "事件日志（埋点流水）。\n数据字典将该表归入“产品使用”域。\n数据字典行数说明为：~200 万（本数据集体量最大）。",
+      "field_count": 6,
+      "key_fields": [
+        "event_id",
+        "user_id"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_event_log\ntype: fact\ngrain: 数据字典说明粒度：一行 = 一次用户行为事件。 数据字典说明主键：`event_id`。\nfield_count: 6\nkey_fields: event_id, user_id\nwarning_level: low\nbusiness_meaning: 事件日志（埋点流水）。\n数据字典将该表归入“产品使用”域。\n数据字典行数说明为：~200 万（本数据集体量最大）。"
+    },
+    {
+      "id": "fact_experiment",
+      "label": "fact_experiment",
+      "type": "fact",
+      "grain": "数据字典说明主键：`exp_id`。",
+      "business_meaning": "AB 实验。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：50。",
+      "field_count": 6,
+      "key_fields": [
+        "exp_id",
+        "feature_key",
+        "start_date",
+        "end_date",
+        "status"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_experiment\ntype: fact\ngrain: 数据字典说明主键：`exp_id`。\nfield_count: 6\nkey_fields: exp_id, feature_key, start_date, end_date, status\nwarning_level: low\nbusiness_meaning: AB 实验。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：50。"
+    },
+    {
+      "id": "fact_experiment_assignment",
+      "label": "fact_experiment_assignment",
+      "type": "fact",
+      "grain": "数据字典说明粒度：一行 = 一个用户在一个实验中的分组。",
+      "business_meaning": "实验分流。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：~13.4 万。",
+      "field_count": 4,
+      "key_fields": [
+        "user_id",
+        "exp_id"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_experiment_assignment\ntype: fact\ngrain: 数据字典说明粒度：一行 = 一个用户在一个实验中的分组。\nfield_count: 4\nkey_fields: user_id, exp_id\nwarning_level: low\nbusiness_meaning: 实验分流。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：~13.4 万。"
+    },
+    {
+      "id": "fact_experiment_metric",
+      "label": "fact_experiment_metric",
+      "type": "fact",
+      "grain": "数据字典说明粒度：一行 = 一个实验的一个分组一个指标在某天的值。",
+      "business_meaning": "实验指标日度。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：~8k。",
+      "field_count": 8,
+      "key_fields": [
+        "exp_id",
+        "dt"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_experiment_metric\ntype: fact\ngrain: 数据字典说明粒度：一行 = 一个实验的一个分组一个指标在某天的值。\nfield_count: 8\nkey_fields: exp_id, dt\nwarning_level: low\nbusiness_meaning: 实验指标日度。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：~8k。"
+    },
+    {
+      "id": "fact_feature_usage",
+      "label": "fact_feature_usage",
+      "type": "fact",
+      "grain": "一行 = 一个 user_id 在某一天 dt 对一个 feature_key 的一条功能使用记录。 当前验证显示 user_id + feature_key + dt 在现有数据中唯一， row_count = 2700092，distinct_primary_key_count = 2700092， duplicate_primary_key_count = 0，因此该粒度成立。",
+      "business_meaning": "功能使用事实表，记录用户在某一天对某个产品功能的使用情况。 该表适合分析功能采用、功能活跃用户、功能操作次数和功能使用时长。 当前验证显示该表可作为正式的功能使用分析事实表使用。\n",
+      "field_count": 5,
+      "key_fields": [
+        "user_id",
+        "feature_key",
+        "dt"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_feature_usage\ntype: fact\ngrain: 一行 = 一个 user_id 在某一天 dt 对一个 feature_key 的一条功能使用记录。 当前验证显示 user_id + feature_key + dt 在现有数据中唯一， row_count = 2700092，distinct_primary_key_count = 2700092， duplicate_primary_key_count = 0，因此该粒度成立。\nfield_count: 5\nkey_fields: user_id, feature_key, dt\nwarning_level: low\nbusiness_meaning: 功能使用事实表，记录用户在某一天对某个产品功能的使用情况。 该表适合分析功能采用、功能活跃用户、功能操作次数和功能使用时长。 当前验证显示该表可作为正式的功能使用分析事实表使用。\n"
+    },
+    {
+      "id": "fact_invoice",
+      "label": "fact_invoice",
+      "type": "fact",
+      "grain": "数据字典说明粒度：一行 = 一张发票。 数据字典说明主键：`invoice_id`。",
+      "business_meaning": "发票。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：~1.2k。",
+      "field_count": 8,
+      "key_fields": [
+        "invoice_id",
+        "tenant_id",
+        "sub_id",
+        "amount",
+        "paid_at",
+        "status"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_invoice\ntype: fact\ngrain: 数据字典说明粒度：一行 = 一张发票。 数据字典说明主键：`invoice_id`。\nfield_count: 8\nkey_fields: invoice_id, tenant_id, sub_id, amount, paid_at, status\nwarning_level: low\nbusiness_meaning: 发票。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：~1.2k。"
+    },
+    {
+      "id": "fact_message",
+      "label": "fact_message",
+      "type": "fact",
+      "grain": "数据字典说明粒度：一行 = 一条消息。 数据字典说明主键：`msg_id`。",
+      "business_meaning": "消息。\n数据字典将该表归入“协作与内容”域。\n数据字典行数说明为：~31.5 万。",
+      "field_count": 6,
+      "key_fields": [
+        "msg_id",
+        "sender_id",
+        "channel_id",
+        "msg_type"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_message\ntype: fact\ngrain: 数据字典说明粒度：一行 = 一条消息。 数据字典说明主键：`msg_id`。\nfield_count: 6\nkey_fields: msg_id, sender_id, channel_id, msg_type\nwarning_level: low\nbusiness_meaning: 消息。\n数据字典将该表归入“协作与内容”域。\n数据字典行数说明为：~31.5 万。"
+    },
+    {
+      "id": "fact_nps_survey",
+      "label": "fact_nps_survey",
+      "type": "fact",
+      "grain": "一行 = 一条 NPS 问卷/反馈记录。 当前验证显示主键候选唯一：row_count = 8000，distinct_primary_key_count = 8000， duplicate_primary_key_count = 0，因此记录级粒度成立。 但 NPS 业务分析不等于直接统计所有记录；计算 NPS 时只能使用 is_completed = 1 且 score != 'N/A' 的完成问卷。",
+      "business_meaning": "NPS 问卷与反馈事实表，记录用户的问卷提交、评分、文本反馈、所属租户与套餐信息。 该表可用于 NPS、完成率、反馈文本分布以及不同租户、套餐、时间维度下的满意度分析。 当前验证显示该表可正式用于 Agent 分析，但存在 `plan_tier` 大小写归一化和未完成问卷过滤规则， 因此应视为 validated_with_warnings。\n",
+      "field_count": 9,
+      "key_fields": [
+        "survey_id",
+        "user_id",
+        "tenant_id",
+        "survey_date",
+        "plan_tier"
+      ],
+      "warning_level": "medium",
+      "title": "table: fact_nps_survey\ntype: fact\ngrain: 一行 = 一条 NPS 问卷/反馈记录。 当前验证显示主键候选唯一：row_count = 8000，distinct_primary_key_count = 8000， duplicate_primary_key_count = 0，因此记录级粒度成立。 但 NPS 业务分析不等于直接统计所有记录；计算 NPS 时只能使用 is_completed = 1 且 score != 'N/A' 的完成问卷。\nfield_count: 9\nkey_fields: survey_id, user_id, tenant_id, survey_date, plan_tier\nwarning_level: medium\nbusiness_meaning: NPS 问卷与反馈事实表，记录用户的问卷提交、评分、文本反馈、所属租户与套餐信息。 该表可用于 NPS、完成率、反馈文本分布以及不同租户、套餐、时间维度下的满意度分析。 当前验证显示该表可正式用于 Agent 分析，但存在 `plan_tier` 大小写归一化和未完成问卷过滤规则， 因此应视为 validated_with_warnings。\n"
+    },
+    {
+      "id": "fact_page_view",
+      "label": "fact_page_view",
+      "type": "fact",
+      "grain": "数据字典说明粒度：一行 = 一次页面访问。 数据字典说明主键：`pv_id`。",
+      "business_meaning": "页面浏览。\n数据字典将该表归入“产品使用”域。\n数据字典行数说明为：~180 万。",
+      "field_count": 6,
+      "key_fields": [
+        "pv_id",
+        "session_id",
+        "user_id"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_page_view\ntype: fact\ngrain: 数据字典说明粒度：一行 = 一次页面访问。 数据字典说明主键：`pv_id`。\nfield_count: 6\nkey_fields: pv_id, session_id, user_id\nwarning_level: low\nbusiness_meaning: 页面浏览。\n数据字典将该表归入“产品使用”域。\n数据字典行数说明为：~180 万。"
+    },
+    {
+      "id": "fact_payment",
+      "label": "fact_payment",
+      "type": "fact",
+      "grain": "数据字典说明粒度：一行 = 一次付款尝试。**一张发票可能对应多条付款记录**（尝试、部分支付、重试）。 数据字典说明主键：`payment_id`。",
+      "business_meaning": "付款流水。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：~1.6k。",
+      "field_count": 6,
+      "key_fields": [
+        "payment_id",
+        "invoice_id",
+        "amount",
+        "status",
+        "paid_at"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_payment\ntype: fact\ngrain: 数据字典说明粒度：一行 = 一次付款尝试。**一张发票可能对应多条付款记录**（尝试、部分支付、重试）。 数据字典说明主键：`payment_id`。\nfield_count: 6\nkey_fields: payment_id, invoice_id, amount, status, paid_at\nwarning_level: low\nbusiness_meaning: 付款流水。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：~1.6k。"
+    },
+    {
+      "id": "fact_session",
+      "label": "fact_session",
+      "type": "fact",
+      "grain": "一行代表一次用户 session。 当前验证显示主键候选 session_id 唯一：row_count = 1269417， distinct_primary_key_count = 1269417，duplicate_primary_key_count = 0。 同一个 user_id 可以有多条 session。 该表适合分析登录/访问会话数、活跃用户数、设备分布、国家分布和会话时长。",
+      "business_meaning": "用户会话事实表，记录用户一次从开始到结束的访问或登录会话。 该表适合分析登录/访问会话数、活跃用户数、设备分布、国家分布和会话时长。 当前验证显示该表可作为正式会话分析事实表使用。\n",
+      "field_count": 6,
+      "key_fields": [
+        "session_id",
+        "user_id",
+        "ip_country"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_session\ntype: fact\ngrain: 一行代表一次用户 session。 当前验证显示主键候选 session_id 唯一：row_count = 1269417， distinct_primary_key_count = 1269417，duplicate_primary_key_count = 0。 同一个 user_id 可以有多条 session。 该表适合分析登录/访问会话数、活跃用户数、设备分布、国家分布和会话时长。\nfield_count: 6\nkey_fields: session_id, user_id, ip_country\nwarning_level: low\nbusiness_meaning: 用户会话事实表，记录用户一次从开始到结束的访问或登录会话。 该表适合分析登录/访问会话数、活跃用户数、设备分布、国家分布和会话时长。 当前验证显示该表可作为正式会话分析事实表使用。\n"
+    },
+    {
+      "id": "fact_subscription",
+      "label": "fact_subscription",
+      "type": "fact",
+      "grain": "数据字典说明粒度：一行 = 一个订阅周期。 数据字典说明主键：`sub_id`。",
+      "business_meaning": "订阅。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：~340。",
+      "field_count": 7,
+      "key_fields": [
+        "sub_id",
+        "tenant_id",
+        "plan_tier",
+        "start_date",
+        "end_date",
+        "mrr",
+        "status"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_subscription\ntype: fact\ngrain: 数据字典说明粒度：一行 = 一个订阅周期。 数据字典说明主键：`sub_id`。\nfield_count: 7\nkey_fields: sub_id, tenant_id, plan_tier, start_date, end_date, mrr, status\nwarning_level: low\nbusiness_meaning: 订阅。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：~340。"
+    },
+    {
+      "id": "fact_tenant_metrics_snapshot",
+      "label": "fact_tenant_metrics_snapshot",
+      "type": "fact",
+      "grain": "一行代表一个 tenant 在一个 snapshot_date 的指标快照。 当前验证显示主键候选 tenant_id + snapshot_date 唯一： row_count = 141684，distinct_primary_key_count = 141684，duplicate_primary_key_count = 0。 该表是快照表，不是事件流水表。 同一个 tenant_id 可以在多个 snapshot_date 出现。 total_users、total_docs、total_revenue、total_messages 等字段是快照状态值，跨多个日期直接 SUM 会重复累计。 按日期分析时应关注每个 snapshot_date 的 tenant 覆盖数量。",
+      "business_meaning": "租户指标快照事实表，记录某个租户在某个快照日期的规模、内容、存储、收入、消息量和当日活跃用户等状态指标。 该表适合做租户总览、租户规模趋势、租户分层分析和租户日度状态监控。 当前验证显示该表可作为正式快照分析事实表使用。\n",
+      "field_count": 8,
+      "key_fields": [
+        "tenant_id",
+        "snapshot_date",
+        "total_revenue"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_tenant_metrics_snapshot\ntype: fact\ngrain: 一行代表一个 tenant 在一个 snapshot_date 的指标快照。 当前验证显示主键候选 tenant_id + snapshot_date 唯一： row_count = 141684，distinct_primary_key_count = 141684，duplicate_primary_key_count = 0。 该表是快照表，不是事件流水表。 同一个 tenant_id 可以在多个 snapshot_date 出现。 total_users、total_docs、total_revenue、total_messages 等字段是快照状态值，跨多个日期直接 SUM 会重复累计。 按日期分析时应关注每个 snapshot_date 的 tenant 覆盖数量。\nfield_count: 8\nkey_fields: tenant_id, snapshot_date, total_revenue\nwarning_level: low\nbusiness_meaning: 租户指标快照事实表，记录某个租户在某个快照日期的规模、内容、存储、收入、消息量和当日活跃用户等状态指标。 该表适合做租户总览、租户规模趋势、租户分层分析和租户日度状态监控。 当前验证显示该表可作为正式快照分析事实表使用。\n"
+    },
+    {
+      "id": "fact_ticket",
+      "label": "fact_ticket",
+      "type": "fact",
+      "grain": "一行代表一个客服/支持工单。 当前验证显示主键候选 ticket_id 唯一：row_count = 3922， distinct_primary_key_count = 3922，duplicate_primary_key_count = 0。 同一个 ticket_id 可以在 fact_ticket_reply 中对应多条回复。 该表适合分析工单数量、优先级、状态、类别、解决时长和租户支持负载。",
+      "business_meaning": "客服/支持工单事实表，记录工单的企业归属、提单用户、分类、优先级、状态、创建时间和解决时间。 该表适合分析工单数量、优先级、状态、类别、解决时长和租户支持负载。 当前验证显示该表可作为正式工单分析事实表使用。\n",
+      "field_count": 8,
+      "key_fields": [
+        "ticket_id",
+        "tenant_id",
+        "reporter_id",
+        "status"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_ticket\ntype: fact\ngrain: 一行代表一个客服/支持工单。 当前验证显示主键候选 ticket_id 唯一：row_count = 3922， distinct_primary_key_count = 3922，duplicate_primary_key_count = 0。 同一个 ticket_id 可以在 fact_ticket_reply 中对应多条回复。 该表适合分析工单数量、优先级、状态、类别、解决时长和租户支持负载。\nfield_count: 8\nkey_fields: ticket_id, tenant_id, reporter_id, status\nwarning_level: low\nbusiness_meaning: 客服/支持工单事实表，记录工单的企业归属、提单用户、分类、优先级、状态、创建时间和解决时间。 该表适合分析工单数量、优先级、状态、类别、解决时长和租户支持负载。 当前验证显示该表可作为正式工单分析事实表使用。\n"
+    },
+    {
+      "id": "fact_ticket_reply",
+      "label": "fact_ticket_reply",
+      "type": "fact",
+      "grain": "一行代表一条工单回复记录。 当前验证显示主键候选 reply_id 唯一：row_count = 21715， distinct_primary_key_count = 21715，duplicate_primary_key_count = 0。 同一个 ticket_id 可以对应多条回复。 该表适合分析工单回复量、回复者类型、回复时间趋势和回复内容长度。",
+      "business_meaning": "工单回复事实表，记录客服工单体系中的每一条回复记录。 该表适合分析工单回复量、回复者类型、回复时间趋势和回复内容长度。 当前验证显示该表可作为正式回复分析事实表使用。\n",
+      "field_count": 5,
+      "key_fields": [
+        "reply_id",
+        "ticket_id",
+        "author_type"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_ticket_reply\ntype: fact\ngrain: 一行代表一条工单回复记录。 当前验证显示主键候选 reply_id 唯一：row_count = 21715， distinct_primary_key_count = 21715，duplicate_primary_key_count = 0。 同一个 ticket_id 可以对应多条回复。 该表适合分析工单回复量、回复者类型、回复时间趋势和回复内容长度。\nfield_count: 5\nkey_fields: reply_id, ticket_id, author_type\nwarning_level: low\nbusiness_meaning: 工单回复事实表，记录客服工单体系中的每一条回复记录。 该表适合分析工单回复量、回复者类型、回复时间趋势和回复内容长度。 当前验证显示该表可作为正式回复分析事实表使用。\n"
+    },
+    {
+      "id": "fact_user_activation",
+      "label": "fact_user_activation",
+      "type": "fact",
+      "grain": "一行代表一个用户达成一个激活里程碑的记录。 当前验证显示主键候选 user_id + milestone_type + reached_at 唯一： row_count = 180072，distinct_primary_key_count = 180072，duplicate_primary_key_count = 0。 同一个 user_id 可以有多个 milestone_type。 该表适合分析用户激活路径、激活漏斗和激活时间趋势。",
+      "business_meaning": "用户激活里程碑事实表，记录用户何时达成某个关键激活动作。 该表适合分析用户激活路径、激活漏斗、不同里程碑的达成情况以及激活时间趋势。 当前验证显示该表可作为正式激活分析事实表使用。\n",
+      "field_count": 3,
+      "key_fields": [
+        "user_id",
+        "milestone_type"
+      ],
+      "warning_level": "low",
+      "title": "table: fact_user_activation\ntype: fact\ngrain: 一行代表一个用户达成一个激活里程碑的记录。 当前验证显示主键候选 user_id + milestone_type + reached_at 唯一： row_count = 180072，distinct_primary_key_count = 180072，duplicate_primary_key_count = 0。 同一个 user_id 可以有多个 milestone_type。 该表适合分析用户激活路径、激活漏斗和激活时间趋势。\nfield_count: 3\nkey_fields: user_id, milestone_type\nwarning_level: low\nbusiness_meaning: 用户激活里程碑事实表，记录用户何时达成某个关键激活动作。 该表适合分析用户激活路径、激活漏斗、不同里程碑的达成情况以及激活时间趋势。 当前验证显示该表可作为正式激活分析事实表使用。\n"
+    }
+  ],
+  "edges": [
+    {
+      "source": "dim_channel",
+      "target": "dim_tenant",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "dim_channel.tenant_id = dim_tenant.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 tenant_id 为所属企业。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "dim_department",
+      "target": "dim_tenant",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "dim_department.tenant_id = dim_tenant.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "一个企业可以有多个部门。 本次验证中 unmatched_department_count = 0。 如果 JOIN 后统计企业数，需要使用 COUNT(DISTINCT dim_tenant.tenant_id)。\n"
+    },
+    {
+      "source": "dim_department",
+      "target": "dim_user",
+      "label": "dept_id = dept_id",
+      "join_condition": "dim_department.dept_id = dim_user.dept_id",
+      "source_field": "dept_id",
+      "target_field": "dept_id",
+      "relationship": "one_to_many",
+      "risk_level": "low",
+      "note": "一个部门可以有多个用户。 本次验证中 dim_user.dept_id 无空值，且全部可以关联到 dim_department.dept_id。 为兼容未来数据版本，用户部门分析仍建议从 dim_user LEFT JOIN dim_department。\n"
+    },
+    {
+      "source": "dim_department",
+      "target": "dim_department",
+      "label": "parent_dept_id = dept_id",
+      "join_condition": "child_department.parent_dept_id = parent_department.dept_id",
+      "source_field": "parent_dept_id",
+      "target_field": "dept_id",
+      "relationship": "many_to_one_self_join",
+      "risk_level": "medium",
+      "note": "parent_dept_id 为空表示顶级部门。 本次验证中 parent_dept_id 空值率为 0.7613， 非空 parent_dept_id 均可关联到有效 dept_id。 自 JOIN 时建议使用别名，例如 child_department 和 parent_department。\n"
+    },
+    {
+      "source": "dim_feature",
+      "target": "fact_feature_usage",
+      "label": "feature_key = feature_key",
+      "join_condition": "dim_feature.feature_key = fact_feature_usage.feature_key",
+      "source_field": "feature_key",
+      "target_field": "feature_key",
+      "relationship": "one_to_many",
+      "risk_level": "low",
+      "note": "`fact_feature_usage.feature_key` 已验证能全部关联到 `dim_feature.feature_key`。\n"
+    },
+    {
+      "source": "dim_plan",
+      "target": "fact_subscription",
+      "label": "plan_tier = plan_tier",
+      "join_condition": "dim_plan.plan_tier = fact_subscription.plan_tier",
+      "source_field": "plan_tier",
+      "target_field": "plan_tier",
+      "relationship": "one_to_many",
+      "risk_level": "low",
+      "note": "数据字典 JOIN 参考显示 dim_plan 通过 tier 匹配关联订阅、实收收入和 NPS。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "dim_tenant",
+      "target": "dim_user",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "dim_tenant.tenant_id = dim_user.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "one_to_many",
+      "risk_level": "low",
+      "note": "dim_user 覆盖率验证通过，user_row_count = 50000， unmatched_user_tenant_count = 0。 JOIN 后如果统计企业数，应继续使用 COUNT(DISTINCT dim_tenant.tenant_id)。\n"
+    },
+    {
+      "source": "dim_tenant",
+      "target": "fact_subscription",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "dim_tenant.tenant_id = fact_subscription.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "one_to_many",
+      "risk_level": "low",
+      "note": "fact_subscription 覆盖率验证通过，subscription_row_count = 343， unmatched_subscription_tenant_count = 0。 JOIN 后如果统计企业数，不能直接 COUNT(*)。\n"
+    },
+    {
+      "source": "dim_tenant_config",
+      "target": "dim_tenant",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "dim_tenant_config.tenant_id = dim_tenant.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "tenant_id 外键覆盖率 100%，unmatched_count = 0。\n"
+    },
+    {
+      "source": "dim_tenant_config",
+      "target": "dim_feature",
+      "label": "feature_key = feature_key",
+      "join_condition": "dim_tenant_config.feature_key = dim_feature.feature_key",
+      "source_field": "feature_key",
+      "target_field": "feature_key",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "feature_key 外键覆盖率 100%，unmatched_count = 0。\n"
+    },
+    {
+      "source": "dim_tenant_config",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    },
+    {
+      "source": "dim_tenant_config",
+      "target": "dim_feature",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "feature_key",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    },
+    {
+      "source": "dim_tenant_plan",
+      "target": "dim_tenant",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "dim_tenant_plan.tenant_id = dim_tenant.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明明确 tenant_id 关联 dim_tenant.tenant_id。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "dim_tenant_plan",
+      "target": "dim_plan",
+      "label": "plan_tier = plan_tier",
+      "join_condition": "dim_tenant_plan.plan_tier = dim_plan.plan_tier",
+      "source_field": "plan_tier",
+      "target_field": "plan_tier",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 plan_tier 为套餐等级，可与 dim_plan 的套餐等级对照。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "dim_ticket_category",
+      "target": "dim_ticket_category",
+      "label": "parent_category_id = category_id",
+      "join_condition": "dim_ticket_category.parent_category_id = dim_ticket_category.category_id",
+      "source_field": "parent_category_id",
+      "target_field": "category_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 parent_category_id 表示上级分类。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "dim_user",
+      "target": "dim_tenant",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "dim_user.tenant_id = dim_tenant.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 tenant_id 为所属企业。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "dim_user",
+      "target": "dim_department",
+      "label": "dept_id = dept_id",
+      "join_condition": "dim_user.dept_id = dim_department.dept_id",
+      "source_field": "dept_id",
+      "target_field": "dept_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 dept_id 为所属部门（可为空）。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "dim_user_id_mapping",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "dim_user_id_mapping.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "user_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "dim_user_id_mapping",
+      "target": "dim_user",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "user_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    },
+    {
+      "source": "dim_user_id_mapping",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    },
+    {
+      "source": "dim_user_profile",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "dim_user_profile.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "user_id 外键覆盖率 100%，unmatched_count = 0。\n"
+    },
+    {
+      "source": "dim_user_profile",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "medium",
+      "note": "一个用户可能有多条 profile 记录。按租户统计用户数时应使用 COUNT(DISTINCT user_id)。\n"
+    },
+    {
+      "source": "dim_user_role_history",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "dim_user_role_history.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 user_id 为被变更用户。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_actual_revenue",
+      "target": "dim_tenant",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "fact_actual_revenue.tenant_id = dim_tenant.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "用于按国家、行业、规模、企业等维度分析实收收入。 当前验证中 unmatched_revenue_tenant_count = 0。 由于 fact_actual_revenue 是收入记录粒度，JOIN dim_tenant 后聚合收入通常是安全的。\n"
+    },
+    {
+      "source": "fact_actual_revenue",
+      "target": "fact_subscription",
+      "label": "sub_id = sub_id",
+      "join_condition": "fact_actual_revenue.sub_id = fact_subscription.sub_id",
+      "source_field": "sub_id",
+      "target_field": "sub_id",
+      "relationship": "many_to_one",
+      "risk_level": "medium",
+      "note": "当前验证中 unmatched_revenue_sub_count = 0。 JOIN fact_subscription 后按套餐聚合收入是常见用法。 但 sub_id + month 存在 15 组重复，按订阅月份分析时应显式聚合。 如果再 JOIN invoice 或 payment，需要额外注意一对多导致重复计算。\n"
+    },
+    {
+      "source": "fact_actual_revenue",
+      "target": "fact_invoice",
+      "label": "sub_id = sub_id",
+      "join_condition": "fact_actual_revenue.sub_id = fact_invoice.sub_id",
+      "source_field": "sub_id",
+      "target_field": "sub_id",
+      "relationship": "one_to_many_or_many_to_many_risk",
+      "risk_level": "high",
+      "note": "通常不建议直接用 fact_actual_revenue JOIN fact_invoice 后聚合金额。 fact_invoice 是发票粒度，fact_actual_revenue 是月度收入记录粒度， 直接 JOIN 可能造成金额重复或账期错位。 除非问题明确要求对比实收和发票，否则不要默认关联 invoice。\n"
+    },
+    {
+      "source": "fact_ai_usage_log",
+      "target": "dim_user_id_mapping",
+      "label": "user_id_hash = user_id_hash",
+      "join_condition": "fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash",
+      "source_field": "user_id_hash",
+      "target_field": "user_id_hash",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "fact_ai_usage_log 不包含明文 user_id。 如需关联 dim_user、dim_tenant 或其他用户行为表，必须先 JOIN dim_user_id_mapping。 当前验证显示 user_id_hash 映射覆盖率为 100%。\n"
+    },
+    {
+      "source": "fact_ai_usage_log",
+      "target": "dim_user",
+      "label": "user_id_hash = user_id",
+      "join_condition": "fact_ai_usage_log.user_id_hash = dim_user.user_id",
+      "source_field": "user_id_hash",
+      "target_field": "user_id",
+      "relationship": "invalid_direct_join",
+      "risk_level": "high",
+      "note": "这是错误 JOIN 路径。 user_id_hash 不是明文 user_id，不能直接关联 dim_user.user_id。 正确路径是先关联 dim_user_id_mapping。\n"
+    },
+    {
+      "source": "fact_ai_usage_log",
+      "target": "dim_user",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "user_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    },
+    {
+      "source": "fact_ai_usage_log",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    },
+    {
+      "source": "fact_ai_usage_log",
+      "target": "fact_daily_usage",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "user_id",
+      "relationship": "unknown",
+      "risk_level": "high",
+      "note": "需要将 created_at 转为日期后再与 fact_daily_usage.dt 对齐。 不能只按 user_id JOIN 后直接聚合，否则会产生跨日期重复。\n"
+    },
+    {
+      "source": "fact_campaign_attribution",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "fact_campaign_attribution.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "user_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_campaign_attribution",
+      "target": "fact_campaign",
+      "label": "campaign_id = campaign_id",
+      "join_condition": "fact_campaign_attribution.campaign_id = fact_campaign.campaign_id",
+      "source_field": "campaign_id",
+      "target_field": "campaign_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "campaign_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_campaign_attribution",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "medium",
+      "note": "同一个用户可能有多条营销触点；按租户统计用户数时应 COUNT(DISTINCT user_id)，统计触点数时才 COUNT(*) 或 COUNT(DISTINCT 主键)。\n"
+    },
+    {
+      "source": "fact_campaign_attribution",
+      "target": "fact_campaign",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "campaign_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    },
+    {
+      "source": "fact_credit_usage",
+      "target": "dim_tenant",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "fact_credit_usage.tenant_id = dim_tenant.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "tenant_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_credit_usage",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    },
+    {
+      "source": "fact_daily_usage",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "fact_daily_usage.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "user_id 外键覆盖率已验证通过，unmatched_daily_usage_user_count = 0。\n"
+    },
+    {
+      "source": "fact_daily_usage",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": "同一用户有多天记录。按租户统计用户数时应 COUNT(DISTINCT user_id)，统计用户日记录数时才 COUNT(*)。\n"
+    },
+    {
+      "source": "fact_daily_usage",
+      "target": "fact_ai_usage_log",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "user_id_hash",
+      "relationship": "unknown",
+      "risk_level": "high",
+      "note": "与 fact_ai_usage_log 关联时，必须先把 fact_ai_usage_log.created_at 转成日期，并按 user_id + 日期对齐。 不能只按 user_id JOIN，否则会造成多对多膨胀。\n"
+    },
+    {
+      "source": "fact_daily_usage",
+      "target": "fact_feature_usage",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "dt",
+      "relationship": "unknown",
+      "risk_level": "medium",
+      "note": "与 fact_feature_usage 关联时，应按 user_id + dt 对齐。 fact_feature_usage 可能一人一天多功能多记录，JOIN 后统计用户数要 COUNT(DISTINCT user_id)。\n"
+    },
+    {
+      "source": "fact_doc_collaboration",
+      "target": "fact_document",
+      "label": "doc_id = doc_id",
+      "join_condition": "fact_doc_collaboration.doc_id = fact_document.doc_id",
+      "source_field": "doc_id",
+      "target_field": "doc_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_doc_collaboration",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "fact_doc_collaboration.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_doc_collaboration",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "medium",
+      "note": "同一用户/文档/日期可能有多条协作记录。统计用户数或文档数时必须 COUNT(DISTINCT user_id/doc_id)，统计协作量时才聚合记录。\n"
+    },
+    {
+      "source": "fact_doc_collaboration",
+      "target": "fact_document",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "doc_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    },
+    {
+      "source": "fact_document",
+      "target": "dim_user",
+      "label": "owner_id = user_id",
+      "join_condition": "fact_document.owner_id = dim_user.user_id",
+      "source_field": "owner_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 owner_id 为文档所有者 user_id。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_event_log",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "fact_event_log.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 user_id 表示用户。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_experiment",
+      "target": "dim_feature",
+      "label": "feature_key = feature_key",
+      "join_condition": "fact_experiment.feature_key = dim_feature.feature_key",
+      "source_field": "feature_key",
+      "target_field": "feature_key",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 feature_key 关联功能。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_experiment_assignment",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "fact_experiment_assignment.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 user_id 表示用户。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_experiment_assignment",
+      "target": "fact_experiment",
+      "label": "exp_id = exp_id",
+      "join_condition": "fact_experiment_assignment.exp_id = fact_experiment.exp_id",
+      "source_field": "exp_id",
+      "target_field": "exp_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 exp_id 表示实验。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_experiment_metric",
+      "target": "fact_experiment",
+      "label": "exp_id = exp_id",
+      "join_condition": "fact_experiment_metric.exp_id = fact_experiment.exp_id",
+      "source_field": "exp_id",
+      "target_field": "exp_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 exp_id 表示实验。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_feature_usage",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "fact_feature_usage.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "user_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_feature_usage",
+      "target": "dim_feature",
+      "label": "feature_key = feature_key",
+      "join_condition": "fact_feature_usage.feature_key = dim_feature.feature_key",
+      "source_field": "feature_key",
+      "target_field": "feature_key",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "feature_key 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_feature_usage",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "medium",
+      "note": ""
+    },
+    {
+      "source": "fact_invoice",
+      "target": "fact_subscription",
+      "label": "sub_id = sub_id",
+      "join_condition": "fact_invoice.sub_id = fact_subscription.sub_id",
+      "source_field": "sub_id",
+      "target_field": "sub_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 sub_id 关联订阅。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_message",
+      "target": "dim_user",
+      "label": "sender_id = user_id",
+      "join_condition": "fact_message.sender_id = dim_user.user_id",
+      "source_field": "sender_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 sender_id 为发送者 user_id。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_message",
+      "target": "dim_channel",
+      "label": "channel_id = channel_id",
+      "join_condition": "fact_message.channel_id = dim_channel.channel_id",
+      "source_field": "channel_id",
+      "target_field": "channel_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 channel_id 为所在频道。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_nps_survey",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "fact_nps_survey.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "user_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_nps_survey",
+      "target": "dim_tenant",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "fact_nps_survey.tenant_id = dim_tenant.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "tenant_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_nps_survey",
+      "target": "dim_plan",
+      "label": "plan_tier = plan_tier",
+      "join_condition": "LOWER(fact_nps_survey.plan_tier) = LOWER(dim_plan.plan_tier)",
+      "source_field": "plan_tier",
+      "target_field": "plan_tier",
+      "relationship": "many_to_one",
+      "risk_level": "medium",
+      "note": "直接等值 JOIN 失败，plan_tier_direct_join_unmatched_count = 8000； 但 LOWER 归一化后全部匹配，plan_tier_lower_join_unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_nps_survey",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    },
+    {
+      "source": "fact_nps_survey",
+      "target": "dim_plan",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "plan_tier",
+      "relationship": "unknown",
+      "risk_level": "medium",
+      "note": ""
+    },
+    {
+      "source": "fact_page_view",
+      "target": "fact_session",
+      "label": "session_id = session_id",
+      "join_condition": "fact_page_view.session_id = fact_session.session_id",
+      "source_field": "session_id",
+      "target_field": "session_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明明确 session_id 关联会话。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_page_view",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "fact_page_view.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 user_id 表示用户。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_page_view",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "medium",
+      "note": ""
+    },
+    {
+      "source": "fact_payment",
+      "target": "fact_invoice",
+      "label": "invoice_id = invoice_id",
+      "join_condition": "fact_payment.invoice_id = fact_invoice.invoice_id",
+      "source_field": "invoice_id",
+      "target_field": "invoice_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 invoice_id 表示关联发票。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_session",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "fact_session.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "user_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_session",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": "同一用户可以有多条 session，按租户统计用户数时应 COUNT(DISTINCT user_id)，统计 session 数时才 COUNT(DISTINCT session_id)。\n"
+    },
+    {
+      "source": "fact_subscription",
+      "target": "dim_tenant",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "fact_subscription.tenant_id = dim_tenant.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "字段说明写明 tenant_id 表示企业。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_subscription",
+      "target": "dim_plan",
+      "label": "plan_tier = plan_tier",
+      "join_condition": "fact_subscription.plan_tier = dim_plan.plan_tier",
+      "source_field": "plan_tier",
+      "target_field": "plan_tier",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "数据字典 JOIN 参考显示 fact_subscription 通过 tier 匹配关联 dim_plan。\n当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。"
+    },
+    {
+      "source": "fact_tenant_metrics_snapshot",
+      "target": "dim_tenant",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "fact_tenant_metrics_snapshot.tenant_id = dim_tenant.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "tenant_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_tenant_metrics_snapshot",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    },
+    {
+      "source": "fact_ticket",
+      "target": "dim_tenant",
+      "label": "tenant_id = tenant_id",
+      "join_condition": "fact_ticket.tenant_id = dim_tenant.tenant_id",
+      "source_field": "tenant_id",
+      "target_field": "tenant_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "tenant_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_ticket",
+      "target": "dim_ticket_category",
+      "label": "category = category_id",
+      "join_condition": "fact_ticket.category = dim_ticket_category.category_id",
+      "source_field": "category",
+      "target_field": "category_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "category 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_ticket",
+      "target": "fact_ticket_reply",
+      "label": "ticket_id = ticket_id",
+      "join_condition": "fact_ticket.ticket_id = fact_ticket_reply.ticket_id",
+      "source_field": "ticket_id",
+      "target_field": "ticket_id",
+      "relationship": "one_to_many",
+      "risk_level": "medium",
+      "note": "一个 ticket 可以有多条 reply，JOIN 后统计工单数必须 COUNT(DISTINCT ticket_id)。\n"
+    },
+    {
+      "source": "fact_ticket_reply",
+      "target": "fact_ticket",
+      "label": "ticket_id = ticket_id",
+      "join_condition": "fact_ticket_reply.ticket_id = fact_ticket.ticket_id",
+      "source_field": "ticket_id",
+      "target_field": "ticket_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "ticket_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_ticket_reply",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "medium",
+      "note": "由于一个工单可以有多条回复，JOIN 后统计工单数时必须 COUNT(DISTINCT ticket_id)。\n"
+    },
+    {
+      "source": "fact_ticket_reply",
+      "target": "dim_user",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "user_id",
+      "relationship": "unknown",
+      "risk_level": "medium",
+      "note": "该路径用于分析不同用户或角色对应的工单回复情况，但不能把回复数误当作用户数。\n"
+    },
+    {
+      "source": "fact_user_activation",
+      "target": "dim_user",
+      "label": "user_id = user_id",
+      "join_condition": "fact_user_activation.user_id = dim_user.user_id",
+      "source_field": "user_id",
+      "target_field": "user_id",
+      "relationship": "many_to_one",
+      "risk_level": "low",
+      "note": "user_id 外键覆盖率已验证通过，unmatched_count = 0。\n"
+    },
+    {
+      "source": "fact_user_activation",
+      "target": "dim_tenant",
+      "label": "",
+      "join_condition": "",
+      "source_field": "",
+      "target_field": "tenant_id",
+      "relationship": "unknown",
+      "risk_level": "low",
+      "note": ""
+    }
+  ],
+  "summary": {
+    "node_count": 37,
+    "edge_count": 80,
+    "table_type_counts": {
+      "dimension": 13,
+      "fact": 24,
+      "mapping": 0,
+      "table": 0
+    },
+    "risk_level_counts": {
+      "low": 63,
+      "medium": 13,
+      "high": 4,
+      "unknown": 0
+    }
+  }
+}
