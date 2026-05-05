@@ -1,0 +1,2257 @@
+[
+  {
+    "table_name": "dim_channel",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`channel_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "channel_id",
+      "dim_channel",
+      "duckdb",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "dim_channel",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_channel",
+      "distinct",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_department",
+    "trap": "dept_name 不是唯一部门 ID。\n",
+    "consequence": "如果用 dept_name 统计唯一部门，会把不同企业下同名部门合并。\n",
+    "prevention": "统计部门实体时使用 dept_id。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "dept_id",
+      "dept_name",
+      "dim_department",
+      "id",
+      "企业",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_department",
+    "trap": "parent_dept_id 空值率较高。\n",
+    "consequence": "容易被误判为数据质量问题。\n",
+    "prevention": "将 parent_dept_id 为空解释为顶级部门。 本次验证中空值率为 0.7613，且非空 parent_dept_id 均可自关联到有效 dept_id。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "dept_id",
+      "dim_department",
+      "parent_dept_id"
+    ]
+  },
+  {
+    "table_name": "dim_department",
+    "trap": "dim_department JOIN dim_user 后直接 COUNT(*)。\n",
+    "consequence": "COUNT(*) 通常统计的是用户记录数，不是部门数。\n",
+    "prevention": "统计部门数使用 COUNT(DISTINCT dim_department.dept_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dept_id",
+      "dim_department",
+      "dim_user",
+      "distinct",
+      "join",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_department",
+    "trap": "使用 INNER JOIN 分析用户部门时可能降低未来数据版本的鲁棒性。\n",
+    "consequence": "当前验证中 dim_user.dept_id 无空值且全部可关联 dim_department。 但未来数据版本若出现空值或无法匹配，INNER JOIN 会丢失用户。\n",
+    "prevention": "默认从 dim_user LEFT JOIN dim_department， 并在报告中说明当前数据版本 join coverage 为 100%。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "coverage",
+      "dept_id",
+      "dim_department",
+      "dim_user",
+      "inner",
+      "join",
+      "left",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_feature",
+    "trap": "使用 feature_name 作为 JOIN key。\n",
+    "consequence": "feature_name 是展示名称，可能变更或存在大小写、命名差异。\n",
+    "prevention": "JOIN 功能使用 feature_key。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "dim_feature",
+      "feature_key",
+      "feature_name",
+      "join",
+      "key",
+      "使用",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "dim_feature",
+    "trap": "JOIN fact_feature_usage 后直接 COUNT(*) 当作功能数。\n",
+    "consequence": "COUNT(*) 会变成功能使用记录数，不是功能数量。\n",
+    "prevention": "统计功能数使用 COUNT(DISTINCT feature_key)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_feature",
+      "distinct",
+      "fact_feature_usage",
+      "feature_key",
+      "join",
+      "使用",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "dim_feature",
+    "trap": "将 module 或 category 当作唯一功能标识。\n",
+    "consequence": "module/category 是分组维度，不是功能主键。\n",
+    "prevention": "唯一功能标识使用 feature_key。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "category",
+      "dim_feature",
+      "feature_key",
+      "module",
+      "使用",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "dim_org_structure",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`node_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "dim_org_structure",
+      "duckdb",
+      "node_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "dim_org_structure",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_org_structure",
+      "distinct",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_plan",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`plan_tier`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "dim_plan",
+      "duckdb",
+      "plan_tier",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "dim_plan",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_plan",
+      "distinct",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_tenant",
+    "trap": "统计企业数时在 JOIN fact 表后直接使用 COUNT(*)。\n",
+    "consequence": "JOIN 用户表或订阅表后，COUNT(*) 会变成用户数或订阅数，而不是企业数。\n",
+    "prevention": "统计企业实体时始终使用 COUNT(DISTINCT tenant_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_tenant",
+      "distinct",
+      "fact",
+      "join",
+      "tenant_id",
+      "企业",
+      "使用",
+      "用户",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "dim_tenant",
+    "trap": "将 name 当作主键或稳定 JOIN 键。\n",
+    "consequence": "虽然当前样本中 name 唯一，但它不是正式主键，不应替代 tenant_id。\n",
+    "prevention": "所有唯一标识和稳定 JOIN 都优先使用 tenant_id，不要用 name JOIN。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "dim_tenant",
+      "join",
+      "name",
+      "tenant_id",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_tenant",
+    "trap": "JOIN 用户表或订阅表后继续把 COUNT(*) 解释为企业数量。\n",
+    "consequence": "会把一对多关系放大的记录数误当成企业实体数。\n",
+    "prevention": "在 dim_user 或 fact_subscription 等下游表 JOIN 后，仍用 COUNT(DISTINCT dim_tenant.tenant_id) 统计企业数。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_tenant",
+      "dim_user",
+      "distinct",
+      "fact_subscription",
+      "join",
+      "tenant_id",
+      "企业",
+      "用户",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "trap": "不要把 config_json 为空当成严重数据质量错误。\n",
+    "consequence": "会误判大量合法的默认配置或无额外配置记录。\n",
+    "prevention": "config_json 为空通常表示默认配置或无额外配置；仅把非空值作为可解析配置处理。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "config_json",
+      "dim_tenant_config"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "trap": "只有 config_json 非空时才解析 JSON。\n",
+    "consequence": "对空值统一按 JSON 解析会引入无意义异常或错误逻辑。\n",
+    "prevention": "先过滤 config_json IS NOT NULL 且非空，再进行 JSON 解析。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "config_json",
+      "dim_tenant_config",
+      "is",
+      "json",
+      "not",
+      "null"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "trap": "把 enabled 当作普通连续数值。\n",
+    "consequence": "enabled 是 0/1 开关字段，不适合按连续指标口径解释。\n",
+    "prevention": "将 enabled 作为 binary flag 使用；SUM(enabled) 表示启用数量，AVG(enabled) 表示启用率。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "avg",
+      "binary",
+      "dim_tenant_config",
+      "enabled",
+      "flag",
+      "sum",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "trap": "统计企业数时直接使用 COUNT(*)。\n",
+    "consequence": "COUNT(*) 是配置记录数，不是企业数。\n",
+    "prevention": "统计企业数使用 COUNT(DISTINCT tenant_id)，统计功能数使用 COUNT(DISTINCT feature_key)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_tenant_config",
+      "distinct",
+      "feature_key",
+      "tenant_id",
+      "企业",
+      "使用",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "trap": "JOIN fact_feature_usage 后直接 COUNT(*) 当作配置数量。\n",
+    "consequence": "一条配置可能关联多条功能使用记录，JOIN 后会放大配置行数。\n",
+    "prevention": "JOIN 后统计配置数量应回到 tenant_id + feature_key 粒度，或使用 COUNT(DISTINCT tenant_id || '|' || feature_key)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_tenant_config",
+      "distinct",
+      "fact_feature_usage",
+      "feature_key",
+      "join",
+      "tenant_id",
+      "使用",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_plan",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`tenant_id` + `effective_from`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "dim_tenant_plan",
+      "duckdb",
+      "effective_from",
+      "tenant_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_plan",
+    "trap": "忽略数据字典中对空字符串、N/A 或混合类型的特别说明。",
+    "consequence": "可能把“当前仍有效”“未完成调研”或“缺失值”误当成普通值。",
+    "prevention": "先按数据字典说明理解异常取值语义，再用验证脚本检查实际分布。",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "a",
+      "dim_tenant_plan",
+      "n",
+      "分布"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_plan",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_tenant_plan",
+      "distinct",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_ticket_category",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`category_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "category_id",
+      "dim_ticket_category",
+      "duckdb",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "dim_ticket_category",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_ticket_category",
+      "distinct",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_user",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`user_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "dim_user",
+      "duckdb",
+      "user_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "dim_user",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_user",
+      "distinct",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_user_id_mapping",
+    "trap": "直接将 fact_ai_usage_log.user_id_hash 与 dim_user.user_id JOIN。\n",
+    "consequence": "user_id_hash 是哈希 ID，不等于明文 user_id，直接 JOIN 会导致错误匹配或匹配失败。\n",
+    "prevention": "必须先通过 dim_user_id_mapping.user_id_hash 映射到 dim_user_id_mapping.user_id， 再 JOIN dim_user.user_id。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "dim_user",
+      "dim_user_id_mapping",
+      "fact_ai_usage_log",
+      "id",
+      "join",
+      "user_id",
+      "user_id_hash"
+    ]
+  },
+  {
+    "table_name": "dim_user_id_mapping",
+    "trap": "JOIN 到用户行为事实表后直接 COUNT(*) 当作用户数。\n",
+    "consequence": "COUNT(*) 会变成行为记录数或映射记录数，不是用户数。\n",
+    "prevention": "统计用户数时使用 COUNT(DISTINCT user_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_user_id_mapping",
+      "distinct",
+      "join",
+      "user_id",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "trap": "不要把 dim_user_profile 当作一人一行的用户维表。\n",
+    "consequence": "会把多 profile / 多设备用户误当成唯一用户画像，导致维度解释错误。\n",
+    "prevention": "先确认分析目标是 profile 记录还是用户实体；用户数使用 COUNT(DISTINCT user_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_user_profile",
+      "distinct",
+      "profile",
+      "user_id",
+      "使用",
+      "用户",
+      "设备"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "trap": "JOIN dim_user_profile 后直接用 COUNT(*) 当用户数。\n",
+    "consequence": "COUNT(*) 是 profile 记录数，不是用户数。\n",
+    "prevention": "统计用户数必须 COUNT(DISTINCT user_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_user_profile",
+      "distinct",
+      "join",
+      "profile",
+      "user_id",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "trap": "按 device_os 分析时假设一个用户只会出现在一个 device_os 组中。\n",
+    "consequence": "多设备用户会同时出现在多个 device_os 组，分组用户数不能简单相加解释为总用户数。\n",
+    "prevention": "明确 device_os 口径是“在该设备系统上出现过的用户数”。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "device_os",
+      "dim_user_profile",
+      "用户",
+      "设备"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "trap": "如果需要一人一条画像，直接默认取一条记录。\n",
+    "consequence": "当前没有 updated_at 或 is_primary_device，任意选取会导致口径不稳定。\n",
+    "prevention": "必须先定义去重策略；当前不能默认取最新或主设备。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "dim_user_profile",
+      "is_primary_device",
+      "updated_at",
+      "设备"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "trap": "随机使用 ANY_VALUE(device_os) 当用户主设备。\n",
+    "consequence": "会构造出不稳定且不可解释的主设备标签。\n",
+    "prevention": "除非用户明确接受这种近似，否则不要用 ANY_VALUE(device_os) 代表主设备。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "any_value",
+      "device_os",
+      "dim_user_profile",
+      "使用",
+      "用户",
+      "设备"
+    ]
+  },
+  {
+    "table_name": "dim_user_role_history",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“无业务主键”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "dim_user_role_history",
+      "duckdb",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "dim_user_role_history",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_user_role_history",
+      "distinct",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "trap": "将 actual_revenue 与 MRR 混用。\n",
+    "consequence": "MRR 是 fact_subscription.mrr 的确认收入口径， actual_revenue 是扣除折扣和优惠券后的实际入账收入。 二者不能直接互相替代。\n",
+    "prevention": "问 MRR 时使用 fact_subscription.mrr； 问实收、实际入账、折扣后收入时使用 fact_actual_revenue.actual_revenue。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "actual_revenue",
+      "fact_actual_revenue",
+      "fact_subscription",
+      "mrr",
+      "使用",
+      "实收",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "trap": "将 actual_revenue 与 invoice amount 混用。\n",
+    "consequence": "fact_invoice.amount 是发票金额，可能存在未支付、作废、逾期等状态。 actual_revenue 是月度实收收入口径。\n",
+    "prevention": "问开票金额时使用 fact_invoice.amount； 问实际收入时使用 fact_actual_revenue.actual_revenue。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "actual_revenue",
+      "amount",
+      "fact_actual_revenue",
+      "fact_invoice",
+      "invoice",
+      "使用",
+      "发票",
+      "实收",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "trap": "将 tenant_id + sub_id + month 当作严格唯一键。\n",
+    "consequence": "当前验证发现 tenant_id + sub_id + month 存在 15 组重复。 如果 Agent 只取其中一条记录，会低估该订阅月份的收入。\n",
+    "prevention": "使用 revenue_id 作为物理主键。 如果需要订阅月份级收入，应 GROUP BY tenant_id, sub_id, month， 并 SUM(actual_revenue)、SUM(list_revenue)、SUM(list_revenue - actual_revenue)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "actual_revenue",
+      "agent",
+      "by",
+      "fact_actual_revenue",
+      "group",
+      "group by",
+      "list_revenue",
+      "month",
+      "revenue_id",
+      "sub_id",
+      "sum",
+      "tenant_id",
+      "使用",
+      "收入",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "trap": "把重复的 tenant_id + sub_id + month 当作脏数据删除。\n",
+    "consequence": "人工复查显示这些记录不是完全重复行。 它们通常 discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同。 删除会丢失真实收入明细。\n",
+    "prevention": "不删除这些记录。 收入分析时聚合 revenue_id 级收入记录。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "actual_revenue",
+      "coupon_amount",
+      "discount_rate",
+      "fact_actual_revenue",
+      "month",
+      "revenue_id",
+      "sub_id",
+      "tenant_id",
+      "实收",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "trap": "强假设 actual_revenue = list_revenue * (1 - discount_rate) - coupon_amount 完全精确。\n",
+    "consequence": "当前验证发现 954 条记录公式偏差超过 0.05。 但人工复查显示平均相对偏差约为 0.00003，属于极小偏差。 若 Agent 重新计算 actual_revenue，可能和表中实际字段不一致。\n",
+    "prevention": "分析实际收入时直接使用 actual_revenue 字段。 公式只作为近似解释，不作为强校验或替代字段。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "actual_revenue",
+      "agent",
+      "coupon_amount",
+      "discount_rate",
+      "fact_actual_revenue",
+      "list_revenue",
+      "使用",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "trap": "直接 JOIN fact_invoice 或 fact_payment 后聚合收入。\n",
+    "consequence": "invoice 和 payment 粒度与 actual_revenue 不同， 可能造成重复计算或账期错位。\n",
+    "prevention": "除非问题明确要求发票或付款对比，否则收入分析优先只使用 fact_actual_revenue， 或先对 invoice/payment 预聚合后再 JOIN。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "actual_revenue",
+      "fact_actual_revenue",
+      "fact_invoice",
+      "fact_payment",
+      "invoice",
+      "join",
+      "payment",
+      "付款",
+      "使用",
+      "发票",
+      "对比",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "trap": "忽略 month 是字符串。\n",
+    "consequence": "如果使用日期函数时未正确转换，可能导致 SQL 报错。\n",
+    "prevention": "月度趋势可直接 GROUP BY month； 若需要日期运算，再考虑将 month || '-01' 转换为 DATE。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "by",
+      "date",
+      "fact_actual_revenue",
+      "group",
+      "group by",
+      "month",
+      "sql",
+      "使用",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "trap": "按套餐分析时忘记 JOIN fact_subscription。\n",
+    "consequence": "fact_actual_revenue 本身没有 plan_tier 字段，无法直接按套餐聚合。\n",
+    "prevention": "通过 fact_actual_revenue.sub_id = fact_subscription.sub_id 获取 plan_tier。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "fact_actual_revenue",
+      "fact_subscription",
+      "join",
+      "plan_tier",
+      "sub_id",
+      "套餐"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "trap": "直接将 user_id_hash 与 dim_user.user_id JOIN。\n",
+    "consequence": "user_id_hash 是哈希后的用户 ID，不等于明文 user_id。 直接 JOIN 会导致匹配失败或错误结果。\n",
+    "prevention": "必须先 JOIN dim_user_id_mapping，再关联 dim_user。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "dim_user",
+      "dim_user_id_mapping",
+      "fact_ai_usage_log",
+      "id",
+      "join",
+      "user_id",
+      "user_id_hash",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "trap": "忘记过滤 operation_type。\n",
+    "consequence": "deduct、earn、refund 混在一起会导致 credits_amount 含义不清。\n",
+    "prevention": "分析 AI 使用/消耗时过滤 operation_type = 'deduct'。 分析 credits 流水时用 CASE 表达不同操作的正负方向。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "ai",
+      "case",
+      "credit",
+      "credits",
+      "credits_amount",
+      "deduct",
+      "earn",
+      "fact_ai_usage_log",
+      "operation_type",
+      "refund",
+      "使用",
+      "消耗"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "trap": "把 deduct、earn、refund 都当作消耗。\n",
+    "consequence": "会高估 AI 使用消耗。\n",
+    "prevention": "只有 deduct 代表 AI credits 消耗。 earn/refund 是 credits 增加或返还，不应计入消耗。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "ai",
+      "credit",
+      "credits",
+      "deduct",
+      "earn",
+      "fact_ai_usage_log",
+      "refund",
+      "使用",
+      "消耗"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "trap": "把 created_at 当作普通时间戳。\n",
+    "consequence": "created_at 是 Unix epoch 秒字符串，直接 DATE_TRUNC 可能报错或结果错误。\n",
+    "prevention": "使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换后再做日期或月份分析。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "ai",
+      "as",
+      "bigint",
+      "cast",
+      "created_at",
+      "date_trunc",
+      "epoch",
+      "fact_ai_usage_log",
+      "to_timestamp",
+      "unix",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "trap": "将 2026-04 当作完整月份参与趋势比较。\n",
+    "consequence": "当前数据中 2026-04 只有少量边界数据，直接与完整月份比较会低估该月 AI 使用。\n",
+    "prevention": "完整月度趋势优先使用 2025-04 到 2026-03。 如果展示 2026-04，必须注明它是截断月份。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "ai",
+      "fact_ai_usage_log",
+      "使用",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "trap": "和 fact_daily_usage 直接按 user_id JOIN，不加日期条件。\n",
+    "consequence": "会产生用户级多对多膨胀，导致 AI 使用与日活指标重复计算。\n",
+    "prevention": "先将 AI 日志 created_at 转为日期，再与 fact_daily_usage.dt 对齐。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "created_at",
+      "dt",
+      "fact_ai_usage_log",
+      "fact_daily_usage",
+      "join",
+      "user_id",
+      "使用",
+      "日活",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "trap": "默认解析 remark 中的 cost 或 token。\n",
+    "consequence": "remark 虽然是 JSON，但 cost/token 信息嵌在 cause 文本中。 默认解析可能增加复杂度并引入不稳定规则。\n",
+    "prevention": "第一版默认使用 credits_amount。 只有用户明确询问 token、cost、session_id 时，再解析 remark。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "ai",
+      "cause",
+      "cost",
+      "credit",
+      "credits",
+      "credits_amount",
+      "fact_ai_usage_log",
+      "json",
+      "remark",
+      "session_id",
+      "token",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_campaign",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`campaign_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "campaign_id",
+      "duckdb",
+      "fact_campaign",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_campaign",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "count",
+      "distinct",
+      "fact_campaign",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "trap": "直接 COUNT(*) 当作用户数或 campaign 数。\n",
+    "consequence": "COUNT(*) 是营销触点记录数，不是用户数，也不是 campaign 数。\n",
+    "prevention": "统计用户数使用 COUNT(DISTINCT user_id)，统计 campaign 数使用 COUNT(DISTINCT campaign_id)，统计触点数才使用 COUNT(*) 或 COUNT(DISTINCT 主键)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "campaign",
+      "campaign_id",
+      "count",
+      "distinct",
+      "fact_campaign_attribution",
+      "user_id",
+      "使用",
+      "用户",
+      "营销"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "trap": "把 touch_type 当作数值指标。\n",
+    "consequence": "touch_type 是 click / impression / signup / demo_request 等枚举，不能 SUM 或 AVG。\n",
+    "prevention": "touch_type 只能作为分组或筛选维度。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "ai",
+      "avg",
+      "click",
+      "demo_request",
+      "fact_campaign_attribution",
+      "impression",
+      "signup",
+      "sum",
+      "touch_type"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "trap": "把 is_converted = 0 当作异常。\n",
+    "consequence": "is_converted = 0 是未转化触点，属于正常记录。\n",
+    "prevention": "保留 0 值；转化数使用 SUM(is_converted)，转化率使用 AVG(is_converted) 或 SUM(is_converted) / COUNT(*)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "avg",
+      "count",
+      "fact_campaign_attribution",
+      "is_converted",
+      "sum",
+      "使用",
+      "转化"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "trap": "JOIN dim_user 或 dim_tenant 后直接 COUNT(*) 当作用户数或企业数。\n",
+    "consequence": "同一个用户或企业可能有多条 attribution 记录，COUNT(*) 会放大。\n",
+    "prevention": "用户数使用 COUNT(DISTINCT user_id)，企业数通过 JOIN dim_user 后使用 COUNT(DISTINCT tenant_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "attribution",
+      "count",
+      "dim_tenant",
+      "dim_user",
+      "distinct",
+      "fact_campaign_attribution",
+      "join",
+      "tenant_id",
+      "user_id",
+      "企业",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "trap": "把 2026-04 当作完整月份参与月度趋势比较。\n",
+    "consequence": "当前最大 touch_at 为 2026-04-20，可能不是完整月份，月度趋势可能低估。\n",
+    "prevention": "完整月度趋势优先使用 2025-04 到 2026-03；如展示 2026-04，需注明可能不完整。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "ai",
+      "fact_campaign_attribution",
+      "touch_at",
+      "使用",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "trap": "直接 SUM(quantity) 并解释为总资源使用量。\n",
+    "consequence": "quantity 的单位取决于 resource_type。storage_gb、ai_token、video_minutes、api_calls 是不同单位，直接混合求和没有统一业务含义。\n",
+    "prevention": "按 resource_type 分组统计 quantity，或先计算 quantity * unit_cost 得到成本后再汇总。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "ai",
+      "ai_token",
+      "api_calls",
+      "credit",
+      "fact_credit_usage",
+      "quantity",
+      "resource_type",
+      "storage_gb",
+      "sum",
+      "token",
+      "unit_cost",
+      "video_minutes",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "trap": "把 resource_type 当作数值指标。\n",
+    "consequence": "resource_type 是资源类型枚举，不能 SUM 或 AVG。\n",
+    "prevention": "resource_type 只能作为分组或筛选维度。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "avg",
+      "credit",
+      "fact_credit_usage",
+      "resource_type",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "trap": "忽略 unit_cost 直接比较不同 resource_type 的 quantity。\n",
+    "consequence": "不同资源单位不可比，可能导致错误判断哪个资源消耗更高。\n",
+    "prevention": "如果要比较总体资源消耗价值，使用 SUM(quantity * unit_cost) 计算成本。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "credit",
+      "fact_credit_usage",
+      "quantity",
+      "resource_type",
+      "sum",
+      "unit_cost",
+      "使用",
+      "消耗"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "trap": "JOIN dim_tenant 后直接 COUNT(*) 当作企业数。\n",
+    "consequence": "COUNT(*) 是资源使用记录数，不是企业数。\n",
+    "prevention": "统计企业数使用 COUNT(DISTINCT tenant_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "credit",
+      "dim_tenant",
+      "distinct",
+      "fact_credit_usage",
+      "join",
+      "tenant_id",
+      "企业",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "trap": "把 dt 忽略后直接汇总长期记录。\n",
+    "consequence": "会丢失时间趋势，也可能把长期资源使用混成一个总量。\n",
+    "prevention": "趋势分析应按 dt 或月份聚合；总量分析需明确时间范围。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "credit",
+      "dt",
+      "fact_credit_usage",
+      "使用",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "trap": "直接 COUNT(*) 当作用户数。\n",
+    "consequence": "COUNT(*) 是用户日记录数，不是用户数。\n",
+    "prevention": "统计 DAU 或用户数使用 COUNT(DISTINCT user_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "count",
+      "dau",
+      "distinct",
+      "fact_daily_usage",
+      "user_id",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "trap": "把 user_id 单独当作主键。\n",
+    "consequence": "同一个 user_id 可以出现在多个 dt，单独 user_id 不唯一。\n",
+    "prevention": "该表业务自然键是 user_id + dt。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "dt",
+      "fact_daily_usage",
+      "user_id"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "trap": "和 fact_ai_usage_log 只按 user_id JOIN。\n",
+    "consequence": "AI 日志是多条操作记录，daily_usage 是用户日级记录，只按 user_id JOIN 会产生跨日期多对多膨胀。\n",
+    "prevention": "先将 fact_ai_usage_log.created_at 转为日期，再按 user_id + 日期对齐。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "created_at",
+      "daily_usage",
+      "fact_ai_usage_log",
+      "fact_daily_usage",
+      "join",
+      "user_id",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "trap": "和 fact_feature_usage 只按 user_id JOIN。\n",
+    "consequence": "fact_feature_usage 可能一人一天多个 feature_key，直接按 user_id JOIN 会重复放大。\n",
+    "prevention": "至少按 user_id + dt 对齐，并根据问题使用 COUNT(DISTINCT user_id)、SUM(action_count)、SUM(duration_sec)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "action_count",
+      "ai",
+      "count",
+      "distinct",
+      "dt",
+      "duration_sec",
+      "fact_daily_usage",
+      "fact_feature_usage",
+      "feature_key",
+      "join",
+      "sum",
+      "user_id",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "trap": "默认解析 feature_usage_json。\n",
+    "consequence": "JSON 字段虽然可解析，但比结构化 fact_feature_usage 更复杂，容易产生不稳定逻辑。\n",
+    "prevention": "第一版默认使用 session_count、active_duration_sec 和结构化功能表。 只有用户明确询问 JSON 内部功能明细时再解析 feature_usage_json。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "active_duration_sec",
+      "ai",
+      "fact_daily_usage",
+      "fact_feature_usage",
+      "feature_usage_json",
+      "json",
+      "session_count",
+      "使用",
+      "功能",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "trap": "把 active_duration_sec 当作分钟或小时。\n",
+    "consequence": "active_duration_sec 单位是秒，直接解释为分钟或小时会出错。\n",
+    "prevention": "需要分钟时除以 60，需要小时时除以 3600。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "active_duration_sec",
+      "ai",
+      "fact_daily_usage"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "trap": "把 doc_id + user_id 当作唯一粒度。\n",
+    "consequence": "同一用户可以在多天协作同一文档，doc_id + user_id 存在重复。\n",
+    "prevention": "如果需要文档-用户级分析，应 GROUP BY doc_id, user_id，并聚合 SUM(edit_duration_sec)、SUM(comment_count)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "by",
+      "comment_count",
+      "doc_id",
+      "edit_duration_sec",
+      "fact_doc_collaboration",
+      "group",
+      "group by",
+      "sum",
+      "user_id",
+      "协作",
+      "文档",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "trap": "把 doc_id + user_id + dt 当作严格唯一粒度。\n",
+    "consequence": "人工检查发现 doc_id + user_id + dt 仍有 33 组重复。 如果只取一条记录，会低估协作时长和评论数。\n",
+    "prevention": "文档-用户-日期级分析必须 GROUP BY doc_id, user_id, dt， 并 SUM(edit_duration_sec)、SUM(comment_count)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "by",
+      "comment_count",
+      "doc_id",
+      "dt",
+      "edit_duration_sec",
+      "fact_doc_collaboration",
+      "group",
+      "group by",
+      "sum",
+      "user_id",
+      "协作",
+      "文档",
+      "时长",
+      "用户",
+      "评论"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "trap": "把重复记录当作脏数据删除。\n",
+    "consequence": "完全重复行不存在，这些重复更可能是同一用户同一天对同一文档的多次协作明细。 删除会丢失协作行为。\n",
+    "prevention": "不删除重复记录，按目标粒度聚合。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "fact_doc_collaboration",
+      "协作",
+      "文档",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "trap": "直接 COUNT(*) 当作文档数或用户数。\n",
+    "consequence": "COUNT(*) 是协作明细记录数，不是文档数，也不是用户数。\n",
+    "prevention": "文档数使用 COUNT(DISTINCT doc_id)，用户数使用 COUNT(DISTINCT user_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "doc_id",
+      "fact_doc_collaboration",
+      "user_id",
+      "使用",
+      "协作",
+      "文档",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "trap": "把 edit_duration_sec 当作分钟或小时。\n",
+    "consequence": "edit_duration_sec 单位是秒，直接解释为分钟/小时会出错。\n",
+    "prevention": "需要分钟时除以 60，需要小时数时除以 3600。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "edit_duration_sec",
+      "fact_doc_collaboration"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "trap": "把 comment_count = 0 或 edit_duration_sec = 0 当作异常。\n",
+    "consequence": "0 是允许值，表示没有评论或无编辑时长记录。\n",
+    "prevention": "保留 0 值，可用于协作强度分析。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "comment_count",
+      "edit_duration_sec",
+      "fact_doc_collaboration",
+      "协作",
+      "时长",
+      "编辑",
+      "评论"
+    ]
+  },
+  {
+    "table_name": "fact_document",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`doc_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "doc_id",
+      "duckdb",
+      "fact_document",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_document",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_document",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_event_log",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`event_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "duckdb",
+      "event_id",
+      "fact_event_log",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_event_log",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_event_log",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_experiment",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`exp_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "duckdb",
+      "exp_id",
+      "fact_experiment",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_experiment",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_experiment",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_experiment_assignment",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_experiment_assignment",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_experiment_metric",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "trap": "JOIN dim_user 或 dim_tenant 后直接用 COUNT(*) 当作用户数或企业数。\n",
+    "consequence": "COUNT(*) 表示功能使用记录数，不是用户数，也不是企业数。\n",
+    "prevention": "统计用户数使用 COUNT(DISTINCT user_id)；统计企业数需先通过 dim_user 映射 tenant_id， 再使用 COUNT(DISTINCT tenant_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_tenant",
+      "dim_user",
+      "distinct",
+      "fact_feature_usage",
+      "join",
+      "tenant_id",
+      "user_id",
+      "企业",
+      "使用",
+      "功能",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "trap": "统计功能数时直接使用 COUNT(*)。\n",
+    "consequence": "会把使用记录数误当成功能数。\n",
+    "prevention": "统计功能数应使用 COUNT(DISTINCT feature_key)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_feature_usage",
+      "feature_key",
+      "使用",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "trap": "统计功能使用量时只看记录条数，不聚合 action_count 或 duration_sec。\n",
+    "consequence": "会低估或误读真实使用强度。\n",
+    "prevention": "统计使用量应使用 SUM(action_count) 或 SUM(duration_sec)。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "action_count",
+      "duration_sec",
+      "fact_feature_usage",
+      "sum",
+      "使用",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "trap": "与 fact_daily_usage 或 fact_ai_usage_log 关联时只按 user_id JOIN。\n",
+    "consequence": "会在多日、多记录情况下产生多对多膨胀，导致计数和时长被放大。\n",
+    "prevention": "跨日粒度行为表关联时应优先按 user_id + dt 对齐，再根据分析目标控制聚合层级。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "dt",
+      "fact_ai_usage_log",
+      "fact_daily_usage",
+      "fact_feature_usage",
+      "join",
+      "user_id",
+      "时长"
+    ]
+  },
+  {
+    "table_name": "fact_invoice",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`invoice_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "duckdb",
+      "fact_invoice",
+      "invoice_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_invoice",
+    "trap": "把发票金额直接当作实收收入。",
+    "consequence": "发票、付款和实收是不同业务口径。",
+    "prevention": "先确认问题是在问发票、付款还是实际收入，再选择事实表。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "fact_invoice",
+      "付款",
+      "发票",
+      "实收",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_invoice",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_invoice",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_message",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`msg_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "duckdb",
+      "fact_message",
+      "msg_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_message",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_message",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "trap": "把 NPS 当作 AVG(score)。\n",
+    "consequence": "AVG(score) 只是平均评分，不是标准 NPS。\n",
+    "prevention": "标准 NPS = %Promoters - %Detractors。Promoter 为 score >= 9， Passive 为 score 7-8，Detractor 为 score <= 6。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "avg",
+      "detractor",
+      "detractors",
+      "fact_nps_survey",
+      "nps",
+      "passive",
+      "promoter",
+      "promoters",
+      "score",
+      "评分"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "trap": "将 score = 'N/A' 或 is_completed = 0 的记录纳入 NPS 计算。\n",
+    "consequence": "会污染 NPS 结果或导致 CAST 错误。\n",
+    "prevention": "NPS 计算必须过滤 WHERE is_completed = 1 AND score != 'N/A'。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "a",
+      "and",
+      "cast",
+      "fact_nps_survey",
+      "is_completed",
+      "n",
+      "nps",
+      "score",
+      "where"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "trap": "直接使用 fact_nps_survey.plan_tier = dim_plan.plan_tier JOIN。\n",
+    "consequence": "由于大小写不一致，直接等值 JOIN 会导致全部 unmatched。\n",
+    "prevention": "使用 LOWER(fact_nps_survey.plan_tier) = LOWER(dim_plan.plan_tier)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "dim_plan",
+      "fact_nps_survey",
+      "join",
+      "lower",
+      "nps",
+      "plan_tier",
+      "unmatched",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "trap": "把 role 当作可求和指标。\n",
+    "consequence": "SUM(role) 没有业务意义。\n",
+    "prevention": "role 是 1 到 3 的角色编码/枚举，只能作为分组维度；具体编码含义如数据字典未说明则保持待确认。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "fact_nps_survey",
+      "nps",
+      "role",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "trap": "JOIN 用户或租户后直接 COUNT(*) 当作用户数或企业数。\n",
+    "consequence": "COUNT(*) 是问卷记录数，不是用户数或企业数。\n",
+    "prevention": "统计用户数使用 COUNT(DISTINCT user_id)，统计企业数使用 COUNT(DISTINCT tenant_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_nps_survey",
+      "join",
+      "nps",
+      "tenant_id",
+      "user_id",
+      "企业",
+      "使用",
+      "用户",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "trap": "把 2026-04 当作完整月份参与月度趋势比较。\n",
+    "consequence": "当前数据最大日期为 2026-04-01，只是边界日期，会导致 2026-04 被低估。\n",
+    "prevention": "完整月份趋势优先使用 2025-04 到 2026-03；如展示 2026-04，需注明不完整。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "fact_nps_survey",
+      "nps",
+      "使用",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_page_view",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`pv_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "duckdb",
+      "fact_page_view",
+      "pv_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_page_view",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_page_view",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_payment",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`payment_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "duckdb",
+      "fact_payment",
+      "payment_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_payment",
+    "trap": "把付款金额与发票金额或实收收入当成完全相同口径。",
+    "consequence": "可能忽略支付状态、时间点和账期差异。",
+    "prevention": "按数据字典和业务问题分别处理 payment、invoice、actual_revenue。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "actual_revenue",
+      "fact_payment",
+      "invoice",
+      "payment",
+      "付款",
+      "发票",
+      "实收",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_payment",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_payment",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "trap": "直接 COUNT(*) 当作用户数。\n",
+    "consequence": "COUNT(*) 是 session 记录数，不是用户数。\n",
+    "prevention": "统计用户数使用 COUNT(DISTINCT user_id)，统计 session 数使用 COUNT(DISTINCT session_id) 或 COUNT(*)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_session",
+      "session",
+      "session_id",
+      "user_id",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "trap": "把 device 或 ip_country 当作数值指标。\n",
+    "consequence": "device 和 ip_country 是枚举维度，不能 SUM 或 AVG。\n",
+    "prevention": "device/ip_country 只能作为分组或筛选维度。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "avg",
+      "device",
+      "fact_session",
+      "ip_country",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "trap": "把 ip_country 等同于租户注册国家。\n",
+    "consequence": "ip_country 来自访问 IP，可能与 dim_tenant.country 不同。\n",
+    "prevention": "分析访问来源国家用 ip_country；分析企业注册或所属国家用 dim_tenant.country。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "country",
+      "dim_tenant",
+      "fact_session",
+      "ip",
+      "ip_country",
+      "企业",
+      "国家",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "trap": "计算 session 时长时没有使用 end_time - start_time。\n",
+    "consequence": "无法得到正确会话时长。\n",
+    "prevention": "使用 DATEDIFF('second', start_time, end_time) 计算 session_duration_sec。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "datediff",
+      "end_time",
+      "fact_session",
+      "second",
+      "session",
+      "session_duration_sec",
+      "start_time",
+      "使用",
+      "时长"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "trap": "JOIN page_view/event_log 后直接 COUNT(*) 当作 session 数。\n",
+    "consequence": "一个 session 可能对应多个 page view 或 event，JOIN 后会放大 session 行数。\n",
+    "prevention": "JOIN 后统计 session 数使用 COUNT(DISTINCT session_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "event",
+      "event_log",
+      "fact_session",
+      "join",
+      "page",
+      "page_view",
+      "session",
+      "session_id",
+      "view",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_subscription",
+    "trap": "把数据字典声明的主键直接当作已验证事实。",
+    "consequence": "如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。",
+    "prevention": "将“`sub_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "duckdb",
+      "fact_subscription",
+      "sub_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_subscription",
+    "trap": "仅根据 status 判断某月有效订阅，而忽略时间区间。",
+    "consequence": "会得到错误的月度活跃订阅口径。",
+    "prevention": "数据字典明确完整月份筛选要结合 start_date 与 end_date。",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "end_date",
+      "fact_subscription",
+      "start_date",
+      "status",
+      "活跃",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "fact_subscription",
+    "trap": "将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。",
+    "consequence": "在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。",
+    "prevention": "先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_subscription",
+      "join",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "trap": "跨多个 snapshot_date 直接 SUM(total_users)、SUM(total_docs)、SUM(total_revenue)。\n",
+    "consequence": "这些字段是快照状态值，不是事件增量。跨多个日期直接求和会重复累计，导致严重高估。\n",
+    "prevention": "如果分析某一天的总规模，先筛选单个 snapshot_date 再聚合。 如果分析最新状态，先取每个 tenant 的最新 snapshot_date。 如果分析趋势，按 snapshot_date 分组，不要把多个日期合并成一个总量。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "snapshot_date",
+      "sum",
+      "tenant",
+      "total_docs",
+      "total_revenue",
+      "total_users",
+      "快照",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "trap": "把 total_revenue 当作期间实收收入。\n",
+    "consequence": "total_revenue 是租户级快照指标，不等同于 fact_actual_revenue.actual_revenue、fact_invoice.amount 或 fact_payment.amount。\n",
+    "prevention": "问实收收入使用 fact_actual_revenue.actual_revenue。 问发票金额使用 fact_invoice。 问付款金额使用 fact_payment。 问租户快照状态或租户总览时才使用 total_revenue。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "actual_revenue",
+      "amount",
+      "fact_actual_revenue",
+      "fact_invoice",
+      "fact_payment",
+      "fact_tenant_metrics_snapshot",
+      "total_revenue",
+      "付款",
+      "使用",
+      "发票",
+      "实收",
+      "快照",
+      "收入",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "trap": "忽略 snapshot_date 的 tenant 覆盖数量。\n",
+    "consequence": "某些日期只有 368 条记录，某些日期有 500 条记录。 直接比较总量可能混入覆盖租户数变化的影响。\n",
+    "prevention": "按日期分析时同时输出 COUNT(DISTINCT tenant_id) AS tenant_count。 必要时比较平均值或只比较覆盖完整的日期。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "as",
+      "count",
+      "distinct",
+      "fact_tenant_metrics_snapshot",
+      "snapshot_date",
+      "tenant",
+      "tenant_count",
+      "tenant_id",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "trap": "把 active_users_today 的 0 当作异常值。\n",
+    "consequence": "active_users_today = 0 是合法值，表示该租户当天无活跃用户。\n",
+    "prevention": "保留 0 值，可用于活跃率或低活跃租户分析。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "active_users_today",
+      "fact_tenant_metrics_snapshot",
+      "活跃",
+      "用户",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "trap": "JOIN dim_tenant 后直接 COUNT(*) 当作租户总数。\n",
+    "consequence": "COUNT(*) 是快照记录数，不是租户数。\n",
+    "prevention": "统计租户数使用 COUNT(DISTINCT tenant_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_tenant",
+      "distinct",
+      "fact_tenant_metrics_snapshot",
+      "join",
+      "tenant_id",
+      "使用",
+      "快照",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "trap": "把 2026-04 当作完整月份参与月度趋势比较。\n",
+    "consequence": "当前最大 snapshot_date 为 2026-04-01，是边界日期，2026-04 不是完整月份。\n",
+    "prevention": "完整月度趋势优先使用 2025-04 到 2026-03；如展示 2026-04，需注明不完整。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "snapshot_date",
+      "使用",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "trap": "JOIN fact_ticket_reply 后直接 COUNT(*) 当作工单数。\n",
+    "consequence": "一个 ticket_id 可以对应多条回复，COUNT(*) 会统计回复记录数，不是工单数。\n",
+    "prevention": "统计工单数使用 COUNT(DISTINCT ticket_id)，统计回复数才使用 fact_ticket_reply 的记录数。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_ticket",
+      "fact_ticket_reply",
+      "join",
+      "ticket_id",
+      "使用",
+      "回复",
+      "工单"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "trap": "计算解决时长时没有过滤 resolved_at IS NOT NULL。\n",
+    "consequence": "未解决或未关闭工单的 resolved_at 为空，会导致解决时长为空或计算错误。\n",
+    "prevention": "计算解决时长时使用 WHERE resolved_at IS NOT NULL，并根据 status 说明统计口径。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "fact_ticket",
+      "is",
+      "not",
+      "null",
+      "resolved_at",
+      "status",
+      "where",
+      "使用",
+      "工单",
+      "时长",
+      "解决"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "trap": "把 resolved_at 为空当作数据质量错误。\n",
+    "consequence": "会误判 open / in_progress 等未解决工单。\n",
+    "prevention": "resolved_at 为空通常代表尚未解决或未关闭，需要结合 status 解释。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "fact_ticket",
+      "in_progress",
+      "open",
+      "resolved_at",
+      "status",
+      "工单",
+      "解决"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "trap": "把 priority 或 status 当作数值指标。\n",
+    "consequence": "priority/status 是枚举维度，不能 SUM 或 AVG。\n",
+    "prevention": "priority/status 只能作为分组或筛选维度。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "avg",
+      "fact_ticket",
+      "priority",
+      "status",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "trap": "JOIN dim_tenant 后直接 COUNT(*) 当作企业数。\n",
+    "consequence": "COUNT(*) 是工单记录数，不是企业数。\n",
+    "prevention": "统计企业数使用 COUNT(DISTINCT tenant_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_tenant",
+      "distinct",
+      "fact_ticket",
+      "join",
+      "tenant_id",
+      "企业",
+      "使用",
+      "工单"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "trap": "JOIN fact_ticket 后直接 COUNT(*) 当作工单数。\n",
+    "consequence": "一个 ticket_id 可以对应多条回复，COUNT(*) 会统计回复记录数，不是工单数。\n",
+    "prevention": "统计工单数使用 COUNT(DISTINCT ticket_id)，统计回复数才使用 COUNT(*) 或 COUNT(DISTINCT 回复主键)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_ticket",
+      "fact_ticket_reply",
+      "join",
+      "ticket_id",
+      "使用",
+      "回复",
+      "工单"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "trap": "把 author_type 当作数值指标。\n",
+    "consequence": "author_type 是 agent / bot / customer 枚举，不能 SUM 或 AVG。\n",
+    "prevention": "author_type 只能作为分组或筛选维度。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "agent",
+      "author_type",
+      "avg",
+      "bot",
+      "customer",
+      "fact_ticket_reply",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "trap": "把 content_length 当作服务质量指标。\n",
+    "consequence": "content_length 只是文本长度，不直接代表回复质量或客户满意度。\n",
+    "prevention": "可使用 AVG(content_length) 分析回复长度，但不要直接解释为服务质量。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "avg",
+      "content_length",
+      "fact_ticket_reply",
+      "使用",
+      "回复",
+      "满意度"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "trap": "分析回复趋势时忘记使用 replied_at。\n",
+    "consequence": "会把所有历史回复混在一起，无法得到时间趋势。\n",
+    "prevention": "使用 replied_at 按日、周或月聚合。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "fact_ticket_reply",
+      "replied_at",
+      "使用",
+      "回复",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "trap": "把 2026-04 当作完整月份参与月度趋势比较。\n",
+    "consequence": "当前最大回复时间为 2026-04-06，可能是不完整月份。\n",
+    "prevention": "完整月度趋势优先使用 2025-04 到 2026-03；如展示 2026-04，需注明可能不完整。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "fact_ticket_reply",
+      "使用",
+      "回复",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "trap": "JOIN dim_user 或 dim_tenant 后直接 COUNT(*) 当作激活用户数。\n",
+    "consequence": "COUNT(*) 是激活里程碑记录数，不是用户数。\n",
+    "prevention": "统计激活用户数使用 COUNT(DISTINCT user_id)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "dim_tenant",
+      "dim_user",
+      "distinct",
+      "fact_user_activation",
+      "join",
+      "user_id",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "trap": "把 milestone_type 当作数值指标。\n",
+    "consequence": "milestone_type 是激活事件类型，不能 SUM 或 AVG。\n",
+    "prevention": "milestone_type 只能用于分组、筛选或漏斗步骤划分。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "avg",
+      "fact_user_activation",
+      "milestone_type",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "trap": "认为一个用户只有一条激活记录。\n",
+    "consequence": "同一个用户可能达成多个 milestone_type，直接 COUNT(*) 会高估用户数。\n",
+    "prevention": "按用户统计时使用 COUNT(DISTINCT user_id)，按激活事件统计时才使用 COUNT(*) 或 COUNT(DISTINCT 主键)。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_user_activation",
+      "milestone_type",
+      "user_id",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "trap": "分析激活趋势时忘记使用 reached_at。\n",
+    "consequence": "会把所有历史激活混在一起，无法得到时间趋势。\n",
+    "prevention": "使用 reached_at 按日、周或月聚合。\n",
+    "related_fields": [],
+    "severity": "medium",
+    "keywords": [
+      "fact_user_activation",
+      "reached_at",
+      "使用",
+      "趋势"
+    ]
+  }
+]

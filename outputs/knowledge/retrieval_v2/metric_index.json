@@ -1,0 +1,2564 @@
+[
+  {
+    "table_name": "dim_channel",
+    "metric_name": "entity_count",
+    "expression": "COUNT(DISTINCT channel_id)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "channel_id",
+      "count",
+      "dim_channel",
+      "distinct",
+      "entity_count",
+      "grain",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "dim_channel",
+    "metric_name": "member_count_sum",
+    "expression": "SUM(member_count)",
+    "meaning": "member_count 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "dim_channel",
+      "member_count",
+      "member_count_sum",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "dim_department",
+    "metric_name": "department_count",
+    "expression": "COUNT(DISTINCT dept_id)",
+    "meaning": "部门数量",
+    "note": "统计部门实体数量时使用。\n",
+    "applicable_grain": "部门级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "department_count",
+      "dept_id",
+      "dim_department",
+      "distinct",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_department",
+    "metric_name": "tenant_count",
+    "expression": "COUNT(DISTINCT tenant_id)",
+    "meaning": "企业数量",
+    "note": "统计拥有相关部门的企业数量时使用。\n",
+    "applicable_grain": "企业级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_department",
+      "distinct",
+      "tenant_count",
+      "tenant_id",
+      "企业",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_department",
+    "metric_name": "top_level_department_count",
+    "expression": "SUM(\n  CASE\n    WHEN parent_dept_id IS NULL OR CAST(parent_dept_id AS VARCHAR) = ''\n    THEN 1 ELSE 0\n  END\n)\n",
+    "meaning": "顶级部门数量",
+    "note": "parent_dept_id 为空代表顶级部门。\n",
+    "applicable_grain": "部门级",
+    "required_filters": "",
+    "keywords": [
+      "as",
+      "case",
+      "cast",
+      "dim_department",
+      "else",
+      "end",
+      "is",
+      "null",
+      "or",
+      "parent_dept_id",
+      "sum",
+      "then",
+      "top_level_department_count",
+      "varchar",
+      "when"
+    ]
+  },
+  {
+    "table_name": "dim_feature",
+    "metric_name": "feature_count",
+    "expression": "COUNT(DISTINCT feature_key)",
+    "meaning": "功能数量",
+    "note": "功能数量应以 feature_key 去重统计。\n",
+    "applicable_grain": "任意汇总层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_feature",
+      "distinct",
+      "feature_count",
+      "feature_key",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "dim_feature",
+    "metric_name": "feature_module_count",
+    "expression": "COUNT(DISTINCT module)",
+    "meaning": "功能模块数量",
+    "note": "可用于统计功能模块覆盖范围。\n",
+    "applicable_grain": "任意汇总层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_feature",
+      "distinct",
+      "feature_module_count",
+      "module",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "dim_org_structure",
+    "metric_name": "entity_count",
+    "expression": "COUNT(DISTINCT node_id)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "dim_org_structure",
+      "distinct",
+      "entity_count",
+      "grain",
+      "node_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "dim_org_structure",
+    "metric_name": "level_sum",
+    "expression": "SUM(level)",
+    "meaning": "level 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "dim_org_structure",
+      "level",
+      "level_sum",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "dim_plan",
+    "metric_name": "plan_count",
+    "expression": "COUNT(DISTINCT plan_tier)",
+    "meaning": "套餐数",
+    "note": "当前样本预期为 5。",
+    "applicable_grain": "套餐级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_plan",
+      "distinct",
+      "plan_count",
+      "plan_tier",
+      "套餐"
+    ]
+  },
+  {
+    "table_name": "dim_plan",
+    "metric_name": "listed_monthly_price",
+    "expression": "monthly_price",
+    "meaning": "月标价",
+    "note": "仅表示价格表中的标价。",
+    "applicable_grain": "套餐级",
+    "required_filters": "",
+    "keywords": [
+      "dim_plan",
+      "listed_monthly_price",
+      "monthly_price"
+    ]
+  },
+  {
+    "table_name": "dim_tenant",
+    "metric_name": "tenant_count",
+    "expression": "COUNT(DISTINCT tenant_id)",
+    "meaning": "企业数量",
+    "note": "统计企业实体数量时优先使用此口径。\n",
+    "applicable_grain": "企业级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_tenant",
+      "distinct",
+      "tenant_count",
+      "tenant_id",
+      "企业",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_tenant",
+    "metric_name": "tenant_created_count",
+    "expression": "COUNT(DISTINCT tenant_id)",
+    "meaning": "指定时间窗内新创建企业数",
+    "note": "通常结合 created_at 的日期截断使用。\n",
+    "applicable_grain": "created_at 时间级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "created_at",
+      "dim_tenant",
+      "distinct",
+      "tenant_created_count",
+      "tenant_id",
+      "企业",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "metric_name": "config_record_count",
+    "expression": "COUNT(*)",
+    "meaning": "配置记录数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "config_record_count",
+      "count",
+      "dim_tenant_config"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "metric_name": "tenant_count",
+    "expression": "COUNT(DISTINCT tenant_id)",
+    "meaning": "租户数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_tenant_config",
+      "distinct",
+      "tenant_count",
+      "tenant_id",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "metric_name": "feature_count",
+    "expression": "COUNT(DISTINCT feature_key)",
+    "meaning": "功能数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_tenant_config",
+      "distinct",
+      "feature_count",
+      "feature_key",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "metric_name": "enabled_config_count",
+    "expression": "SUM(enabled)",
+    "meaning": "启用配置数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "dim_tenant_config",
+      "enabled",
+      "enabled_config_count",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "metric_name": "enabled_rate",
+    "expression": "AVG(enabled)",
+    "meaning": "启用率",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "avg",
+      "dim_tenant_config",
+      "enabled",
+      "enabled_rate"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_plan",
+    "metric_name": "entity_count",
+    "expression": "COUNT(*)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "dim_tenant_plan",
+      "distinct",
+      "entity_count",
+      "grain",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "dim_ticket_category",
+    "metric_name": "entity_count",
+    "expression": "COUNT(DISTINCT category_id)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "category_id",
+      "count",
+      "dim_ticket_category",
+      "distinct",
+      "entity_count",
+      "grain",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "dim_ticket_category",
+    "metric_name": "sla_hours_sum",
+    "expression": "SUM(sla_hours)",
+    "meaning": "sla_hours 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "dim_ticket_category",
+      "sla_hours",
+      "sla_hours_sum",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "dim_user",
+    "metric_name": "user_count",
+    "expression": "COUNT(DISTINCT user_id)",
+    "meaning": "用户数量",
+    "note": "用户实体计数的标准口径。",
+    "applicable_grain": "用户级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_user",
+      "distinct",
+      "user_count",
+      "user_id",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user",
+    "metric_name": "registered_user_count",
+    "expression": "COUNT(DISTINCT user_id)",
+    "meaning": "指定时间窗内注册用户数",
+    "note": "通常配合 DATE_TRUNC 或 STRFTIME 使用。",
+    "applicable_grain": "register_at 时间级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "date_trunc",
+      "dim_user",
+      "distinct",
+      "registered_user_count",
+      "strftime",
+      "user_id",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user",
+    "metric_name": "active_status_user_count",
+    "expression": "COUNT(DISTINCT CASE WHEN status = 'active' THEN user_id END)",
+    "meaning": "当前状态为 active 的用户数",
+    "note": "这是当前状态口径，不是历史任意日期活跃口径。",
+    "applicable_grain": "用户级",
+    "required_filters": "",
+    "keywords": [
+      "active",
+      "active_status_user_count",
+      "case",
+      "count",
+      "dim_user",
+      "distinct",
+      "end",
+      "status",
+      "then",
+      "user_id",
+      "when",
+      "活跃",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user_id_mapping",
+    "metric_name": "mapped_user_count",
+    "expression": "COUNT(DISTINCT user_id)",
+    "meaning": "已映射用户数",
+    "note": "统计用户规模时应使用明文 user_id 去重。\n",
+    "applicable_grain": "任意汇总层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_user_id_mapping",
+      "distinct",
+      "mapped_user_count",
+      "user_id",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user_id_mapping",
+    "metric_name": "hash_mapping_count",
+    "expression": "COUNT(DISTINCT user_id_hash)",
+    "meaning": "哈希用户映射数",
+    "note": "可用于衡量哈希 ID 映射覆盖规模。\n",
+    "applicable_grain": "任意汇总层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_user_id_mapping",
+      "distinct",
+      "hash_mapping_count",
+      "id",
+      "user_id_hash",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "metric_name": "profile_record_count",
+    "expression": "COUNT(*)",
+    "meaning": "profile 记录数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_user_profile",
+      "profile",
+      "profile_record_count"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "metric_name": "profile_user_count",
+    "expression": "COUNT(DISTINCT user_id)",
+    "meaning": "有 profile 记录的用户数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_user_profile",
+      "distinct",
+      "profile",
+      "profile_user_count",
+      "user_id",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "metric_name": "user_count_by_language",
+    "expression": "COUNT(DISTINCT user_id) GROUP BY language",
+    "meaning": "按语言分组的用户数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "by",
+      "count",
+      "dim_user_profile",
+      "distinct",
+      "group",
+      "group by",
+      "language",
+      "user_count_by_language",
+      "user_id",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "metric_name": "user_count_by_timezone",
+    "expression": "COUNT(DISTINCT user_id) GROUP BY timezone",
+    "meaning": "按时区分组的用户数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "by",
+      "count",
+      "dim_user_profile",
+      "distinct",
+      "group",
+      "group by",
+      "timezone",
+      "user_count_by_timezone",
+      "user_id",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "metric_name": "user_count_by_device_os",
+    "expression": "COUNT(DISTINCT user_id) GROUP BY device_os",
+    "meaning": "按设备系统分组的用户数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "by",
+      "count",
+      "device_os",
+      "dim_user_profile",
+      "distinct",
+      "group",
+      "group by",
+      "user_count_by_device_os",
+      "user_id",
+      "用户",
+      "设备"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "metric_name": "multi_profile_user_count",
+    "expression": "COUNT(*) over users where COUNT(*) > 1",
+    "meaning": "拥有多条 profile 记录的用户数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_user_profile",
+      "multi_profile_user_count",
+      "over",
+      "profile",
+      "users",
+      "where",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user_role_history",
+    "metric_name": "row_count",
+    "expression": "COUNT(*)",
+    "meaning": "记录数",
+    "note": "当前表未确认稳定主键，COUNT(*) 只能先解释为记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "dim_user_role_history",
+      "row_count"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "metric_name": "actual_revenue",
+    "expression": "SUM(actual_revenue)",
+    "meaning": "实际入账收入",
+    "note": "用户问实收、实际收入、入账收入时优先使用。\n",
+    "applicable_grain": "收入记录级",
+    "required_filters": "",
+    "keywords": [
+      "actual_revenue",
+      "fact_actual_revenue",
+      "sum",
+      "使用",
+      "实收",
+      "收入",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "metric_name": "list_revenue",
+    "expression": "SUM(list_revenue)",
+    "meaning": "标价收入",
+    "note": "用于和 actual_revenue 对比，衡量折扣和优惠券影响。\n",
+    "applicable_grain": "收入记录级",
+    "required_filters": "",
+    "keywords": [
+      "actual_revenue",
+      "fact_actual_revenue",
+      "list_revenue",
+      "sum",
+      "对比",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "metric_name": "revenue_gap",
+    "expression": "SUM(list_revenue - actual_revenue)",
+    "meaning": "标价收入与实际收入差额",
+    "note": "可解释为折扣和优惠券导致的收入让利金额。 应直接使用 list_revenue - actual_revenue 的字段差额， 不要重新计算 actual_revenue 后再求差。\n",
+    "applicable_grain": "收入记录级",
+    "required_filters": "",
+    "keywords": [
+      "actual_revenue",
+      "fact_actual_revenue",
+      "list_revenue",
+      "revenue_gap",
+      "sum",
+      "使用",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "metric_name": "coupon_amount",
+    "expression": "SUM(coupon_amount)",
+    "meaning": "优惠券扣减金额",
+    "note": "用于分析固定优惠券金额对收入的影响。\n",
+    "applicable_grain": "收入记录级",
+    "required_filters": "",
+    "keywords": [
+      "coupon_amount",
+      "fact_actual_revenue",
+      "sum",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "metric_name": "avg_discount_rate",
+    "expression": "AVG(discount_rate)",
+    "meaning": "平均折扣率",
+    "note": "简单平均折扣率不一定等于收入加权折扣率。 如需严谨分析，可使用 list_revenue 加权折扣率。\n",
+    "applicable_grain": "收入记录级",
+    "required_filters": "",
+    "keywords": [
+      "avg",
+      "avg_discount_rate",
+      "discount_rate",
+      "fact_actual_revenue",
+      "list_revenue",
+      "使用",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "metric_name": "weighted_discount_rate",
+    "expression": "SUM(list_revenue * discount_rate) / NULLIF(SUM(list_revenue), 0)",
+    "meaning": "收入加权折扣率",
+    "note": "比 AVG(discount_rate) 更适合表达收入加权折扣水平。\n",
+    "applicable_grain": "收入记录级",
+    "required_filters": "",
+    "keywords": [
+      "avg",
+      "discount_rate",
+      "fact_actual_revenue",
+      "list_revenue",
+      "nullif",
+      "sum",
+      "weighted_discount_rate",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "metric_name": "total_seats",
+    "expression": "SUM(seats)",
+    "meaning": "总席位数",
+    "note": "用于分析席位规模与收入之间的关系。 如果重复 sub_id + month 表示拆分收入记录，SUM(seats) 可能需要结合业务语义谨慎解释。\n",
+    "applicable_grain": "收入记录级",
+    "required_filters": "",
+    "keywords": [
+      "fact_actual_revenue",
+      "month",
+      "seats",
+      "sub_id",
+      "sum",
+      "total_seats",
+      "收入"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "metric_name": "ai_operation_count",
+    "expression": "COUNT(DISTINCT log_id)",
+    "meaning": "AI 操作次数",
+    "note": "所有 operation_type 都可计入操作次数。 如果只分析真实 AI 使用调用，建议过滤 operation_type = 'deduct'。\n",
+    "applicable_grain": "AI 日志记录级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "ai_operation_count",
+      "count",
+      "deduct",
+      "distinct",
+      "fact_ai_usage_log",
+      "log_id",
+      "operation_type",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "metric_name": "ai_deduct_count",
+    "expression": "COUNT(DISTINCT CASE WHEN operation_type = 'deduct' THEN log_id END)",
+    "meaning": "AI 扣减操作次数",
+    "note": "更接近真实 AI 使用调用次数。\n",
+    "applicable_grain": "AI 日志记录级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "ai_deduct_count",
+      "case",
+      "count",
+      "deduct",
+      "distinct",
+      "end",
+      "fact_ai_usage_log",
+      "log_id",
+      "operation_type",
+      "then",
+      "when",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "metric_name": "credits_consumed",
+    "expression": "SUM(CASE WHEN operation_type = 'deduct' THEN credits_amount ELSE 0 END)",
+    "meaning": "AI credits 消耗量",
+    "note": "分析 AI 使用/消耗时优先使用该口径。\n",
+    "applicable_grain": "AI 日志记录级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "case",
+      "credit",
+      "credits",
+      "credits_amount",
+      "credits_consumed",
+      "deduct",
+      "else",
+      "end",
+      "fact_ai_usage_log",
+      "operation_type",
+      "sum",
+      "then",
+      "when",
+      "使用",
+      "消耗"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "metric_name": "credits_earned",
+    "expression": "SUM(CASE WHEN operation_type = 'earn' THEN credits_amount ELSE 0 END)",
+    "meaning": "AI credits 获得量",
+    "note": "用于分析赠送或获得的 credits。\n",
+    "applicable_grain": "AI 日志记录级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "case",
+      "credit",
+      "credits",
+      "credits_amount",
+      "credits_earned",
+      "earn",
+      "else",
+      "end",
+      "fact_ai_usage_log",
+      "operation_type",
+      "sum",
+      "then",
+      "when"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "metric_name": "credits_refunded",
+    "expression": "SUM(CASE WHEN operation_type = 'refund' THEN credits_amount ELSE 0 END)",
+    "meaning": "AI credits 退还量",
+    "note": "用于分析退还 credits。\n",
+    "applicable_grain": "AI 日志记录级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "case",
+      "credit",
+      "credits",
+      "credits_amount",
+      "credits_refunded",
+      "else",
+      "end",
+      "fact_ai_usage_log",
+      "operation_type",
+      "refund",
+      "sum",
+      "then",
+      "when"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "metric_name": "net_credits_change",
+    "expression": "SUM(\n  CASE\n    WHEN operation_type IN ('earn', 'refund') THEN credits_amount\n    WHEN operation_type = 'deduct' THEN -credits_amount\n    ELSE 0\n  END\n)\n",
+    "meaning": "credits 净变化",
+    "note": "该指标用于 credits 流水变化，不等同于 AI 消耗量。 人工确认口径：deduct 记为负，earn/refund 记为正。\n",
+    "applicable_grain": "AI 日志记录级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "case",
+      "credit",
+      "credits",
+      "credits_amount",
+      "deduct",
+      "earn",
+      "else",
+      "end",
+      "fact_ai_usage_log",
+      "in",
+      "net_credits_change",
+      "operation_type",
+      "refund",
+      "sum",
+      "then",
+      "when",
+      "消耗"
+    ]
+  },
+  {
+    "table_name": "fact_campaign",
+    "metric_name": "entity_count",
+    "expression": "COUNT(DISTINCT campaign_id)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "campaign_id",
+      "count",
+      "distinct",
+      "entity_count",
+      "fact_campaign",
+      "grain",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_campaign",
+    "metric_name": "budget_sum",
+    "expression": "SUM(budget)",
+    "meaning": "budget 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "budget",
+      "budget_sum",
+      "fact_campaign",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "metric_name": "attribution_record_count",
+    "expression": "COUNT(*)",
+    "meaning": "归因触点记录数",
+    "note": "当前主键候选已验证唯一，因此触点记录数可直接使用 COUNT(*)。\n",
+    "applicable_grain": "fact_campaign_attribution 原子粒度",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "attribution_record_count",
+      "count",
+      "fact_campaign_attribution",
+      "使用",
+      "归因"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "metric_name": "touched_user_count",
+    "expression": "COUNT(DISTINCT user_id)",
+    "meaning": "被 campaign 触达的用户数",
+    "note": "用户数与触点记录数不能混用。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "campaign",
+      "count",
+      "distinct",
+      "fact_campaign_attribution",
+      "touched_user_count",
+      "user_id",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "metric_name": "campaign_count",
+    "expression": "COUNT(DISTINCT campaign_id)",
+    "meaning": "campaign 数量",
+    "note": "campaign 数应按 campaign_id 去重统计。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "campaign",
+      "campaign_count",
+      "campaign_id",
+      "count",
+      "distinct",
+      "fact_campaign_attribution"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "metric_name": "converted_touch_count",
+    "expression": "SUM(is_converted)",
+    "meaning": "转化触点数",
+    "note": "is_converted 为 0/1，可直接求和得到转化触点数。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "converted_touch_count",
+      "fact_campaign_attribution",
+      "is_converted",
+      "sum",
+      "转化"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "metric_name": "conversion_rate",
+    "expression": "AVG(is_converted)",
+    "meaning": "触点级转化率",
+    "note": "也可使用 SUM(is_converted) / COUNT(*) 计算。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "avg",
+      "conversion_rate",
+      "count",
+      "fact_campaign_attribution",
+      "is_converted",
+      "sum",
+      "使用",
+      "转化"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "metric_name": "touch_type_count",
+    "expression": "COUNT(DISTINCT touch_type)",
+    "meaning": "触点类型数量",
+    "note": "touch_type 是分组维度，不是数值指标。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "distinct",
+      "fact_campaign_attribution",
+      "touch_type",
+      "touch_type_count"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "metric_name": "credit_usage_record_count",
+    "expression": "COUNT(DISTINCT usage_id)",
+    "meaning": "资源使用记录数",
+    "note": "usage_id 已验证唯一，可直接用于记录去重统计。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "credit",
+      "credit_usage_record_count",
+      "distinct",
+      "fact_credit_usage",
+      "usage_id",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "metric_name": "tenant_count",
+    "expression": "COUNT(DISTINCT tenant_id)",
+    "meaning": "产生资源使用记录的企业数",
+    "note": "企业数与资源使用记录数不能混用。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "credit",
+      "distinct",
+      "fact_credit_usage",
+      "tenant_count",
+      "tenant_id",
+      "企业",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "metric_name": "resource_type_count",
+    "expression": "COUNT(DISTINCT resource_type)",
+    "meaning": "资源类型数",
+    "note": "用于统计资源种类覆盖范围。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "credit",
+      "distinct",
+      "fact_credit_usage",
+      "resource_type",
+      "resource_type_count"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "metric_name": "total_quantity_by_resource_type",
+    "expression": "SUM(quantity)",
+    "meaning": "按资源类型统计使用数量",
+    "note": "不同 resource_type 的 quantity 不能直接混合解释。\n",
+    "applicable_grain": "必须按 resource_type 分组",
+    "required_filters": "",
+    "keywords": [
+      "credit",
+      "fact_credit_usage",
+      "quantity",
+      "resource_type",
+      "sum",
+      "total_quantity_by_resource_type",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "metric_name": "total_cost",
+    "expression": "SUM(quantity * unit_cost)",
+    "meaning": "资源使用成本",
+    "note": "跨 resource_type 汇总时优先比较成本而不是原始数量。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "credit",
+      "fact_credit_usage",
+      "quantity",
+      "resource_type",
+      "sum",
+      "total_cost",
+      "unit_cost",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "metric_name": "avg_unit_cost",
+    "expression": "AVG(unit_cost)",
+    "meaning": "平均单位资源成本",
+    "note": "更适合在相同 resource_type 内做比较。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "avg",
+      "avg_unit_cost",
+      "credit",
+      "fact_credit_usage",
+      "resource_type",
+      "unit_cost"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "metric_name": "daily_usage_record_count",
+    "expression": "COUNT(*)",
+    "meaning": "用户日使用记录数",
+    "note": "当前 user_id + dt 已验证唯一，因此 COUNT(*) 表示用户日记录数。\n",
+    "applicable_grain": "fact_daily_usage 原子粒度",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "daily_usage_record_count",
+      "dt",
+      "fact_daily_usage",
+      "user_id",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "metric_name": "daily_active_user_count",
+    "expression": "COUNT(DISTINCT user_id)",
+    "meaning": "日活跃用户数 / DAU",
+    "note": "DAU 应使用 COUNT(DISTINCT user_id)。\n",
+    "applicable_grain": "单日或任意按日期汇总层级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "daily_active_user_count",
+      "dau",
+      "distinct",
+      "fact_daily_usage",
+      "user_id",
+      "使用",
+      "日活",
+      "活跃",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "metric_name": "total_session_count",
+    "expression": "SUM(session_count)",
+    "meaning": "session 总数",
+    "note": "适合衡量整体访问频率。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "fact_daily_usage",
+      "session",
+      "session_count",
+      "sum",
+      "total_session_count"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "metric_name": "avg_session_count_per_user_day",
+    "expression": "AVG(session_count)",
+    "meaning": "平均每用户日 session 数",
+    "note": "反映单个用户日的平均访问频率。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "avg",
+      "avg_session_count_per_user_day",
+      "fact_daily_usage",
+      "session",
+      "session_count",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "metric_name": "total_active_duration_sec",
+    "expression": "SUM(active_duration_sec)",
+    "meaning": "总活跃时长秒数",
+    "note": "active_duration_sec 单位为秒。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "active_duration_sec",
+      "ai",
+      "fact_daily_usage",
+      "sum",
+      "total_active_duration_sec",
+      "时长",
+      "活跃"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "metric_name": "avg_active_duration_sec_per_user_day",
+    "expression": "AVG(active_duration_sec)",
+    "meaning": "平均每用户日活跃时长秒数",
+    "note": "反映单个用户日的平均使用深度。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "active_duration_sec",
+      "ai",
+      "avg",
+      "avg_active_duration_sec_per_user_day",
+      "fact_daily_usage",
+      "使用",
+      "日活",
+      "时长",
+      "活跃",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "metric_name": "total_active_duration_hours",
+    "expression": "SUM(active_duration_sec) / 3600.0",
+    "meaning": "总活跃时长小时数",
+    "note": "换算小时必须除以 3600。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "active_duration_sec",
+      "ai",
+      "fact_daily_usage",
+      "sum",
+      "total_active_duration_hours",
+      "时长",
+      "活跃"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "metric_name": "collaboration_record_count",
+    "expression": "COUNT(*)",
+    "meaning": "协作明细记录数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "collaboration_record_count",
+      "count",
+      "fact_doc_collaboration",
+      "协作"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "metric_name": "collaborating_user_count",
+    "expression": "COUNT(DISTINCT user_id)",
+    "meaning": "参与协作用户数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "collaborating_user_count",
+      "count",
+      "distinct",
+      "fact_doc_collaboration",
+      "user_id",
+      "协作",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "metric_name": "collaborated_doc_count",
+    "expression": "COUNT(DISTINCT doc_id)",
+    "meaning": "被协作的文档数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "collaborated_doc_count",
+      "count",
+      "distinct",
+      "doc_id",
+      "fact_doc_collaboration",
+      "协作",
+      "文档"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "metric_name": "total_edit_duration_sec",
+    "expression": "SUM(edit_duration_sec)",
+    "meaning": "总编辑协作时长秒数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "edit_duration_sec",
+      "fact_doc_collaboration",
+      "sum",
+      "total_edit_duration_sec",
+      "协作",
+      "时长",
+      "编辑"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "metric_name": "total_edit_duration_hours",
+    "expression": "SUM(edit_duration_sec) / 3600.0",
+    "meaning": "总编辑协作时长小时数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "edit_duration_sec",
+      "fact_doc_collaboration",
+      "sum",
+      "total_edit_duration_hours",
+      "协作",
+      "时长",
+      "编辑"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "metric_name": "total_comment_count",
+    "expression": "SUM(comment_count)",
+    "meaning": "总评论数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "comment_count",
+      "fact_doc_collaboration",
+      "sum",
+      "total_comment_count",
+      "评论"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "metric_name": "doc_user_day_collaboration_count",
+    "expression": "COUNT(DISTINCT doc_id || '|' || user_id || '|' || CAST(dt AS VARCHAR))",
+    "meaning": "文档-用户-日期组合数，不等于严格记录数",
+    "note": "",
+    "applicable_grain": "",
+    "required_filters": "",
+    "keywords": [
+      "as",
+      "cast",
+      "count",
+      "distinct",
+      "doc_id",
+      "doc_user_day_collaboration_count",
+      "dt",
+      "fact_doc_collaboration",
+      "user_id",
+      "varchar",
+      "文档",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_document",
+    "metric_name": "entity_count",
+    "expression": "COUNT(DISTINCT doc_id)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "distinct",
+      "doc_id",
+      "entity_count",
+      "fact_document",
+      "grain",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_document",
+    "metric_name": "edit_count_sum",
+    "expression": "SUM(edit_count)",
+    "meaning": "edit_count 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "edit_count",
+      "edit_count_sum",
+      "fact_document",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_event_log",
+    "metric_name": "entity_count",
+    "expression": "COUNT(DISTINCT event_id)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "distinct",
+      "entity_count",
+      "event_id",
+      "fact_event_log",
+      "grain",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_experiment",
+    "metric_name": "entity_count",
+    "expression": "COUNT(DISTINCT exp_id)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "distinct",
+      "entity_count",
+      "exp_id",
+      "fact_experiment",
+      "grain",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_experiment_assignment",
+    "metric_name": "row_count",
+    "expression": "COUNT(*)",
+    "meaning": "记录数",
+    "note": "当前表未确认稳定主键，COUNT(*) 只能先解释为记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "fact_experiment_assignment",
+      "row_count"
+    ]
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "metric_name": "row_count",
+    "expression": "COUNT(*)",
+    "meaning": "记录数",
+    "note": "当前表未确认稳定主键，COUNT(*) 只能先解释为记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "fact_experiment_metric",
+      "row_count"
+    ]
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "metric_name": "sample_size_sum",
+    "expression": "SUM(sample_size)",
+    "meaning": "sample_size 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "fact_experiment_metric",
+      "sample_size",
+      "sample_size_sum",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "metric_name": "metric_value_sum",
+    "expression": "SUM(metric_value)",
+    "meaning": "metric_value 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "fact_experiment_metric",
+      "metric_value",
+      "metric_value_sum",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "metric_name": "ci_lower_sum",
+    "expression": "SUM(ci_lower)",
+    "meaning": "ci_lower 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ci_lower",
+      "ci_lower_sum",
+      "fact_experiment_metric",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "metric_name": "feature_usage_record_count",
+    "expression": "COUNT(DISTINCT (user_id, feature_key, dt))",
+    "meaning": "功能使用记录数",
+    "note": "由于当前主键为 user_id + feature_key + dt，记录数可按该复合键去重统计。\n",
+    "applicable_grain": "fact_feature_usage 原子粒度",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "dt",
+      "fact_feature_usage",
+      "feature_key",
+      "feature_usage_record_count",
+      "user_id",
+      "使用",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "metric_name": "active_feature_user_count",
+    "expression": "COUNT(DISTINCT user_id)",
+    "meaning": "使用过功能的用户数",
+    "note": "统计用户数时应使用 COUNT(DISTINCT user_id)。\n",
+    "applicable_grain": "任意功能或时间汇总层级",
+    "required_filters": "",
+    "keywords": [
+      "active_feature_user_count",
+      "count",
+      "distinct",
+      "fact_feature_usage",
+      "user_id",
+      "使用",
+      "功能",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "metric_name": "feature_count",
+    "expression": "COUNT(DISTINCT feature_key)",
+    "meaning": "功能数",
+    "note": "统计功能覆盖数时应使用 COUNT(DISTINCT feature_key)。\n",
+    "applicable_grain": "任意时间或用户范围",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_feature_usage",
+      "feature_count",
+      "feature_key",
+      "使用",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "metric_name": "total_action_count",
+    "expression": "SUM(action_count)",
+    "meaning": "总功能操作次数",
+    "note": "使用量应按 SUM(action_count) 聚合。\n",
+    "applicable_grain": "任意汇总层级",
+    "required_filters": "",
+    "keywords": [
+      "action_count",
+      "fact_feature_usage",
+      "sum",
+      "total_action_count",
+      "使用",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "metric_name": "total_duration_sec",
+    "expression": "SUM(duration_sec)",
+    "meaning": "总功能使用时长（秒）",
+    "note": "使用时长应按 SUM(duration_sec) 聚合。\n",
+    "applicable_grain": "任意汇总层级",
+    "required_filters": "",
+    "keywords": [
+      "duration_sec",
+      "fact_feature_usage",
+      "sum",
+      "total_duration_sec",
+      "使用",
+      "功能",
+      "时长"
+    ]
+  },
+  {
+    "table_name": "fact_invoice",
+    "metric_name": "entity_count",
+    "expression": "COUNT(DISTINCT invoice_id)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "distinct",
+      "entity_count",
+      "fact_invoice",
+      "grain",
+      "invoice_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_invoice",
+    "metric_name": "amount_sum",
+    "expression": "SUM(amount)",
+    "meaning": "amount 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "amount",
+      "amount_sum",
+      "fact_invoice",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_message",
+    "metric_name": "entity_count",
+    "expression": "COUNT(DISTINCT msg_id)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "distinct",
+      "entity_count",
+      "fact_message",
+      "grain",
+      "msg_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_message",
+    "metric_name": "word_count_sum",
+    "expression": "SUM(word_count)",
+    "meaning": "word_count 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "fact_message",
+      "sum",
+      "word_count",
+      "word_count_sum"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "metric_name": "survey_response_count",
+    "expression": "COUNT(DISTINCT survey_id)",
+    "meaning": "问卷记录数",
+    "note": "survey_id 已验证唯一，可直接用于记录去重统计。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_nps_survey",
+      "nps",
+      "survey_id",
+      "survey_response_count"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "metric_name": "completed_response_count",
+    "expression": "COUNT(DISTINCT CASE WHEN is_completed = 1 THEN survey_id END)",
+    "meaning": "完成问卷数",
+    "note": "NPS 计算前应先看完成问卷规模。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "case",
+      "completed_response_count",
+      "count",
+      "distinct",
+      "end",
+      "fact_nps_survey",
+      "is_completed",
+      "nps",
+      "survey_id",
+      "then",
+      "when"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "metric_name": "respondent_user_count",
+    "expression": "COUNT(DISTINCT user_id)",
+    "meaning": "参与问卷用户数",
+    "note": "COUNT(*) 是问卷记录数，不是参与用户数。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_nps_survey",
+      "nps",
+      "respondent_user_count",
+      "user_id",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "metric_name": "respondent_tenant_count",
+    "expression": "COUNT(DISTINCT tenant_id)",
+    "meaning": "有问卷反馈的企业数",
+    "note": "企业数应使用 tenant_id 去重统计。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_nps_survey",
+      "nps",
+      "respondent_tenant_count",
+      "tenant_id",
+      "企业",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "metric_name": "average_score",
+    "expression": "AVG(CAST(score AS INTEGER))",
+    "meaning": "平均评分，不等于 NPS",
+    "note": "使用前必须过滤 WHERE is_completed = 1 AND score != 'N/A'。\n",
+    "applicable_grain": "完成问卷且 score 非 N/A",
+    "required_filters": "",
+    "keywords": [
+      "a",
+      "and",
+      "as",
+      "average_score",
+      "avg",
+      "cast",
+      "fact_nps_survey",
+      "integer",
+      "is_completed",
+      "n",
+      "nps",
+      "score",
+      "where",
+      "使用",
+      "评分"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "metric_name": "nps_score",
+    "expression": "%Promoters - %Detractors",
+    "meaning": "标准 NPS",
+    "note": "Promoter 为 score >= 9，Passive 为 score 7-8，Detractor 为 score <= 6。\n",
+    "applicable_grain": "完成问卷且 score 非 N/A",
+    "required_filters": "",
+    "keywords": [
+      "detractor",
+      "detractors",
+      "fact_nps_survey",
+      "nps",
+      "nps_score",
+      "passive",
+      "promoter",
+      "promoters",
+      "score"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "metric_name": "completion_rate",
+    "expression": "AVG(CASE WHEN is_completed = 1 THEN 1 ELSE 0 END)",
+    "meaning": "问卷完成率",
+    "note": "可用于衡量问卷是否完成，不等于满意度指标。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "avg",
+      "case",
+      "completion_rate",
+      "else",
+      "end",
+      "fact_nps_survey",
+      "is_completed",
+      "nps",
+      "then",
+      "when",
+      "满意度"
+    ]
+  },
+  {
+    "table_name": "fact_page_view",
+    "metric_name": "entity_count",
+    "expression": "COUNT(DISTINCT pv_id)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "distinct",
+      "entity_count",
+      "fact_page_view",
+      "grain",
+      "pv_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_page_view",
+    "metric_name": "view_duration_ms_sum",
+    "expression": "SUM(view_duration_ms)",
+    "meaning": "view_duration_ms 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "fact_page_view",
+      "sum",
+      "view_duration_ms",
+      "view_duration_ms_sum"
+    ]
+  },
+  {
+    "table_name": "fact_payment",
+    "metric_name": "entity_count",
+    "expression": "COUNT(DISTINCT payment_id)",
+    "meaning": "实体或记录数量",
+    "note": "按当前正式卡 grain 与 validation 结果解释统计口径。\n对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "ai",
+      "count",
+      "distinct",
+      "entity_count",
+      "fact_payment",
+      "grain",
+      "payment_id",
+      "validation"
+    ]
+  },
+  {
+    "table_name": "fact_payment",
+    "metric_name": "amount_sum",
+    "expression": "SUM(amount)",
+    "meaning": "amount 的SUM指标",
+    "note": "当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。",
+    "applicable_grain": "table_grain",
+    "required_filters": "",
+    "keywords": [
+      "amount",
+      "amount_sum",
+      "fact_payment",
+      "sum"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "metric_name": "session_count",
+    "expression": "COUNT(DISTINCT session_id)",
+    "meaning": "session 数",
+    "note": "统计 session 数应使用 session_id 去重，或在确认无重复时使用 COUNT(*)。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_session",
+      "session",
+      "session_count",
+      "session_id",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "metric_name": "active_user_count",
+    "expression": "COUNT(DISTINCT user_id)",
+    "meaning": "有 session 的活跃用户数",
+    "note": "用户数和 session 数不能混用。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "active_user_count",
+      "count",
+      "distinct",
+      "fact_session",
+      "session",
+      "user_id",
+      "活跃",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "metric_name": "avg_session_duration_sec",
+    "expression": "AVG(DATEDIFF('second', start_time, end_time))",
+    "meaning": "平均 session 时长秒数",
+    "note": "使用 start_time 与 end_time 计算时长。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "avg",
+      "avg_session_duration_sec",
+      "datediff",
+      "end_time",
+      "fact_session",
+      "second",
+      "session",
+      "start_time",
+      "使用",
+      "时长"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "metric_name": "total_session_duration_sec",
+    "expression": "SUM(DATEDIFF('second', start_time, end_time))",
+    "meaning": "总 session 时长秒数",
+    "note": "可用于分析总体访问时长规模。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "datediff",
+      "end_time",
+      "fact_session",
+      "second",
+      "session",
+      "start_time",
+      "sum",
+      "total_session_duration_sec",
+      "时长"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "metric_name": "device_count",
+    "expression": "COUNT(DISTINCT device)",
+    "meaning": "设备类型数",
+    "note": "device 是分组维度，不是数值指标。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "device",
+      "device_count",
+      "distinct",
+      "fact_session",
+      "设备"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "metric_name": "ip_country_count",
+    "expression": "COUNT(DISTINCT ip_country)",
+    "meaning": "访问来源国家数",
+    "note": "ip_country 表示访问来源国家，不等同于租户注册国家。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_session",
+      "ip_country",
+      "ip_country_count",
+      "国家",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "fact_subscription",
+    "metric_name": "subscription_count",
+    "expression": "COUNT(DISTINCT sub_id)",
+    "meaning": "订阅数量",
+    "note": "统计订阅实体数时使用。",
+    "applicable_grain": "订阅级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_subscription",
+      "sub_id",
+      "subscription_count",
+      "使用",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "fact_subscription",
+    "metric_name": "active_subscription_count",
+    "expression": "COUNT(\n DISTINCT CASE\n WHEN status = 'active' THEN sub_id\n END\n)",
+    "meaning": "当前状态为 active 的订阅数量",
+    "note": "若分析某个月是否有效，建议再叠加 start_date 和 end_date 条件。",
+    "applicable_grain": "订阅级",
+    "required_filters": "",
+    "keywords": [
+      "active",
+      "active_subscription_count",
+      "case",
+      "count",
+      "distinct",
+      "end",
+      "end_date",
+      "fact_subscription",
+      "start_date",
+      "status",
+      "sub_id",
+      "then",
+      "when",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "fact_subscription",
+    "metric_name": "total_mrr",
+    "expression": "SUM(mrr)",
+    "meaning": "MRR 合计",
+    "note": "这是订阅口径的名义月收入，不等于实收收入。",
+    "applicable_grain": "订阅聚合级",
+    "required_filters": "",
+    "keywords": [
+      "fact_subscription",
+      "mrr",
+      "sum",
+      "total_mrr",
+      "实收",
+      "收入",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "metric_name": "snapshot_record_count",
+    "expression": "COUNT(*)",
+    "meaning": "快照记录数",
+    "note": "当前已验证 tenant_id + snapshot_date 唯一，因此 snapshot_record_count 可直接使用 COUNT(*)。\n",
+    "applicable_grain": "fact_tenant_metrics_snapshot 原子粒度",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "fact_tenant_metrics_snapshot",
+      "snapshot_date",
+      "snapshot_record_count",
+      "tenant_id",
+      "使用",
+      "快照"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "metric_name": "snapshot_tenant_count",
+    "expression": "COUNT(DISTINCT tenant_id)",
+    "meaning": "快照覆盖租户数",
+    "note": "按日期比较时应同时输出 tenant_count。\n",
+    "applicable_grain": "单日或任意聚合层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_tenant_metrics_snapshot",
+      "snapshot_tenant_count",
+      "tenant_count",
+      "tenant_id",
+      "快照",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "metric_name": "total_users_on_date",
+    "expression": "SUM(total_users)",
+    "meaning": "某快照日期的总用户数",
+    "note": "仅应在单个 snapshot_date 过滤或按日期分组后使用。\n",
+    "applicable_grain": "单个 snapshot_date",
+    "required_filters": "",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "snapshot_date",
+      "sum",
+      "total_users",
+      "total_users_on_date",
+      "使用",
+      "快照",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "metric_name": "avg_users_per_tenant",
+    "expression": "AVG(total_users)",
+    "meaning": "平均每租户用户数",
+    "note": "有助于在 tenant 覆盖数变化时做稳健比较。\n",
+    "applicable_grain": "单日或任意已分组层级",
+    "required_filters": "",
+    "keywords": [
+      "avg",
+      "avg_users_per_tenant",
+      "fact_tenant_metrics_snapshot",
+      "tenant",
+      "total_users",
+      "用户",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "metric_name": "total_docs_on_date",
+    "expression": "SUM(total_docs)",
+    "meaning": "某快照日期的总文档数",
+    "note": "不要跨多个 snapshot_date 直接 SUM 后解释为期间新增文档数。\n",
+    "applicable_grain": "单个 snapshot_date",
+    "required_filters": "",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "snapshot_date",
+      "sum",
+      "total_docs",
+      "total_docs_on_date",
+      "快照",
+      "文档"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "metric_name": "total_storage_mb_on_date",
+    "expression": "SUM(total_storage_mb)",
+    "meaning": "某快照日期的总存储量",
+    "note": "单位为 MB，属于快照状态值。\n",
+    "applicable_grain": "单个 snapshot_date",
+    "required_filters": "",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "mb",
+      "sum",
+      "total_storage_mb",
+      "total_storage_mb_on_date",
+      "快照"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "metric_name": "total_revenue_snapshot_on_date",
+    "expression": "SUM(total_revenue)",
+    "meaning": "某快照日期的租户收入快照总量，不等于期间实收",
+    "note": "问实收收入时应改用 fact_actual_revenue。\n",
+    "applicable_grain": "单个 snapshot_date",
+    "required_filters": "",
+    "keywords": [
+      "fact_actual_revenue",
+      "fact_tenant_metrics_snapshot",
+      "sum",
+      "total_revenue",
+      "total_revenue_snapshot_on_date",
+      "实收",
+      "快照",
+      "收入",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "metric_name": "active_users_today",
+    "expression": "SUM(active_users_today)",
+    "meaning": "当天活跃用户数合计",
+    "note": "0 值允许存在，不应视为异常。\n",
+    "applicable_grain": "单个 snapshot_date 或按日期趋势",
+    "required_filters": "",
+    "keywords": [
+      "active_users_today",
+      "fact_tenant_metrics_snapshot",
+      "sum",
+      "活跃",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "metric_name": "ticket_count",
+    "expression": "COUNT(DISTINCT ticket_id)",
+    "meaning": "工单数",
+    "note": "工单数量应使用 ticket_id 去重统计。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_ticket",
+      "ticket_count",
+      "ticket_id",
+      "使用",
+      "工单"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "metric_name": "open_ticket_count",
+    "expression": "COUNT(DISTINCT CASE WHEN status = 'open' THEN ticket_id END)",
+    "meaning": "open 工单数",
+    "note": "用于统计未处理工单数量。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "case",
+      "count",
+      "distinct",
+      "end",
+      "fact_ticket",
+      "open",
+      "open_ticket_count",
+      "status",
+      "then",
+      "ticket_id",
+      "when",
+      "工单"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "metric_name": "in_progress_ticket_count",
+    "expression": "COUNT(DISTINCT CASE WHEN status = 'in_progress' THEN ticket_id END)",
+    "meaning": "处理中工单数",
+    "note": "用于统计处理中工单数量。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "case",
+      "count",
+      "distinct",
+      "end",
+      "fact_ticket",
+      "in_progress",
+      "in_progress_ticket_count",
+      "status",
+      "then",
+      "ticket_id",
+      "when",
+      "工单"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "metric_name": "resolved_ticket_count",
+    "expression": "COUNT(DISTINCT CASE WHEN status = 'resolved' THEN ticket_id END)",
+    "meaning": "已解决工单数",
+    "note": "用于统计已解决工单数量。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "case",
+      "count",
+      "distinct",
+      "end",
+      "fact_ticket",
+      "resolved",
+      "resolved_ticket_count",
+      "status",
+      "then",
+      "ticket_id",
+      "when",
+      "工单",
+      "解决"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "metric_name": "closed_ticket_count",
+    "expression": "COUNT(DISTINCT CASE WHEN status = 'closed' THEN ticket_id END)",
+    "meaning": "已关闭工单数",
+    "note": "用于统计已关闭工单数量。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "case",
+      "closed",
+      "closed_ticket_count",
+      "count",
+      "distinct",
+      "end",
+      "fact_ticket",
+      "status",
+      "then",
+      "ticket_id",
+      "when",
+      "工单"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "metric_name": "unresolved_ticket_count",
+    "expression": "COUNT(DISTINCT CASE WHEN resolved_at IS NULL THEN ticket_id END)",
+    "meaning": "未解决或无解决时间工单数",
+    "note": "需结合 status 理解未解决或未关闭状态。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "case",
+      "count",
+      "distinct",
+      "end",
+      "fact_ticket",
+      "is",
+      "null",
+      "resolved_at",
+      "status",
+      "then",
+      "ticket_id",
+      "unresolved_ticket_count",
+      "when",
+      "工单",
+      "解决"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "metric_name": "avg_resolution_hours",
+    "expression": "AVG(DATEDIFF('second', created_at, resolved_at) / 3600.0)",
+    "meaning": "平均解决时长小时数",
+    "note": "使用前必须过滤 WHERE resolved_at IS NOT NULL。\n",
+    "applicable_grain": "resolved_at 非空的工单",
+    "required_filters": "",
+    "keywords": [
+      "avg",
+      "avg_resolution_hours",
+      "created_at",
+      "datediff",
+      "fact_ticket",
+      "is",
+      "not",
+      "null",
+      "resolved_at",
+      "second",
+      "where",
+      "使用",
+      "时长",
+      "解决"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "metric_name": "reply_record_count",
+    "expression": "COUNT(DISTINCT reply_id)",
+    "meaning": "工单回复记录数",
+    "note": "统计回复数时可使用 reply_id 去重，或在确认无重复时使用 COUNT(*)。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_ticket_reply",
+      "reply_id",
+      "reply_record_count",
+      "使用",
+      "回复",
+      "工单"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "metric_name": "replied_ticket_count",
+    "expression": "COUNT(DISTINCT ticket_id)",
+    "meaning": "有回复的工单数",
+    "note": "工单数应使用 ticket_id 去重统计。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_ticket_reply",
+      "replied_ticket_count",
+      "ticket_id",
+      "使用",
+      "回复",
+      "工单"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "metric_name": "avg_content_length",
+    "expression": "AVG(content_length)",
+    "meaning": "平均回复文本长度",
+    "note": "仅表示长度，不直接代表服务质量。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "avg",
+      "avg_content_length",
+      "content_length",
+      "fact_ticket_reply",
+      "回复"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "metric_name": "total_content_length",
+    "expression": "SUM(content_length)",
+    "meaning": "总回复文本长度",
+    "note": "可用于衡量回复文本总量。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "content_length",
+      "fact_ticket_reply",
+      "sum",
+      "total_content_length",
+      "回复"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "metric_name": "agent_reply_count",
+    "expression": "COUNT(DISTINCT CASE WHEN author_type = 'agent' THEN reply_id END)",
+    "meaning": "人工客服回复数",
+    "note": "适合区分人工与机器人回复结构。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "agent",
+      "agent_reply_count",
+      "author_type",
+      "case",
+      "count",
+      "distinct",
+      "end",
+      "fact_ticket_reply",
+      "reply_id",
+      "then",
+      "when",
+      "回复",
+      "客服"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "metric_name": "bot_reply_count",
+    "expression": "COUNT(DISTINCT CASE WHEN author_type = 'bot' THEN reply_id END)",
+    "meaning": "机器人回复数",
+    "note": "用于分析机器人回复占比。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "author_type",
+      "bot",
+      "bot_reply_count",
+      "case",
+      "count",
+      "distinct",
+      "end",
+      "fact_ticket_reply",
+      "reply_id",
+      "then",
+      "when",
+      "回复"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "metric_name": "customer_reply_count",
+    "expression": "COUNT(DISTINCT CASE WHEN author_type = 'customer' THEN reply_id END)",
+    "meaning": "客户回复数",
+    "note": "用于分析客户追问或交互结构。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "author_type",
+      "case",
+      "count",
+      "customer",
+      "customer_reply_count",
+      "distinct",
+      "end",
+      "fact_ticket_reply",
+      "reply_id",
+      "then",
+      "when",
+      "回复"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "metric_name": "activation_record_count",
+    "expression": "COUNT(DISTINCT (user_id, milestone_type, reached_at))",
+    "meaning": "激活里程碑记录数",
+    "note": "按事件或记录数统计时可使用复合主键去重。\n",
+    "applicable_grain": "fact_user_activation 原子粒度",
+    "required_filters": "",
+    "keywords": [
+      "activation_record_count",
+      "count",
+      "distinct",
+      "fact_user_activation",
+      "milestone_type",
+      "reached_at",
+      "user_id",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "metric_name": "activated_user_count",
+    "expression": "COUNT(DISTINCT user_id)",
+    "meaning": "达成激活里程碑的用户数",
+    "note": "按用户数统计时必须使用 COUNT(DISTINCT user_id)。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "activated_user_count",
+      "count",
+      "distinct",
+      "fact_user_activation",
+      "user_id",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "metric_name": "milestone_type_count",
+    "expression": "COUNT(DISTINCT milestone_type)",
+    "meaning": "激活里程碑类型数",
+    "note": "milestone_type 是分组维度，不是数值指标。\n",
+    "applicable_grain": "任意分析层级",
+    "required_filters": "",
+    "keywords": [
+      "count",
+      "distinct",
+      "fact_user_activation",
+      "milestone_type",
+      "milestone_type_count"
+    ]
+  }
+]

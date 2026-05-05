@@ -1,0 +1,56 @@
+[
+  {
+    "recipe_id": "question_1",
+    "name": "",
+    "description": "",
+    "required_tables": [],
+    "required_fields": [],
+    "metrics": [],
+    "dimensions": [],
+    "join_paths": [],
+    "grain_rules": [],
+    "dq_rules": [],
+    "sql_skeleton": "",
+    "source": "",
+    "confidence": "",
+    "keywords": [
+      "question_1"
+    ]
+  },
+  {
+    "recipe_id": "question_2",
+    "name": "",
+    "description": "",
+    "required_tables": [],
+    "required_fields": [],
+    "metrics": [],
+    "dimensions": [],
+    "join_paths": [],
+    "grain_rules": [],
+    "dq_rules": [],
+    "sql_skeleton": "",
+    "source": "",
+    "confidence": "",
+    "keywords": [
+      "question_2"
+    ]
+  },
+  {
+    "recipe_id": "question_3",
+    "name": "",
+    "description": "",
+    "required_tables": [],
+    "required_fields": [],
+    "metrics": [],
+    "dimensions": [],
+    "join_paths": [],
+    "grain_rules": [],
+    "dq_rules": [],
+    "sql_skeleton": "",
+    "source": "",
+    "confidence": "",
+    "keywords": [
+      "question_3"
+    ]
+  }
+]

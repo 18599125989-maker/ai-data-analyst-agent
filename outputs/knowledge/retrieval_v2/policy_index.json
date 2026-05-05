@@ -1,0 +1,1489 @@
+[
+  {
+    "table_name": "dim_tenant_config",
+    "policy_flag": "table_grain_is_tenant_feature_config",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "dim_tenant_config",
+      "grain",
+      "table_grain_is_tenant_feature_config",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "policy_flag": "natural_key_is_tenant_id_feature_key",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "dim_tenant_config",
+      "natural_key_is_tenant_id_feature_key",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "policy_flag": "enabled_is_binary_flag",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "dim_tenant_config",
+      "enabled_is_binary_flag",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "policy_flag": "config_json_nullable_is_expected",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "config_json_nullable_is_expected",
+      "dim_tenant_config",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "policy_flag": "parse_config_json_only_when_non_null",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "dim_tenant_config",
+      "parse_config_json_only_when_non_null",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "policy_flag": "count_tenants_with_distinct_tenant_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_tenants_with_distinct_tenant_id",
+      "dim_tenant_config",
+      "distinct",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "policy_flag": "count_features_with_distinct_feature_key",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_features_with_distinct_feature_key",
+      "dim_tenant_config",
+      "distinct",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "policy_flag": "table_is_not_unique_user_dimension",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "dim_user_profile",
+      "table_is_not_unique_user_dimension",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "policy_flag": "user_id_not_unique",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "dim_user_profile",
+      "true",
+      "user_id_not_unique"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "policy_flag": "count_users_with_distinct_user_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_users_with_distinct_user_id",
+      "dim_user_profile",
+      "distinct",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "policy_flag": "count_profile_records_with_count_star",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_profile_records_with_count_star",
+      "dim_user_profile",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "policy_flag": "device_os_can_be_multi_valued_per_user",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "device_os_can_be_multi_valued_per_user",
+      "dim_user_profile",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "policy_flag": "do_not_assume_primary_device",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "dim_user_profile",
+      "do_not_assume_primary_device",
+      "true"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "policy_flag": "require_dedup_strategy_for_one_profile_per_user",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "dim_user_profile",
+      "require_dedup_strategy_for_one_profile_per_user",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "can_use_for_revenue_analysis",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "can_use_for_revenue_analysis",
+      "fact_actual_revenue",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "ready_for_agent",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_actual_revenue",
+      "ready_for_agent",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "use_revenue_id_as_physical_key",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_actual_revenue",
+      "true",
+      "use_revenue_id_as_physical_key"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "tenant_sub_month_requires_aggregation",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_actual_revenue",
+      "tenant_sub_month_requires_aggregation",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "monthly_revenue_should_sum_records",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_actual_revenue",
+      "monthly_revenue_should_sum_records",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "subscription_month_revenue_should_sum_records",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_actual_revenue",
+      "subscription_month_revenue_should_sum_records",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "actual_revenue_should_be_summed_not_selected_single_row",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "actual_revenue_should_be_summed_not_selected_single_row",
+      "fact_actual_revenue",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "must_use_actual_revenue_field_for_actual_income",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_actual_revenue",
+      "must_use_actual_revenue_field_for_actual_income",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "must_not_recalculate_actual_revenue_as_replacement",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_actual_revenue",
+      "must_not_recalculate_actual_revenue_as_replacement",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "formula_is_explanatory_only",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_actual_revenue",
+      "formula_is_explanatory_only",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "must_not_drop_duplicate_tenant_sub_month_records",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_actual_revenue",
+      "must_not_drop_duplicate_tenant_sub_month_records",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "policy_flag": "avoid_direct_join_to_invoice_or_payment_by_default",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "avoid_direct_join_to_invoice_or_payment_by_default",
+      "fact_actual_revenue",
+      "join",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "can_use_for_ai_usage_analysis",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "can_use_for_ai_usage_analysis",
+      "fact_ai_usage_log",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "ready_for_agent",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_ai_usage_log",
+      "ready_for_agent",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "use_log_id_as_physical_key",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_ai_usage_log",
+      "true",
+      "use_log_id_as_physical_key"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "use_deduct_for_ai_consumption",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_ai_usage_log",
+      "true",
+      "use_deduct_for_ai_consumption"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "net_credits_change_rule",
+    "policy_value": "deduct 记为负，earn/refund 记为正。\n",
+    "policy_value_text": "deduct 记为负，earn/refund 记为正。\n",
+    "keywords": [
+      "ai",
+      "credit",
+      "credits",
+      "deduct",
+      "earn",
+      "fact_ai_usage_log",
+      "net_credits_change_rule",
+      "refund"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "must_use_mapping_table_before_joining_user",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_ai_usage_log",
+      "join",
+      "must_use_mapping_table_before_joining_user",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "must_not_direct_join_user_id_hash_to_dim_user",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_ai_usage_log",
+      "join",
+      "must_not_direct_join_user_id_hash_to_dim_user",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "convert_created_at_from_unix_seconds",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "convert_created_at_from_unix_seconds",
+      "fact_ai_usage_log",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "treat_2026_04_as_partial_month",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_ai_usage_log",
+      "treat_2026_04_as_partial_month",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "use_complete_month_range_for_trends",
+    "policy_value": "2025-04 to 2026-03",
+    "policy_value_text": "2025-04 to 2026-03",
+    "keywords": [
+      "ai",
+      "fact_ai_usage_log",
+      "to",
+      "use_complete_month_range_for_trends"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "do_not_parse_remark_by_default",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "do_not_parse_remark_by_default",
+      "fact_ai_usage_log",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "policy_flag": "parse_remark_only_when_user_asks_token_cost_or_session",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_ai_usage_log",
+      "parse_remark_only_when_user_asks_token_cost_or_session",
+      "token",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "policy_flag": "count_attributions_with_primary_key",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "count_attributions_with_primary_key",
+      "fact_campaign_attribution",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "policy_flag": "count_users_with_distinct_user_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "count_users_with_distinct_user_id",
+      "distinct",
+      "fact_campaign_attribution",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "policy_flag": "count_campaigns_with_distinct_campaign_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "count_campaigns_with_distinct_campaign_id",
+      "distinct",
+      "fact_campaign_attribution",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "policy_flag": "touch_type_is_enum_not_metric",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_campaign_attribution",
+      "touch_type_is_enum_not_metric",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "policy_flag": "is_converted_is_binary_metric",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_campaign_attribution",
+      "is_converted_is_binary_metric",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "policy_flag": "is_converted_zero_is_valid",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_campaign_attribution",
+      "is_converted_zero_is_valid",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "policy_flag": "use_sum_is_converted_for_conversion_count",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_campaign_attribution",
+      "true",
+      "use_sum_is_converted_for_conversion_count"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "policy_flag": "use_avg_is_converted_for_conversion_rate",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_campaign_attribution",
+      "true",
+      "use_avg_is_converted_for_conversion_rate"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "policy_flag": "use_touch_at_for_attribution_trends",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_campaign_attribution",
+      "true",
+      "use_touch_at_for_attribution_trends"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "policy_flag": "join_to_user_or_tenant_can_duplicate_entities",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_campaign_attribution",
+      "join",
+      "join_to_user_or_tenant_can_duplicate_entities",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "policy_flag": "treat_2026_04_as_partial_month",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_campaign_attribution",
+      "treat_2026_04_as_partial_month",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "policy_flag": "count_records_with_primary_key",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_records_with_primary_key",
+      "credit",
+      "fact_credit_usage",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "policy_flag": "count_tenants_with_distinct_tenant_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_tenants_with_distinct_tenant_id",
+      "credit",
+      "distinct",
+      "fact_credit_usage",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "policy_flag": "resource_type_is_enum_not_metric",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "credit",
+      "fact_credit_usage",
+      "resource_type_is_enum_not_metric",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "policy_flag": "quantity_unit_depends_on_resource_type",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "credit",
+      "fact_credit_usage",
+      "quantity_unit_depends_on_resource_type",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "policy_flag": "do_not_sum_quantity_across_resource_types_without_grouping",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "credit",
+      "do_not_sum_quantity_across_resource_types_without_grouping",
+      "fact_credit_usage",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "policy_flag": "use_quantity_times_unit_cost_for_cost",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "credit",
+      "fact_credit_usage",
+      "true",
+      "use_quantity_times_unit_cost_for_cost"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "policy_flag": "use_dt_for_usage_trends",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "credit",
+      "fact_credit_usage",
+      "true",
+      "use_dt_for_usage_trends"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "policy_flag": "join_to_tenant_for_tenant_profile",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "credit",
+      "fact_credit_usage",
+      "join",
+      "join_to_tenant_for_tenant_profile",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "policy_flag": "table_grain_is_user_day",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_daily_usage",
+      "grain",
+      "table_grain_is_user_day",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "policy_flag": "natural_key_is_user_id_dt",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_daily_usage",
+      "natural_key_is_user_id_dt",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "policy_flag": "count_dau_with_distinct_user_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "count_dau_with_distinct_user_id",
+      "distinct",
+      "fact_daily_usage",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "policy_flag": "count_records_with_count_star",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "count_records_with_count_star",
+      "fact_daily_usage",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "policy_flag": "sum_session_count_for_total_sessions",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_daily_usage",
+      "sum_session_count_for_total_sessions",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "policy_flag": "sum_active_duration_sec_for_total_duration",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_daily_usage",
+      "sum_active_duration_sec_for_total_duration",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "policy_flag": "active_duration_sec_unit_is_seconds",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "active_duration_sec_unit_is_seconds",
+      "ai",
+      "fact_daily_usage",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "policy_flag": "feature_usage_json_is_parseable_but_not_default",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_daily_usage",
+      "feature_usage_json_is_parseable_but_not_default",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "policy_flag": "prefer_fact_feature_usage_for_feature_analysis",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_daily_usage",
+      "prefer_fact_feature_usage_for_feature_analysis",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "policy_flag": "join_ai_usage_by_user_and_date",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_daily_usage",
+      "join",
+      "join_ai_usage_by_user_and_date",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "policy_flag": "join_feature_usage_by_user_and_dt",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_daily_usage",
+      "join",
+      "join_feature_usage_by_user_and_dt",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "policy_flag": "table_has_no_strict_primary_key",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_doc_collaboration",
+      "table_has_no_strict_primary_key",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "policy_flag": "grain_validated_partial",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "ai",
+      "fact_doc_collaboration",
+      "grain",
+      "grain_validated_partial",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "policy_flag": "doc_user_dt_not_unique",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "doc_user_dt_not_unique",
+      "fact_doc_collaboration",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "policy_flag": "do_not_drop_duplicate_doc_user_dt_records",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "do_not_drop_duplicate_doc_user_dt_records",
+      "fact_doc_collaboration",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "policy_flag": "aggregate_to_doc_user_dt_before_doc_user_day_analysis",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "aggregate_to_doc_user_dt_before_doc_user_day_analysis",
+      "fact_doc_collaboration",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "policy_flag": "sum_edit_duration_sec_for_duration",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_doc_collaboration",
+      "sum_edit_duration_sec_for_duration",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "policy_flag": "sum_comment_count_for_comments",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_doc_collaboration",
+      "sum_comment_count_for_comments",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "policy_flag": "count_docs_with_distinct_doc_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_docs_with_distinct_doc_id",
+      "distinct",
+      "fact_doc_collaboration",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "policy_flag": "count_users_with_distinct_user_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_users_with_distinct_user_id",
+      "distinct",
+      "fact_doc_collaboration",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "policy_flag": "edit_duration_sec_unit_is_seconds",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "edit_duration_sec_unit_is_seconds",
+      "fact_doc_collaboration",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "policy_flag": "zero_edit_duration_or_comment_count_is_valid",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_doc_collaboration",
+      "true",
+      "zero_edit_duration_or_comment_count_is_valid"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "policy_flag": "use_only_completed_responses_for_nps",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_nps_survey",
+      "nps",
+      "true",
+      "use_only_completed_responses_for_nps"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "policy_flag": "exclude_na_score_for_nps",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "exclude_na_score_for_nps",
+      "fact_nps_survey",
+      "nps",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "policy_flag": "cast_score_to_integer_after_filter",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "cast_score_to_integer_after_filter",
+      "fact_nps_survey",
+      "nps",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "policy_flag": "nps_is_not_average_score",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_nps_survey",
+      "nps",
+      "nps_is_not_average_score",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "policy_flag": "plan_tier_join_requires_lower_normalization",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_nps_survey",
+      "join",
+      "nps",
+      "plan_tier_join_requires_lower_normalization",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "policy_flag": "plan_tier_direct_join_is_invalid",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_nps_survey",
+      "join",
+      "nps",
+      "plan_tier_direct_join_is_invalid",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "policy_flag": "role_is_enum_not_metric",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_nps_survey",
+      "nps",
+      "role_is_enum_not_metric",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "policy_flag": "do_not_sum_role",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "do_not_sum_role",
+      "fact_nps_survey",
+      "nps",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "policy_flag": "use_complete_month_range_for_trends",
+    "policy_value": "2025-04 to 2026-03",
+    "policy_value_text": "2025-04 to 2026-03",
+    "keywords": [
+      "fact_nps_survey",
+      "nps",
+      "to",
+      "use_complete_month_range_for_trends"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "policy_flag": "treat_2026_04_as_partial_month",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_nps_survey",
+      "nps",
+      "treat_2026_04_as_partial_month",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "policy_flag": "count_sessions_with_distinct_session_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_sessions_with_distinct_session_id",
+      "distinct",
+      "fact_session",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "policy_flag": "count_users_with_distinct_user_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_users_with_distinct_user_id",
+      "distinct",
+      "fact_session",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "policy_flag": "device_is_enum_not_metric",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "device_is_enum_not_metric",
+      "fact_session",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "policy_flag": "ip_country_is_access_country_not_tenant_country",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_session",
+      "ip_country_is_access_country_not_tenant_country",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "policy_flag": "calculate_duration_from_start_and_end_time",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "calculate_duration_from_start_and_end_time",
+      "fact_session",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "policy_flag": "use_start_time_for_session_trends",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_session",
+      "true",
+      "use_start_time_for_session_trends"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "policy_flag": "join_to_event_tables_can_duplicate_sessions",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_session",
+      "join",
+      "join_to_event_tables_can_duplicate_sessions",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "policy_flag": "table_is_snapshot_not_event_log",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "table_is_snapshot_not_event_log",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "policy_flag": "do_not_sum_snapshot_metrics_across_dates_without_grouping",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "do_not_sum_snapshot_metrics_across_dates_without_grouping",
+      "fact_tenant_metrics_snapshot",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "policy_flag": "filter_or_group_by_snapshot_date_before_aggregating_snapshot_metrics",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "filter_or_group_by_snapshot_date_before_aggregating_snapshot_metrics",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "policy_flag": "use_latest_snapshot_for_current_state",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "true",
+      "use_latest_snapshot_for_current_state"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "policy_flag": "include_tenant_count_when_comparing_dates",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "include_tenant_count_when_comparing_dates",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "policy_flag": "active_users_today_zero_is_valid",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "active_users_today_zero_is_valid",
+      "fact_tenant_metrics_snapshot",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "policy_flag": "total_revenue_is_snapshot_metric_not_actual_revenue",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "total_revenue_is_snapshot_metric_not_actual_revenue",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "policy_flag": "use_actual_revenue_table_for_actual_income",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "true",
+      "use_actual_revenue_table_for_actual_income"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "policy_flag": "treat_2026_04_as_partial_month",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_tenant_metrics_snapshot",
+      "treat_2026_04_as_partial_month",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "policy_flag": "count_tickets_with_distinct_ticket_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_tickets_with_distinct_ticket_id",
+      "distinct",
+      "fact_ticket",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "policy_flag": "priority_is_enum_not_metric",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_ticket",
+      "priority_is_enum_not_metric",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "policy_flag": "status_is_enum_not_metric",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_ticket",
+      "status_is_enum_not_metric",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "policy_flag": "use_created_at_for_ticket_creation_trends",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_ticket",
+      "true",
+      "use_created_at_for_ticket_creation_trends"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "policy_flag": "use_resolved_at_only_for_resolved_ticket_duration",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_ticket",
+      "true",
+      "use_resolved_at_only_for_resolved_ticket_duration"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "policy_flag": "resolved_at_null_means_unresolved_or_not_closed",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_ticket",
+      "resolved_at_null_means_unresolved_or_not_closed",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "policy_flag": "ticket_can_have_multiple_replies",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_ticket",
+      "ticket_can_have_multiple_replies",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "policy_flag": "join_to_reply_can_duplicate_ticket_rows",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_ticket",
+      "join",
+      "join_to_reply_can_duplicate_ticket_rows",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "policy_flag": "do_not_count_star_after_join_reply_as_ticket_count",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "do_not_count_star_after_join_reply_as_ticket_count",
+      "fact_ticket",
+      "join",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "policy_flag": "count_replies_with_reply_primary_key",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_replies_with_reply_primary_key",
+      "fact_ticket_reply",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "policy_flag": "count_tickets_with_distinct_ticket_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_tickets_with_distinct_ticket_id",
+      "distinct",
+      "fact_ticket_reply",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "policy_flag": "author_type_is_enum_not_metric",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "author_type_is_enum_not_metric",
+      "fact_ticket_reply",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "policy_flag": "content_length_is_length_not_quality",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "content_length_is_length_not_quality",
+      "fact_ticket_reply",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "policy_flag": "use_replied_at_for_reply_trends",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_ticket_reply",
+      "true",
+      "use_replied_at_for_reply_trends"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "policy_flag": "ticket_can_have_multiple_replies",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_ticket_reply",
+      "ticket_can_have_multiple_replies",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "policy_flag": "join_to_ticket_before_tenant_or_user",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_ticket_reply",
+      "join",
+      "join_to_ticket_before_tenant_or_user",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "policy_flag": "treat_2026_04_as_partial_month",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_ticket_reply",
+      "treat_2026_04_as_partial_month",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "policy_flag": "count_users_with_distinct_user_id",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "count_users_with_distinct_user_id",
+      "distinct",
+      "fact_user_activation",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "policy_flag": "milestone_type_is_enum_not_metric",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_user_activation",
+      "milestone_type_is_enum_not_metric",
+      "true"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "policy_flag": "use_reached_at_for_activation_trends",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_user_activation",
+      "true",
+      "use_reached_at_for_activation_trends"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "policy_flag": "user_can_have_multiple_milestones",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_user_activation",
+      "true",
+      "user_can_have_multiple_milestones"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "policy_flag": "join_to_tenant_through_dim_user",
+    "policy_value": true,
+    "policy_value_text": "True",
+    "keywords": [
+      "fact_user_activation",
+      "join",
+      "join_to_tenant_through_dim_user",
+      "true"
+    ]
+  }
+]

@@ -1,0 +1,59 @@
+[
+  {
+    "recipe_id": "question_1",
+    "title": "企业画像分布",
+    "analysis_type": "single_table_distribution",
+    "main_tables": [
+      "dim_tenant"
+    ],
+    "query_sql": "-- Question 1: 企业画像分布\n\n-- 1. 按国家统计企业数\nSELECT\n    country,\n    COUNT(*) AS tenant_count\nFROM dim_tenant\nGROUP BY country\nORDER BY tenant_count DESC, country;\n\n-- 2. 按规模统计企业数和占比\nSELECT\n    size_tier,\n    COUNT(*) AS tenant_count,\n    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS percentage\nFROM dim_tenant\nGROUP BY size_tier\nORDER BY tenant_count DESC, size_tier;\n\n-- 3. 国家 × 行业二维分布\nSELECT\n    country,\n    industry,\n    COUNT(*) AS tenant_count\nFROM dim_tenant\nGROUP BY country, industry\nORDER BY country, industry;\n",
+    "insight": "# Question 1 Insight：企业画像分布\n\n## 使用表\n- dim_tenant\n\n## 使用字段\n- tenant_id\n- country\n- industry\n- size_tier\n\n## 主要结论\n- 企业数量最多的国家是 US，共有 63 家企业。\n- 占比最高的规模段是 large，占比 21.6%。\n- 已生成国家 × 行业二维分布表，用于观察不同国家的行业结构差异。\n\n## 口径说明\n- dim_tenant 的粒度是一行一个企业。\n- 因此本题可以直接使用 COUNT(*) 统计企业数量。\n",
+    "output_files": [
+      "country_distribution.csv",
+      "country_distribution.png",
+      "country_industry_distribution.csv",
+      "country_industry_pivot.csv",
+      "insight.md",
+      "query.sql",
+      "size_distribution.csv",
+      "size_distribution.png"
+    ],
+    "source_dir": "outputs/sample/question_1"
+  },
+  {
+    "recipe_id": "question_2",
+    "title": "月度新注册用户",
+    "analysis_type": "time_trend",
+    "main_tables": [
+      "dim_user"
+    ],
+    "query_sql": "SELECT\n    STRFTIME(DATE_TRUNC('month', register_at), '%Y-%m') AS register_month,\n    COUNT(*) AS new_users,\n    SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS active_users,\n    SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) AS inactive_users,\n    SUM(CASE WHEN status = 'suspended' THEN 1 ELSE 0 END) AS suspended_users\nFROM dim_user\nWHERE register_at >= TIMESTAMP '2025-04-01'\n  AND register_at <  TIMESTAMP '2026-04-01'\nGROUP BY register_month\nORDER BY register_month;\n",
+    "insight": "# Question 2 Insight：月度新注册用户\n\n## 使用表\n- dim_user\n\n## 使用字段\n- user_id\n- register_at\n- status\n\n## 主要结论\n- 注册量最高的月份是 2025-07，新增用户 3604 人。\n- 注册量最低的月份是 2025-04，新增用户 2469 人。\n- 已计算每个月注册用户在当前时点下的 active / inactive / suspended 状态占比。\n\n## 重要口径说明\n- dim_user.status 是用户当前状态，不是注册当月状态。\n- 因此，状态占比只能说明这些注册用户现在的账户状态，不能直接解释为注册当月留存率。\n- 如果要分析真实留存，需要使用 fact_daily_usage、fact_session 或其他行为表重新定义活跃口径。\n\n## 可能业务解释\n- 注册高峰可能与营销活动、产品发布或季节性采购周期有关。\n- 注册低谷可能与假期、预算周期或推广减少有关。\n",
+    "output_files": [
+      "insight.md",
+      "monthly_new_users.csv",
+      "monthly_new_users.png",
+      "query.sql"
+    ],
+    "source_dir": "outputs/sample/question_2"
+  },
+  {
+    "recipe_id": "question_3",
+    "title": "各套餐月收入对比",
+    "analysis_type": "join_and_revenue_aggregation",
+    "main_tables": [
+      "fact_subscription",
+      "dim_plan"
+    ],
+    "query_sql": "WITH active_subs AS (\n    SELECT\n        sub_id,\n        tenant_id,\n        plan_tier,\n        start_date,\n        end_date,\n        mrr,\n        status\n    FROM fact_subscription\n    WHERE status = 'active'\n      AND start_date <= DATE '2025-10-31'\n      AND COALESCE(end_date, DATE '9999-12-31') >= DATE '2025-10-01'\n)\n\nSELECT\n    a.plan_tier,\n    COUNT(*) AS active_subscription_count,\n    ROUND(SUM(a.mrr), 2) AS total_mrr,\n    ROUND(SUM(a.mrr / NULLIF(p.monthly_price, 0)), 2) AS estimated_seats,\n    ROUND(SUM((a.mrr / NULLIF(p.monthly_price, 0)) * p.monthly_price), 2) AS nominal_revenue\nFROM active_subs a\nLEFT JOIN dim_plan p\n    ON a.plan_tier = p.plan_tier\nGROUP BY a.plan_tier\nORDER BY total_mrr DESC;\n",
+    "insight": "# Question 3 Insight：各套餐月收入对比\n\n## 使用表\n- fact_subscription\n- dim_plan\n\n## 使用字段\n- fact_subscription.sub_id\n- fact_subscription.plan_tier\n- fact_subscription.start_date\n- fact_subscription.end_date\n- fact_subscription.status\n- fact_subscription.mrr\n- dim_plan.plan_tier\n- dim_plan.monthly_price\n\n## 主要结论\n- 2025-10 当月 MRR 最高的套餐是 business，总 MRR 为 299296.0。\n- 已按套餐统计活跃订阅数量、总 MRR、估算 seats 和 nominal revenue。\n\n## 有效订阅口径\n本题将满足以下条件的订阅视为 2025-10 当月有效订阅：\n1. status = active\n2. start_date <= 2025-10-31\n3. end_date >= 2025-10-01；如果 end_date 为空，则视为仍然有效。\n\n## 重要口径说明\n- fact_subscription.mrr 是月度经常性收入，即确认收入口径。\n- estimated_seats 是通过 mrr / monthly_price 反推得到，不是真实 seats 字段。\n- nominal_revenue = estimated_seats * monthly_price，所以它通常会非常接近 total_mrr。\n- 如果正式分析要求真实商业收入，应优先考虑 fact_actual_revenue.actual_revenue。\n- 如果使用发票或付款表，还需要考虑折扣、优惠券、未付款、退款、多币种和账期错位等问题。\n",
+    "output_files": [
+      "active_subscription_count.png",
+      "insight.md",
+      "plan_revenue_comparison.csv",
+      "query.sql",
+      "total_mrr.png"
+    ],
+    "source_dir": "outputs/sample/question_3"
+  }
+]

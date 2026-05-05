@@ -39,8 +39,12 @@ for_contestants/
 *.duckdb
 *.db
 
-# 输出结果
-outputs/
+
+
+# outputs下仅保留小体积探查结果，大体积验证文件不上传
+outputs/knowledge/validation/
+outputs/*.csv
+outputs/*.parquet
 
 # 敏感配置文件（绝对不能上传）
 .env
@@ -61,3 +65,22 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Large generated validation outputs
+outputs/knowledge/validation/
+outputs/logs/
+*.duckdb
+
+# Local environment
+.venv/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+.DS_Store
+
+# Local database and generated outputs
+cloudwork.duckdb
+outputs/logs/
+outputs/knowledge/validation/

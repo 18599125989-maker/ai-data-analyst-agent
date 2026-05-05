@@ -1,0 +1,27 @@
+{
+  "total_yaml_files": 37,
+  "parsed_count": 37,
+  "parse_failed_count": 0,
+  "ready_for_agent_count": 37,
+  "skipped_count": 0,
+  "table_index_count": 37,
+  "field_index_count": 217,
+  "metric_index_count": 137,
+  "join_index_count": 81,
+  "trap_index_count": 132,
+  "policy_index_count": 127,
+  "recipe_index_count": 3,
+  "skipped_cards": [],
+  "errors": [],
+  "output_files": {
+    "table_index": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/table_index.json",
+    "field_index": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/field_index.json",
+    "metric_index": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/metric_index.json",
+    "join_index": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/join_index.json",
+    "trap_index": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/trap_index.json",
+    "policy_index": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/policy_index.json",
+    "recipe_index": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/recipe_index.json",
+    "compact_table_cards": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/compact_table_cards.md",
+    "build_summary": "/Users/zhang/Desktop/飞书比赛/outputs/knowledge/retrieval_v2/build_summary.json"
+  }
+}

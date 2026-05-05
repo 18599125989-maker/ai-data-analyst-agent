@@ -1,0 +1,3474 @@
+[
+  {
+    "table_name": "dim_channel",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_channel.yaml",
+    "file_size_kb": 8.53,
+    "business_meaning": "群聊/频道维度。\n数据字典将该表归入“协作与内容”域。\n数据字典行数说明为：~5.6k。",
+    "grain_summary": "数据字典说明粒度：一行 = 一个频道。 数据字典说明主键：`channel_id`。",
+    "row_count": 5591,
+    "column_count": 5,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "channel_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "channel_id",
+        "tenant_id"
+      ],
+      "time_columns": [
+        "created_at"
+      ],
+      "metric_columns": [
+        "member_count"
+      ],
+      "dimension_columns": [
+        "channel_id",
+        "tenant_id",
+        "channel_type",
+        "created_at"
+      ],
+      "enum_columns": [
+        "channel_type"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "entity_count",
+      "member_count_sum"
+    ],
+    "join_targets": [
+      "dim_tenant"
+    ],
+    "keywords": [
+      "channel_id",
+      "channel_type",
+      "consequence",
+      "count",
+      "created_at",
+      "dim_channel",
+      "distinct",
+      "duckdb",
+      "entity_count",
+      "join",
+      "k",
+      "member_count",
+      "member_count_sum",
+      "prevention",
+      "tenant_id",
+      "trap",
+      "validation",
+      "使用",
+      "协作"
+    ]
+  },
+  {
+    "table_name": "dim_department",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_department.yaml",
+    "file_size_kb": 16.4,
+    "business_meaning": "部门维度表，描述每个企业 tenant 下的部门信息，以及部门之间的上下级关系。 该表用于组织结构分析、部门分布分析，也可以作为用户分析中的部门维度表。\n",
+    "grain_summary": "一行 = 一个部门。 每个部门属于一个 tenant。 一个 tenant 可以有多个部门。 parent_dept_id 表示上级部门，空值表示顶级部门。",
+    "row_count": 2937,
+    "column_count": 4,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "dept_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "dept_id",
+        "tenant_id",
+        "parent_dept_id"
+      ],
+      "time_columns": [],
+      "metric_columns": [],
+      "dimension_columns": [
+        "tenant_id",
+        "dept_name",
+        "parent_dept_id"
+      ],
+      "enum_columns": [
+        "dept_name"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "department_count",
+      "tenant_count",
+      "top_level_department_count"
+    ],
+    "join_targets": [
+      "dim_department",
+      "dim_tenant",
+      "dim_user"
+    ],
+    "keywords": [
+      "consequence",
+      "count",
+      "coverage",
+      "department_count",
+      "dept_id",
+      "dept_name",
+      "dim_department",
+      "dim_user",
+      "distinct",
+      "id",
+      "inner",
+      "join",
+      "left",
+      "n",
+      "parent_dept_id",
+      "prevention",
+      "tenant",
+      "tenant_count",
+      "tenant_id",
+      "top_level_department_count",
+      "trap",
+      "企业",
+      "使用",
+      "分布",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_feature",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_feature.yaml",
+    "file_size_kb": 10.64,
+    "business_meaning": "产品功能维度表，描述 CloudWork 中各个功能模块的稳定编码、展示名称、所属模块、类别和上线时间。 该表适合做功能目录、功能分组、功能上线时间分析，以及为 `fact_feature_usage` 等事实表补充功能属性。 当前验证显示该表可作为正式功能维度表使用。\n",
+    "grain_summary": "一行代表一个产品功能。 feature_key 是功能主键和稳定功能编码。 feature_name 是展示名称，不建议作为 JOIN key。 当前验证显示主键候选唯一：row_count = 12，distinct_primary_key_count = 12， duplicate_primary_key_count = 0，因此功能维度粒度成立。",
+    "row_count": 12,
+    "column_count": 5,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "feature_key"
+    ],
+    "natural_key_candidate": [
+      "feature_key"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "tested_key": [
+        "feature_key"
+      ],
+      "duplicated_group_count": 0,
+      "note": "当前验证显示 feature_key 唯一且无空值，可作为稳定功能编码和主键使用。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "feature_key"
+      ],
+      "time_columns": [
+        "launched_at"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "feature_key",
+        "feature_name",
+        "module",
+        "category"
+      ],
+      "enum_columns": [
+        "module",
+        "category"
+      ],
+      "json_columns": [],
+      "text_columns": [
+        "feature_name"
+      ]
+    },
+    "metric_names": [
+      "feature_count",
+      "feature_module_count"
+    ],
+    "join_targets": [
+      "fact_feature_usage"
+    ],
+    "keywords": [
+      "category",
+      "cloudwork",
+      "consequence",
+      "count",
+      "dim_feature",
+      "distinct",
+      "distinct_primary_key_count",
+      "duplicate_primary_key_count",
+      "fact_feature_usage",
+      "feature_count",
+      "feature_key",
+      "feature_module_count",
+      "feature_name",
+      "join",
+      "key",
+      "launched_at",
+      "module",
+      "n",
+      "prevention",
+      "row_count",
+      "trap",
+      "使用",
+      "功能"
+    ]
+  },
+  {
+    "table_name": "dim_org_structure",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_org_structure.yaml",
+    "file_size_kb": 7.86,
+    "business_meaning": "组织节点（团队/虚拟组）。\n数据字典将该表归入“租户与组织”域。\n数据字典行数说明为：~1.9k。",
+    "grain_summary": "数据字典说明粒度：一行 = 一个组织节点；只覆盖前 200 个 tenant。 数据字典说明主键：`node_id`。",
+    "row_count": 1901,
+    "column_count": 5,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "node_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "node_id",
+        "parent_node_id",
+        "tenant_id"
+      ],
+      "time_columns": [],
+      "metric_columns": [
+        "level"
+      ],
+      "dimension_columns": [
+        "node_id",
+        "parent_node_id",
+        "tenant_id",
+        "node_type"
+      ],
+      "enum_columns": [
+        "node_type"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "entity_count",
+      "level_sum"
+    ],
+    "join_targets": [],
+    "keywords": [
+      "consequence",
+      "count",
+      "dim_org_structure",
+      "distinct",
+      "duckdb",
+      "entity_count",
+      "join",
+      "k",
+      "level",
+      "level_sum",
+      "node_id",
+      "node_type",
+      "parent_node_id",
+      "prevention",
+      "tenant",
+      "tenant_id",
+      "trap",
+      "validation",
+      "使用",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "dim_plan",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_plan.yaml",
+    "file_size_kb": 10.54,
+    "business_meaning": "套餐维度。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：5。",
+    "grain_summary": "数据字典说明主键：`plan_tier`。",
+    "row_count": 5,
+    "column_count": 6,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "plan_tier"
+    ],
+    "natural_key_candidate": [
+      "plan_name"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "duplicated_group_count": 0,
+      "note": "plan_name 在当前样本中看似唯一，但业务上更推荐使用 plan_tier 做稳定关联键。"
+    },
+    "field_groups": {
+      "id_columns": [
+        "plan_tier"
+      ],
+      "time_columns": [],
+      "metric_columns": [
+        "monthly_price",
+        "annual_price"
+      ],
+      "dimension_columns": [
+        "plan_name",
+        "plan_tier",
+        "seat_limit"
+      ],
+      "enum_columns": [
+        "plan_name",
+        "plan_tier",
+        "seat_limit"
+      ],
+      "json_columns": [],
+      "text_columns": [
+        "features"
+      ]
+    },
+    "metric_names": [
+      "plan_count",
+      "listed_monthly_price"
+    ],
+    "join_targets": [
+      "fact_subscription"
+    ],
+    "keywords": [
+      "annual_price",
+      "consequence",
+      "count",
+      "dim_plan",
+      "distinct",
+      "duckdb",
+      "features",
+      "join",
+      "listed_monthly_price",
+      "monthly_price",
+      "plan_count",
+      "plan_name",
+      "plan_tier",
+      "prevention",
+      "seat_limit",
+      "trap",
+      "validation",
+      "使用",
+      "套餐",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "dim_tenant",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_tenant.yaml",
+    "file_size_kb": 13.58,
+    "business_meaning": "企业客户维度表，描述 CloudWork 中每个 tenant 的基础企业画像信息。 该表是一切租户级分析的核心维度表，可用于补充企业名称、行业、规模、国家和创建时间。 当前验证显示该表可作为企业实体统计和企业画像分析的正式维度表使用。\n",
+    "grain_summary": "一行 = 一个企业。 当前验证显示 tenant_id 唯一，row_count = 500，distinct_tenant_id_count = 500， 因此“一个 tenant 一行”的粒度成立。",
+    "row_count": 500,
+    "column_count": 6,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "tenant_id"
+    ],
+    "natural_key_candidate": [
+      "name"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "tested_key": [
+        "name"
+      ],
+      "duplicated_group_count": 0,
+      "note": "当前样本中 name 也唯一，distinct_name_count = 500，duplicate_name_count = 0。 但 name 仍然只应视为候选自然键，不应替代 tenant_id 作为主键、 稳定 JOIN 键或唯一企业标识。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "tenant_id"
+      ],
+      "time_columns": [
+        "created_at"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "name",
+        "industry",
+        "size_tier",
+        "country"
+      ],
+      "enum_columns": [
+        "industry",
+        "size_tier",
+        "country"
+      ],
+      "json_columns": [],
+      "text_columns": [
+        "name"
+      ]
+    },
+    "metric_names": [
+      "tenant_count",
+      "tenant_created_count"
+    ],
+    "join_targets": [
+      "dim_user",
+      "fact_subscription"
+    ],
+    "keywords": [
+      "cloudwork",
+      "consequence",
+      "count",
+      "country",
+      "created_at",
+      "dim_tenant",
+      "dim_user",
+      "distinct",
+      "distinct_tenant_id_count",
+      "fact",
+      "fact_subscription",
+      "industry",
+      "join",
+      "n",
+      "name",
+      "prevention",
+      "row_count",
+      "size_tier",
+      "tenant",
+      "tenant_count",
+      "tenant_created_count",
+      "tenant_id",
+      "trap",
+      "企业",
+      "使用",
+      "国家",
+      "用户",
+      "租户",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_tenant_config.yaml",
+    "file_size_kb": 10.96,
+    "business_meaning": "租户功能开关与配置维度表。 用于记录每个 tenant 对各 feature 的启用状态和可选配置， 适合分析功能启用率、租户功能覆盖情况和配置分布。\n",
+    "grain_summary": "一行代表一个 tenant_id 对一个 feature_key 的配置记录。 tenant_id + feature_key 是业务自然键/配置粒度。",
+    "row_count": 6000,
+    "column_count": 4,
+    "authoring_status": "validated_with_warnings",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": "partial",
+    "ready_for_agent": true,
+    "warning_level": "medium",
+    "primary_key": [],
+    "natural_key_candidate": [
+      "tenant_id",
+      "feature_key"
+    ],
+    "natural_key_status": {
+      "validation_status": "passed",
+      "is_unique": true,
+      "note": "tenant_id + feature_key 已验证唯一，可作为业务自然键，但不是单列物理主键。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "tenant_id",
+        "feature_key"
+      ],
+      "time_columns": [],
+      "metric_columns": [
+        "enabled"
+      ],
+      "dimension_columns": [
+        "tenant_id",
+        "feature_key",
+        "config_json"
+      ],
+      "enum_columns": [
+        "feature_key"
+      ],
+      "json_columns": [
+        "config_json"
+      ],
+      "text_columns": []
+    },
+    "metric_names": [
+      "config_record_count",
+      "tenant_count",
+      "feature_count",
+      "enabled_config_count",
+      "enabled_rate"
+    ],
+    "join_targets": [
+      "dim_feature",
+      "dim_tenant"
+    ],
+    "keywords": [
+      "ai",
+      "avg",
+      "binary",
+      "config_json",
+      "config_json_nullable_is_expected",
+      "config_record_count",
+      "consequence",
+      "count",
+      "count_features_with_distinct_feature_key",
+      "count_tenants_with_distinct_tenant_id",
+      "dim_tenant_config",
+      "distinct",
+      "enabled",
+      "enabled_config_count",
+      "enabled_is_binary_flag",
+      "enabled_rate",
+      "fact_feature_usage",
+      "feature",
+      "feature_count",
+      "feature_key",
+      "flag",
+      "grain",
+      "is",
+      "join",
+      "json",
+      "n",
+      "natural_key_is_tenant_id_feature_key",
+      "not",
+      "null",
+      "parse_config_json_only_when_non_null",
+      "prevention",
+      "sum",
+      "table_grain_is_tenant_feature_config",
+      "tenant",
+      "tenant_count",
+      "tenant_id",
+      "trap",
+      "true",
+      "企业",
+      "使用",
+      "分布",
+      "功能",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "dim_tenant_plan",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_tenant_plan.yaml",
+    "file_size_kb": 10.25,
+    "business_meaning": "租户套餐历史（SCD2）。\n数据字典将该表归入“租户与组织”域。\n数据字典行数说明为：~2.3k。",
+    "grain_summary": "数据字典说明粒度：一行 = 一个租户在某个时间区间使用的套餐。 数据字典说明主键：`tenant_id` + `effective_from`。",
+    "row_count": 2320,
+    "column_count": 5,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "tenant_id",
+      "effective_from"
+    ],
+    "natural_key_candidate": [
+      "tenant_id",
+      "effective_from"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "note": "该候选自然键用于表达业务粒度或替代性唯一键，使用前应结合本卡 validation 结果理解。\n当前卡已升级为正式版本，唯一性与使用规则以本卡和 validation report 为准。"
+    },
+    "field_groups": {
+      "id_columns": [
+        "tenant_id",
+        "effective_from"
+      ],
+      "time_columns": [
+        "effective_from",
+        "effective_to"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "tenant_id",
+        "plan_name",
+        "plan_tier",
+        "effective_from",
+        "effective_to"
+      ],
+      "enum_columns": [
+        "plan_name",
+        "plan_tier"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "entity_count"
+    ],
+    "join_targets": [
+      "dim_plan",
+      "dim_tenant"
+    ],
+    "keywords": [
+      "a",
+      "consequence",
+      "count",
+      "dim_tenant_plan",
+      "distinct",
+      "duckdb",
+      "effective_from",
+      "effective_to",
+      "entity_count",
+      "join",
+      "k",
+      "n",
+      "plan_name",
+      "plan_tier",
+      "prevention",
+      "scd2",
+      "tenant_id",
+      "trap",
+      "validation",
+      "使用",
+      "分布",
+      "套餐",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "dim_ticket_category",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_ticket_category.yaml",
+    "file_size_kb": 7.56,
+    "business_meaning": "工单分类。\n数据字典将该表归入“客服工单”域。\n数据字典行数说明为：12，**含两级层级**（通过 `parent_category_id` 构建）。",
+    "grain_summary": "数据字典说明主键：`category_id`。",
+    "row_count": 12,
+    "column_count": 4,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "category_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "category_id",
+        "parent_category_id"
+      ],
+      "time_columns": [],
+      "metric_columns": [
+        "sla_hours"
+      ],
+      "dimension_columns": [
+        "category_id",
+        "category_name",
+        "parent_category_id"
+      ],
+      "enum_columns": [
+        "category_id",
+        "category_name",
+        "parent_category_id"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "entity_count",
+      "sla_hours_sum"
+    ],
+    "join_targets": [
+      "dim_ticket_category"
+    ],
+    "keywords": [
+      "category_id",
+      "category_name",
+      "consequence",
+      "count",
+      "dim_ticket_category",
+      "distinct",
+      "duckdb",
+      "entity_count",
+      "join",
+      "parent_category_id",
+      "prevention",
+      "sla_hours",
+      "sla_hours_sum",
+      "trap",
+      "validation",
+      "使用",
+      "客服",
+      "工单"
+    ]
+  },
+  {
+    "table_name": "dim_user",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_user.yaml",
+    "file_size_kb": 12.81,
+    "business_meaning": "用户维度。\n数据字典将该表归入“用户”域。\n数据字典行数说明为：50,000。",
+    "grain_summary": "数据字典说明粒度：一行 = 一个用户。 数据字典说明主键：`user_id`。",
+    "row_count": 50000,
+    "column_count": 7,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "user_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "user_id",
+        "tenant_id",
+        "dept_id"
+      ],
+      "time_columns": [
+        "register_at",
+        "last_active_at"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "tenant_id",
+        "dept_id",
+        "role",
+        "status"
+      ],
+      "enum_columns": [
+        "role",
+        "status"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "user_count",
+      "registered_user_count",
+      "active_status_user_count"
+    ],
+    "join_targets": [
+      "dim_department",
+      "dim_tenant"
+    ],
+    "keywords": [
+      "active_status_user_count",
+      "consequence",
+      "count",
+      "dept_id",
+      "dim_user",
+      "distinct",
+      "duckdb",
+      "join",
+      "last_active_at",
+      "prevention",
+      "register_at",
+      "registered_user_count",
+      "role",
+      "status",
+      "tenant_id",
+      "trap",
+      "user_count",
+      "user_id",
+      "validation",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user_id_mapping",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_user_id_mapping.yaml",
+    "file_size_kb": 8.18,
+    "business_meaning": "用户 ID 哈希映射表，用于把隐私保护场景中的哈希用户 ID 映射回明文 user_id。 该表是 `fact_ai_usage_log.user_id_hash` 与 `dim_user.user_id` 之间的桥接维度。 当前验证显示该表可作为正式桥接表使用。\n",
+    "grain_summary": "一行代表一个 user_id_hash 与明文 user_id 的映射关系。 当前验证显示主键候选已唯一：row_count = 40016，distinct_primary_key_count = 40016， duplicate_primary_key_count = 0，因此映射关系粒度成立。 该表用于把隐私保护后的 user_id_hash 映射回 dim_user.user_id。",
+    "row_count": 40016,
+    "column_count": 2,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "user_id"
+    ],
+    "natural_key_candidate": [
+      "user_id"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "tested_key": [
+        "user_id"
+      ],
+      "duplicated_group_count": 0,
+      "note": "当前验证显示 user_id 唯一，可作为本表主键与映射记录唯一标识。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "user_id",
+        "user_id_hash"
+      ],
+      "time_columns": [],
+      "metric_columns": [],
+      "dimension_columns": [
+        "user_id",
+        "user_id_hash"
+      ],
+      "enum_columns": [],
+      "json_columns": [],
+      "text_columns": [
+        "user_id_hash"
+      ]
+    },
+    "metric_names": [
+      "mapped_user_count",
+      "hash_mapping_count"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "dim_user"
+    ],
+    "keywords": [
+      "ai",
+      "consequence",
+      "count",
+      "dim_user",
+      "dim_user_id_mapping",
+      "distinct",
+      "distinct_primary_key_count",
+      "duplicate_primary_key_count",
+      "fact_ai_usage_log",
+      "hash_mapping_count",
+      "id",
+      "join",
+      "mapped_user_count",
+      "n",
+      "prevention",
+      "row_count",
+      "trap",
+      "user_id",
+      "user_id_hash",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "dim_user_profile",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_user_profile.yaml",
+    "file_size_kb": 12.28,
+    "business_meaning": "用户 profile / device preference 记录表。 用于描述用户的语言偏好、时区、设备系统和客户端版本分布， 更适合做用户画像分层和设备偏好分析，而不是作为唯一用户维表。\n",
+    "grain_summary": "一行代表一个用户的一条 profile/device preference 记录。 user_id 不唯一，不能把该表当作一人一行的用户维表。 重复 user_id 多数是 device_os 不同，可能表示一人多设备。 也存在部分完全重复 profile 行。 当前缺少 updated_at / version / is_primary_device 字段，无法判断最新画像或主设备。",
+    "row_count": 52500,
+    "column_count": 5,
+    "authoring_status": "validated_with_warnings",
+    "profile_filled": true,
+    "grain_validated": "partial",
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "high",
+    "primary_key": [],
+    "natural_key_candidate": [
+      "user_id"
+    ],
+    "natural_key_status": {
+      "validation_status": "failed",
+      "is_unique": false,
+      "duplicate_user_id_count": 2500,
+      "note": "user_id 不唯一，因此不能作为严格主键。 该表是 profile/device preference 记录表，不是一人一行的用户维表。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "user_id"
+      ],
+      "time_columns": [],
+      "metric_columns": [],
+      "dimension_columns": [
+        "user_id",
+        "language",
+        "timezone",
+        "device_os",
+        "app_version"
+      ],
+      "enum_columns": [
+        "language",
+        "timezone",
+        "device_os"
+      ],
+      "json_columns": [],
+      "text_columns": [
+        "app_version"
+      ]
+    },
+    "metric_names": [
+      "profile_record_count",
+      "profile_user_count",
+      "user_count_by_language",
+      "user_count_by_timezone",
+      "user_count_by_device_os",
+      "multi_profile_user_count"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "dim_user"
+    ],
+    "keywords": [
+      "any_value",
+      "app_version",
+      "consequence",
+      "count",
+      "count_profile_records_with_count_star",
+      "count_users_with_distinct_user_id",
+      "device",
+      "device_os",
+      "device_os_can_be_multi_valued_per_user",
+      "dim_user_profile",
+      "distinct",
+      "do_not_assume_primary_device",
+      "is_primary_device",
+      "join",
+      "language",
+      "multi_profile_user_count",
+      "n",
+      "preference",
+      "prevention",
+      "profile",
+      "profile_record_count",
+      "profile_user_count",
+      "require_dedup_strategy_for_one_profile_per_user",
+      "table_is_not_unique_user_dimension",
+      "timezone",
+      "trap",
+      "true",
+      "updated_at",
+      "user_count_by_device_os",
+      "user_count_by_language",
+      "user_count_by_timezone",
+      "user_id",
+      "user_id_not_unique",
+      "version",
+      "使用",
+      "分布",
+      "用户",
+      "设备"
+    ]
+  },
+  {
+    "table_name": "dim_user_role_history",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/dim_user_role_history.yaml",
+    "file_size_kb": 8.04,
+    "business_meaning": "角色变更流水。\n数据字典将该表归入“用户”域。\n数据字典行数说明为：~1.5 万。",
+    "grain_summary": "数据字典说明粒度：一行 = 一次角色变更。 数据字典说明主键：无业务主键。",
+    "row_count": 15070,
+    "column_count": 5,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "user_id"
+      ],
+      "time_columns": [
+        "changed_at"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "user_id",
+        "old_role",
+        "new_role",
+        "changed_at",
+        "changed_by"
+      ],
+      "enum_columns": [
+        "old_role",
+        "new_role"
+      ],
+      "json_columns": [],
+      "text_columns": [
+        "changed_by"
+      ]
+    },
+    "metric_names": [
+      "row_count"
+    ],
+    "join_targets": [
+      "dim_user"
+    ],
+    "keywords": [
+      "changed_at",
+      "changed_by",
+      "consequence",
+      "count",
+      "dim_user_role_history",
+      "distinct",
+      "duckdb",
+      "join",
+      "new_role",
+      "old_role",
+      "prevention",
+      "row_count",
+      "trap",
+      "user_id",
+      "validation",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_actual_revenue.yaml",
+    "file_size_kb": 32.96,
+    "business_meaning": "月度实收收入事实表，记录订阅在月份维度上的席位数、标价收入、 折扣率、优惠券扣减金额以及实际入账收入。 该表是分析“实收收入”“实际收入”“折扣后收入”“收入缺口”的核心事实表。 当前验证显示该表可用于 Agent 收入分析，但需要遵守两个规则： 第一，sub_id + month 不是严格唯一键；第二，actual_revenue 公式只适合作为近似解释， 不应重新计算 actual_revenue 替代表字段。\n",
+    "grain_summary": "物理粒度：一行 = 一条 revenue_id 标识的收入记录。 业务分析时可以按 month、tenant_id + month、plan_tier + month、 tenant_id + sub_id + month 等维度聚合。 当前验证和人工复查显示，tenant_id + sub_id + month 存在 15 组重复。 这些重复组不是完全重复行，而是同一租户、同一订阅、同一月份下， discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同的多条收入明细。 因此订阅月份级收入必须先 GROUP BY tenant_id, sub_id, month 后 SUM(actual_revenue)， 不能只取单条记录。",
+    "row_count": 1366,
+    "column_count": 11,
+    "authoring_status": "validated_with_warnings",
+    "profile_filled": true,
+    "grain_validated": "partial",
+    "dq_validated": "partial",
+    "ready_for_agent": true,
+    "warning_level": "high",
+    "primary_key": [
+      "revenue_id"
+    ],
+    "natural_key_candidate": [
+      "tenant_id",
+      "sub_id",
+      "month"
+    ],
+    "natural_key_status": {
+      "is_unique": false,
+      "tested_key": [
+        "tenant_id",
+        "sub_id",
+        "month"
+      ],
+      "duplicated_group_count": 15,
+      "exact_duplicate_row_count": 0,
+      "duplicate_interpretation": "tenant_id + sub_id + month 存在 15 组重复。 人工复查显示这些重复组不是完全重复行。 重复组中 seats、list_price_per_seat、list_revenue 通常相同， 但 discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同。 因此这些记录更像同一订阅同月下的多条折扣/优惠收入明细，不应删除。\n",
+      "required_agent_behavior": "当问题要求订阅月份级、租户月份级、套餐月份级或总收入级分析时， 必须 SUM(actual_revenue) 聚合 revenue_id 级记录。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "revenue_id",
+        "tenant_id",
+        "sub_id"
+      ],
+      "time_columns": [
+        "month"
+      ],
+      "metric_columns": [
+        "seats",
+        "list_price_per_seat",
+        "list_revenue",
+        "discount_rate",
+        "coupon_amount",
+        "actual_revenue"
+      ],
+      "dimension_columns": [
+        "tenant_id",
+        "sub_id",
+        "month",
+        "currency"
+      ],
+      "enum_columns": [
+        "currency"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "actual_revenue",
+      "list_revenue",
+      "revenue_gap",
+      "coupon_amount",
+      "avg_discount_rate",
+      "weighted_discount_rate",
+      "total_seats"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "fact_invoice",
+      "fact_subscription"
+    ],
+    "keywords": [
+      "actual_revenue",
+      "actual_revenue_should_be_summed_not_selected_single_row",
+      "agent",
+      "amount",
+      "avg_discount_rate",
+      "avoid_direct_join_to_invoice_or_payment_by_default",
+      "by",
+      "can_use_for_revenue_analysis",
+      "consequence",
+      "coupon_amount",
+      "currency",
+      "date",
+      "discount_rate",
+      "fact_actual_revenue",
+      "fact_invoice",
+      "fact_payment",
+      "fact_subscription",
+      "formula_is_explanatory_only",
+      "group",
+      "group by",
+      "invoice",
+      "join",
+      "list_price_per_seat",
+      "list_revenue",
+      "month",
+      "monthly_revenue_should_sum_records",
+      "mrr",
+      "must_not_drop_duplicate_tenant_sub_month_records",
+      "must_not_recalculate_actual_revenue_as_replacement",
+      "must_use_actual_revenue_field_for_actual_income",
+      "n",
+      "payment",
+      "plan_tier",
+      "prevention",
+      "ready_for_agent",
+      "revenue_gap",
+      "revenue_id",
+      "seats",
+      "sql",
+      "sub_id",
+      "subscription_month_revenue_should_sum_records",
+      "sum",
+      "tenant_id",
+      "tenant_sub_month_requires_aggregation",
+      "total_seats",
+      "trap",
+      "true",
+      "use_revenue_id_as_physical_key",
+      "weighted_discount_rate",
+      "付款",
+      "使用",
+      "发票",
+      "套餐",
+      "实收",
+      "对比",
+      "收入",
+      "租户",
+      "订阅",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_ai_usage_log.yaml",
+    "file_size_kb": 27.33,
+    "business_meaning": "AI 调用日志事实表，记录用户发生的一次 AI credits 操作，例如扣减、赠送或退款。 该表是分析 AI 使用量、AI credits 消耗、不同模型使用情况、AI 使用用户画像 和租户级 AI 使用强度的核心事实表。 由于该表出于隐私考虑只存储 user_id_hash，不直接存储明文 user_id， 因此如需关联用户、租户、部门、角色等维度，必须通过 dim_user_id_mapping 做 ID 映射。\n",
+    "grain_summary": "一行 = 一次 AI credits 操作或 AI 使用日志。 log_id 唯一标识一条 AI 使用日志。 operation_type 表示本次 credits 是扣减、赠送还是退款。 当前验证显示 log_id 唯一，因此“一行 = 一次 AI 操作”的粒度成立。",
+    "row_count": 248249,
+    "column_count": 7,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "log_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "log_id",
+        "user_id_hash"
+      ],
+      "time_columns": [
+        "created_at"
+      ],
+      "metric_columns": [
+        "credits_amount"
+      ],
+      "dimension_columns": [
+        "user_id_hash",
+        "operation_type",
+        "model_name"
+      ],
+      "enum_columns": [
+        "operation_type",
+        "model_name"
+      ],
+      "json_columns": [
+        "remark"
+      ],
+      "text_columns": [
+        "remark"
+      ]
+    },
+    "metric_names": [
+      "ai_operation_count",
+      "ai_deduct_count",
+      "credits_consumed",
+      "credits_earned",
+      "credits_refunded",
+      "net_credits_change"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "dim_user",
+      "dim_user_id_mapping",
+      "fact_daily_usage"
+    ],
+    "keywords": [
+      "ai",
+      "ai_deduct_count",
+      "ai_operation_count",
+      "as",
+      "bigint",
+      "can_use_for_ai_usage_analysis",
+      "case",
+      "cast",
+      "cause",
+      "consequence",
+      "convert_created_at_from_unix_seconds",
+      "cost",
+      "created_at",
+      "credit",
+      "credits",
+      "credits_amount",
+      "credits_consumed",
+      "credits_earned",
+      "credits_refunded",
+      "date_trunc",
+      "deduct",
+      "dim_user",
+      "dim_user_id_mapping",
+      "do_not_parse_remark_by_default",
+      "dt",
+      "earn",
+      "epoch",
+      "fact_ai_usage_log",
+      "fact_daily_usage",
+      "id",
+      "join",
+      "json",
+      "log_id",
+      "model_name",
+      "must_not_direct_join_user_id_hash_to_dim_user",
+      "must_use_mapping_table_before_joining_user",
+      "n",
+      "net_credits_change",
+      "net_credits_change_rule",
+      "operation_type",
+      "parse_remark_only_when_user_asks_token_cost_or_session",
+      "prevention",
+      "ready_for_agent",
+      "refund",
+      "remark",
+      "session_id",
+      "to",
+      "to_timestamp",
+      "token",
+      "trap",
+      "treat_2026_04_as_partial_month",
+      "true",
+      "unix",
+      "use_complete_month_range_for_trends",
+      "use_deduct_for_ai_consumption",
+      "use_log_id_as_physical_key",
+      "user_id",
+      "user_id_hash",
+      "使用",
+      "日活",
+      "模型",
+      "消耗",
+      "用户",
+      "租户",
+      "趋势",
+      "退款"
+    ]
+  },
+  {
+    "table_name": "fact_campaign",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_campaign.yaml",
+    "file_size_kb": 8.08,
+    "business_meaning": "营销活动。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：30。",
+    "grain_summary": "数据字典说明主键：`campaign_id`。",
+    "row_count": 30,
+    "column_count": 7,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "campaign_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "campaign_id"
+      ],
+      "time_columns": [
+        "start_date",
+        "end_date"
+      ],
+      "metric_columns": [
+        "budget"
+      ],
+      "dimension_columns": [
+        "campaign_id",
+        "name",
+        "channel",
+        "start_date",
+        "end_date",
+        "target_segment"
+      ],
+      "enum_columns": [
+        "channel",
+        "target_segment"
+      ],
+      "json_columns": [],
+      "text_columns": [
+        "name"
+      ]
+    },
+    "metric_names": [
+      "entity_count",
+      "budget_sum"
+    ],
+    "join_targets": [],
+    "keywords": [
+      "ai",
+      "budget",
+      "budget_sum",
+      "campaign_id",
+      "channel",
+      "consequence",
+      "count",
+      "distinct",
+      "duckdb",
+      "end_date",
+      "entity_count",
+      "fact_campaign",
+      "join",
+      "name",
+      "prevention",
+      "start_date",
+      "target_segment",
+      "trap",
+      "validation",
+      "使用",
+      "活动",
+      "营销"
+    ]
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_campaign_attribution.yaml",
+    "file_size_kb": 17.08,
+    "business_meaning": "营销归因触点事实表，记录用户与营销活动之间的一次触点或归因记录。 该表适合分析营销触点、转化触点、转化率、campaign 归因路径和用户转化行为。 当前验证显示该表可作为正式营销归因分析事实表使用。\n",
+    "grain_summary": "一行代表一次 campaign attribution / marketing touch 记录。 当前验证显示主键候选 user_id + campaign_id + touch_type + touch_at 唯一： row_count = 78414，distinct_primary_key_count = 78414，duplicate_primary_key_count = 0。 同一个 user_id 可以有多条 campaign touch。 同一个 campaign_id 可以对应多个 user_id 和多种 touch_type。 该表适合分析营销触点、转化触点、转化率、campaign 归因路径和用户转化行为。",
+    "row_count": 78414,
+    "column_count": 5,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "user_id",
+      "campaign_id",
+      "touch_type",
+      "touch_at"
+    ],
+    "natural_key_candidate": [
+      "user_id",
+      "campaign_id",
+      "touch_type",
+      "touch_at"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "tested_key": [
+        "user_id",
+        "campaign_id",
+        "touch_type",
+        "touch_at"
+      ],
+      "duplicated_group_count": 0,
+      "note": "当前验证显示 user_id + campaign_id + touch_type + touch_at 唯一， 可作为本表的复合唯一键与记录级 grain key。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "user_id",
+        "campaign_id",
+        "touch_type",
+        "touch_at"
+      ],
+      "time_columns": [
+        "touch_at"
+      ],
+      "metric_columns": [
+        "is_converted"
+      ],
+      "dimension_columns": [
+        "user_id",
+        "campaign_id",
+        "touch_type"
+      ],
+      "enum_columns": [
+        "touch_type"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "attribution_record_count",
+      "touched_user_count",
+      "campaign_count",
+      "converted_touch_count",
+      "conversion_rate",
+      "touch_type_count"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "dim_user",
+      "fact_campaign"
+    ],
+    "keywords": [
+      "ai",
+      "attribution",
+      "attribution_record_count",
+      "avg",
+      "campaign",
+      "campaign_count",
+      "campaign_id",
+      "click",
+      "consequence",
+      "conversion_rate",
+      "converted_touch_count",
+      "count",
+      "count_attributions_with_primary_key",
+      "count_campaigns_with_distinct_campaign_id",
+      "count_users_with_distinct_user_id",
+      "demo_request",
+      "dim_tenant",
+      "dim_user",
+      "distinct",
+      "distinct_primary_key_count",
+      "duplicate_primary_key_count",
+      "fact_campaign_attribution",
+      "impression",
+      "is_converted",
+      "is_converted_is_binary_metric",
+      "is_converted_zero_is_valid",
+      "join",
+      "join_to_user_or_tenant_can_duplicate_entities",
+      "marketing",
+      "n",
+      "prevention",
+      "row_count",
+      "signup",
+      "sum",
+      "tenant_id",
+      "touch",
+      "touch_at",
+      "touch_type",
+      "touch_type_count",
+      "touch_type_is_enum_not_metric",
+      "touched_user_count",
+      "trap",
+      "treat_2026_04_as_partial_month",
+      "true",
+      "use_avg_is_converted_for_conversion_rate",
+      "use_sum_is_converted_for_conversion_count",
+      "use_touch_at_for_attribution_trends",
+      "user_id",
+      "企业",
+      "使用",
+      "归因",
+      "活动",
+      "用户",
+      "营销",
+      "趋势",
+      "转化"
+    ]
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_credit_usage.yaml",
+    "file_size_kb": 15.21,
+    "business_meaning": "资源消耗与信用使用事实表，记录租户在某一天对某类资源的使用数量及其单位成本。 该表适合分析资源消耗、信用额度使用、资源成本和租户级资源使用趋势。 当前验证显示该表可作为正式资源消耗分析事实表使用。\n",
+    "grain_summary": "一行代表一个 tenant 在某个 dt 对某类 resource_type 的资源用量或计费记录。 当前验证显示主键候选 usage_id 唯一：row_count = 64456， distinct_primary_key_count = 64456，duplicate_primary_key_count = 0。 同一个 tenant_id 可以在多个 dt、多个 resource_type 下出现。 该表适合分析资源消耗、信用额度使用、资源成本和租户级资源使用趋势。",
+    "row_count": 64456,
+    "column_count": 6,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "usage_id"
+    ],
+    "natural_key_candidate": [
+      "usage_id"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "tested_key": [
+        "usage_id"
+      ],
+      "duplicated_group_count": 0,
+      "note": "当前验证显示 usage_id 唯一，可作为本表的物理主键与记录级唯一标识。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "usage_id",
+        "tenant_id"
+      ],
+      "time_columns": [
+        "dt"
+      ],
+      "metric_columns": [
+        "quantity",
+        "unit_cost"
+      ],
+      "dimension_columns": [
+        "tenant_id",
+        "resource_type"
+      ],
+      "enum_columns": [
+        "resource_type"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "credit_usage_record_count",
+      "tenant_count",
+      "resource_type_count",
+      "total_quantity_by_resource_type",
+      "total_cost",
+      "avg_unit_cost"
+    ],
+    "join_targets": [
+      "dim_tenant"
+    ],
+    "keywords": [
+      "ai",
+      "ai_token",
+      "api_calls",
+      "avg",
+      "avg_unit_cost",
+      "consequence",
+      "count",
+      "count_records_with_primary_key",
+      "count_tenants_with_distinct_tenant_id",
+      "credit",
+      "credit_usage_record_count",
+      "dim_tenant",
+      "distinct",
+      "distinct_primary_key_count",
+      "do_not_sum_quantity_across_resource_types_without_grouping",
+      "dt",
+      "duplicate_primary_key_count",
+      "fact_credit_usage",
+      "join",
+      "join_to_tenant_for_tenant_profile",
+      "n",
+      "prevention",
+      "quantity",
+      "quantity_unit_depends_on_resource_type",
+      "resource_type",
+      "resource_type_count",
+      "resource_type_is_enum_not_metric",
+      "row_count",
+      "storage_gb",
+      "sum",
+      "tenant",
+      "tenant_count",
+      "tenant_id",
+      "token",
+      "total_cost",
+      "total_quantity_by_resource_type",
+      "trap",
+      "true",
+      "unit_cost",
+      "usage_id",
+      "use_dt_for_usage_trends",
+      "use_quantity_times_unit_cost_for_cost",
+      "video_minutes",
+      "企业",
+      "使用",
+      "消耗",
+      "租户",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_daily_usage.yaml",
+    "file_size_kb": 18.48,
+    "business_meaning": "用户日级使用汇总事实表，记录用户在某一天的 session 数、活跃时长和功能使用摘要。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。 当前验证显示该表可作为正式用户日活分析事实表使用。\n",
+    "grain_summary": "一行代表一个 user_id 在一个 dt 的日级使用汇总记录。 user_id + dt 已验证唯一，可以作为该表的业务自然键 / grain key。 该表没有单列物理主键；不要把 user_id 单独当主键。 同一个 user_id 可以在多个 dt 出现。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。",
+    "row_count": 1915210,
+    "column_count": 5,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [],
+    "natural_key_candidate": [
+      "user_id",
+      "dt"
+    ],
+    "natural_key_status": {
+      "validation_status": "passed",
+      "is_unique": true,
+      "tested_key": [
+        "user_id",
+        "dt"
+      ],
+      "duplicate_count": 0,
+      "note": "user_id + dt 已验证唯一，可作为该日级使用表的业务唯一键 / grain key。 但它是复合业务键，不是单列物理主键。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "user_id"
+      ],
+      "time_columns": [
+        "dt"
+      ],
+      "metric_columns": [
+        "session_count",
+        "active_duration_sec"
+      ],
+      "dimension_columns": [
+        "user_id",
+        "dt"
+      ],
+      "enum_columns": [],
+      "json_columns": [
+        "feature_usage_json"
+      ],
+      "text_columns": [
+        "feature_usage_json"
+      ]
+    },
+    "metric_names": [
+      "daily_usage_record_count",
+      "daily_active_user_count",
+      "total_session_count",
+      "avg_session_count_per_user_day",
+      "total_active_duration_sec",
+      "avg_active_duration_sec_per_user_day",
+      "total_active_duration_hours"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "dim_user",
+      "fact_ai_usage_log",
+      "fact_feature_usage"
+    ],
+    "keywords": [
+      "action_count",
+      "active_duration_sec",
+      "active_duration_sec_unit_is_seconds",
+      "ai",
+      "avg_active_duration_sec_per_user_day",
+      "avg_session_count_per_user_day",
+      "consequence",
+      "count",
+      "count_dau_with_distinct_user_id",
+      "count_records_with_count_star",
+      "created_at",
+      "daily_active_user_count",
+      "daily_usage",
+      "daily_usage_record_count",
+      "dau",
+      "distinct",
+      "dt",
+      "duration_sec",
+      "fact_ai_usage_log",
+      "fact_daily_usage",
+      "fact_feature_usage",
+      "feature_key",
+      "feature_usage_json",
+      "feature_usage_json_is_parseable_but_not_default",
+      "grain",
+      "join",
+      "join_ai_usage_by_user_and_date",
+      "join_feature_usage_by_user_and_dt",
+      "json",
+      "key",
+      "n",
+      "natural_key_is_user_id_dt",
+      "prefer_fact_feature_usage_for_feature_analysis",
+      "prevention",
+      "session",
+      "session_count",
+      "sum",
+      "sum_active_duration_sec_for_total_duration",
+      "sum_session_count_for_total_sessions",
+      "table_grain_is_user_day",
+      "total_active_duration_hours",
+      "total_active_duration_sec",
+      "total_session_count",
+      "trap",
+      "true",
+      "user_id",
+      "使用",
+      "功能",
+      "日活",
+      "时长",
+      "活跃",
+      "用户",
+      "租户",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_doc_collaboration.yaml",
+    "file_size_kb": 16.87,
+    "business_meaning": "文档协作明细事实表。 用于记录用户对文档的协作行为明细，可用于分析协作文档数、协作用户数、 编辑时长、评论数量以及协作时间趋势。\n",
+    "grain_summary": "一行代表一个用户对一个文档的一条协作明细记录。 doc_id + user_id 不唯一；同一用户可以在多天协作同一文档。 doc_id + user_id + dt 也不是严格唯一；人工检查发现仍有 33 组重复。 完全重复行不存在，因此重复不是整行脏重复，不应删除。 如果要分析文档-用户-日期级协作，应先 GROUP BY doc_id, user_id, dt，并 SUM(edit_duration_sec)、SUM(comment_count)。 如果要分析文档级协作，应按 doc_id 聚合。 如果要分析用户级协作，应按 user_id 聚合。",
+    "row_count": 89676,
+    "column_count": 5,
+    "authoring_status": "validated_with_warnings",
+    "profile_filled": true,
+    "grain_validated": "partial",
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "high",
+    "primary_key": [],
+    "natural_key_candidate": [
+      "doc_id",
+      "user_id",
+      "dt"
+    ],
+    "natural_key_status": {
+      "validation_status": "failed",
+      "is_unique": false,
+      "tested_key": [
+        "doc_id",
+        "user_id",
+        "dt"
+      ],
+      "duplicated_group_count": 33,
+      "exact_duplicate_row_count": 0,
+      "note": "doc_id + user_id + dt 仍存在 33 组重复，因此不能作为严格自然键。 但完全重复行不存在，说明重复不是整行脏重复。 更合理的业务解释是同一用户、同一文档、同一天内可能存在多条协作明细记录。\n",
+      "required_agent_behavior": "分析文档-用户-日期级协作时必须 GROUP BY doc_id, user_id, dt， 并聚合 SUM(edit_duration_sec)、SUM(comment_count)。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "doc_id",
+        "user_id"
+      ],
+      "time_columns": [
+        "dt"
+      ],
+      "metric_columns": [
+        "edit_duration_sec",
+        "comment_count"
+      ],
+      "dimension_columns": [
+        "doc_id",
+        "user_id",
+        "dt"
+      ],
+      "enum_columns": [],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "collaboration_record_count",
+      "collaborating_user_count",
+      "collaborated_doc_count",
+      "total_edit_duration_sec",
+      "total_edit_duration_hours",
+      "total_comment_count",
+      "doc_user_day_collaboration_count"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "dim_user",
+      "fact_document"
+    ],
+    "keywords": [
+      "aggregate_to_doc_user_dt_before_doc_user_day_analysis",
+      "ai",
+      "by",
+      "collaborated_doc_count",
+      "collaborating_user_count",
+      "collaboration_record_count",
+      "comment_count",
+      "consequence",
+      "count",
+      "count_docs_with_distinct_doc_id",
+      "count_users_with_distinct_user_id",
+      "distinct",
+      "do_not_drop_duplicate_doc_user_dt_records",
+      "doc_id",
+      "doc_user_day_collaboration_count",
+      "doc_user_dt_not_unique",
+      "dt",
+      "edit_duration_sec",
+      "edit_duration_sec_unit_is_seconds",
+      "fact_doc_collaboration",
+      "grain",
+      "grain_validated_partial",
+      "group",
+      "group by",
+      "n",
+      "prevention",
+      "sum",
+      "sum_comment_count_for_comments",
+      "sum_edit_duration_sec_for_duration",
+      "table_has_no_strict_primary_key",
+      "total_comment_count",
+      "total_edit_duration_hours",
+      "total_edit_duration_sec",
+      "trap",
+      "true",
+      "user_id",
+      "zero_edit_duration_or_comment_count_is_valid",
+      "使用",
+      "协作",
+      "文档",
+      "时长",
+      "用户",
+      "编辑",
+      "评论",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_document",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_document.yaml",
+    "file_size_kb": 9.46,
+    "business_meaning": "文档。\n数据字典将该表归入“协作与内容”域。\n数据字典行数说明为：80,000。",
+    "grain_summary": "数据字典说明粒度：一行 = 一个文档。 数据字典说明主键：`doc_id`。",
+    "row_count": 80000,
+    "column_count": 7,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "doc_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "doc_id",
+        "creator_id",
+        "tenant_id"
+      ],
+      "time_columns": [
+        "created_at",
+        "last_edit_at"
+      ],
+      "metric_columns": [
+        "edit_count"
+      ],
+      "dimension_columns": [
+        "doc_id",
+        "creator_id",
+        "tenant_id",
+        "doc_type",
+        "created_at",
+        "last_edit_at"
+      ],
+      "enum_columns": [
+        "doc_type"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "entity_count",
+      "edit_count_sum"
+    ],
+    "join_targets": [
+      "dim_user"
+    ],
+    "keywords": [
+      "consequence",
+      "count",
+      "created_at",
+      "creator_id",
+      "distinct",
+      "doc_id",
+      "doc_type",
+      "duckdb",
+      "edit_count",
+      "edit_count_sum",
+      "entity_count",
+      "fact_document",
+      "join",
+      "last_edit_at",
+      "prevention",
+      "tenant_id",
+      "trap",
+      "validation",
+      "使用",
+      "协作",
+      "文档"
+    ]
+  },
+  {
+    "table_name": "fact_event_log",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_event_log.yaml",
+    "file_size_kb": 9.48,
+    "business_meaning": "事件日志（埋点流水）。\n数据字典将该表归入“产品使用”域。\n数据字典行数说明为：~200 万（本数据集体量最大）。",
+    "grain_summary": "数据字典说明粒度：一行 = 一次用户行为事件。 数据字典说明主键：`event_id`。",
+    "row_count": 2000000,
+    "column_count": 6,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "event_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "event_id",
+        "user_id"
+      ],
+      "time_columns": [
+        "event_time"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "event_id",
+        "user_id",
+        "event_name",
+        "event_time",
+        "page",
+        "properties_json"
+      ],
+      "enum_columns": [
+        "event_name",
+        "page"
+      ],
+      "json_columns": [
+        "properties_json"
+      ],
+      "text_columns": []
+    },
+    "metric_names": [
+      "entity_count"
+    ],
+    "join_targets": [
+      "dim_user"
+    ],
+    "keywords": [
+      "consequence",
+      "count",
+      "distinct",
+      "duckdb",
+      "entity_count",
+      "event_id",
+      "event_name",
+      "event_time",
+      "fact_event_log",
+      "join",
+      "page",
+      "prevention",
+      "properties_json",
+      "trap",
+      "user_id",
+      "validation",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_experiment",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_experiment.yaml",
+    "file_size_kb": 8.22,
+    "business_meaning": "AB 实验。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：50。",
+    "grain_summary": "数据字典说明主键：`exp_id`。",
+    "row_count": 50,
+    "column_count": 6,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "exp_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "exp_id",
+        "feature_key"
+      ],
+      "time_columns": [
+        "start_date",
+        "end_date"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "exp_id",
+        "exp_name",
+        "feature_key",
+        "start_date",
+        "end_date",
+        "status"
+      ],
+      "enum_columns": [
+        "feature_key",
+        "status"
+      ],
+      "json_columns": [],
+      "text_columns": [
+        "exp_name"
+      ]
+    },
+    "metric_names": [
+      "entity_count"
+    ],
+    "join_targets": [
+      "dim_feature"
+    ],
+    "keywords": [
+      "ab",
+      "consequence",
+      "count",
+      "distinct",
+      "duckdb",
+      "end_date",
+      "entity_count",
+      "exp_id",
+      "exp_name",
+      "fact_experiment",
+      "feature_key",
+      "join",
+      "prevention",
+      "start_date",
+      "status",
+      "trap",
+      "validation",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_experiment_assignment",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_experiment_assignment.yaml",
+    "file_size_kb": 8.62,
+    "business_meaning": "实验分流。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：~13.4 万。",
+    "grain_summary": "数据字典说明粒度：一行 = 一个用户在一个实验中的分组。",
+    "row_count": 133748,
+    "column_count": 4,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [],
+    "natural_key_candidate": [
+      "user_id",
+      "exp_id"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "note": "该候选自然键用于表达业务粒度或替代性唯一键，使用前应结合本卡 validation 结果理解。\n当前卡已升级为正式版本，唯一性与使用规则以本卡和 validation report 为准。"
+    },
+    "field_groups": {
+      "id_columns": [
+        "user_id",
+        "exp_id"
+      ],
+      "time_columns": [
+        "assigned_at"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "user_id",
+        "exp_id",
+        "variant",
+        "assigned_at"
+      ],
+      "enum_columns": [
+        "variant"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "row_count"
+    ],
+    "join_targets": [
+      "dim_user",
+      "fact_experiment"
+    ],
+    "keywords": [
+      "assigned_at",
+      "consequence",
+      "count",
+      "distinct",
+      "exp_id",
+      "fact_experiment_assignment",
+      "join",
+      "prevention",
+      "row_count",
+      "trap",
+      "user_id",
+      "validation",
+      "variant",
+      "使用",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_experiment_metric.yaml",
+    "file_size_kb": 10.12,
+    "business_meaning": "实验指标日度。\n数据字典将该表归入“增长与实验”域。\n数据字典行数说明为：~8k。",
+    "grain_summary": "数据字典说明粒度：一行 = 一个实验的一个分组一个指标在某天的值。",
+    "row_count": 8071,
+    "column_count": 8,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [],
+    "natural_key_candidate": [
+      "exp_id",
+      "variant",
+      "metric_name",
+      "dt"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "note": "该候选自然键用于表达业务粒度或替代性唯一键，使用前应结合本卡 validation 结果理解。\n当前卡已升级为正式版本，唯一性与使用规则以本卡和 validation report 为准。"
+    },
+    "field_groups": {
+      "id_columns": [
+        "exp_id"
+      ],
+      "time_columns": [
+        "dt"
+      ],
+      "metric_columns": [
+        "sample_size",
+        "metric_value",
+        "ci_lower",
+        "ci_upper"
+      ],
+      "dimension_columns": [
+        "exp_id",
+        "variant",
+        "metric_name",
+        "dt"
+      ],
+      "enum_columns": [
+        "variant",
+        "metric_name"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "row_count",
+      "sample_size_sum",
+      "metric_value_sum",
+      "ci_lower_sum"
+    ],
+    "join_targets": [
+      "fact_experiment"
+    ],
+    "keywords": [
+      "ci_lower",
+      "ci_lower_sum",
+      "ci_upper",
+      "consequence",
+      "count",
+      "distinct",
+      "dt",
+      "exp_id",
+      "fact_experiment_metric",
+      "join",
+      "k",
+      "metric_name",
+      "metric_value",
+      "metric_value_sum",
+      "prevention",
+      "row_count",
+      "sample_size",
+      "sample_size_sum",
+      "trap",
+      "validation",
+      "variant",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_feature_usage.yaml",
+    "file_size_kb": 15.81,
+    "business_meaning": "功能使用事实表，记录用户在某一天对某个产品功能的使用情况。 该表适合分析功能采用、功能活跃用户、功能操作次数和功能使用时长。 当前验证显示该表可作为正式的功能使用分析事实表使用。\n",
+    "grain_summary": "一行 = 一个 user_id 在某一天 dt 对一个 feature_key 的一条功能使用记录。 当前验证显示 user_id + feature_key + dt 在现有数据中唯一， row_count = 2700092，distinct_primary_key_count = 2700092， duplicate_primary_key_count = 0，因此该粒度成立。",
+    "row_count": 2700092,
+    "column_count": 5,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "user_id",
+      "feature_key",
+      "dt"
+    ],
+    "natural_key_candidate": [
+      "user_id",
+      "feature_key",
+      "dt"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "tested_key": [
+        "user_id",
+        "feature_key",
+        "dt"
+      ],
+      "duplicated_group_count": 0,
+      "note": "当前验证显示 user_id + feature_key + dt 在样本中唯一， 可作为本表的复合物理主键与业务粒度键使用。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "user_id",
+        "feature_key",
+        "dt"
+      ],
+      "time_columns": [
+        "dt"
+      ],
+      "metric_columns": [
+        "action_count",
+        "duration_sec"
+      ],
+      "dimension_columns": [
+        "user_id",
+        "feature_key",
+        "dt"
+      ],
+      "enum_columns": [
+        "feature_key"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "feature_usage_record_count",
+      "active_feature_user_count",
+      "feature_count",
+      "total_action_count",
+      "total_duration_sec"
+    ],
+    "join_targets": [
+      "dim_feature",
+      "dim_tenant",
+      "dim_user"
+    ],
+    "keywords": [
+      "action_count",
+      "active_feature_user_count",
+      "ai",
+      "consequence",
+      "count",
+      "dim_tenant",
+      "dim_user",
+      "distinct",
+      "distinct_primary_key_count",
+      "dt",
+      "duplicate_primary_key_count",
+      "duration_sec",
+      "fact_ai_usage_log",
+      "fact_daily_usage",
+      "fact_feature_usage",
+      "feature_count",
+      "feature_key",
+      "feature_usage_record_count",
+      "join",
+      "n",
+      "prevention",
+      "row_count",
+      "sum",
+      "tenant_id",
+      "total_action_count",
+      "total_duration_sec",
+      "trap",
+      "user_id",
+      "企业",
+      "使用",
+      "功能",
+      "时长",
+      "活跃",
+      "用户"
+    ]
+  },
+  {
+    "table_name": "fact_invoice",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_invoice.yaml",
+    "file_size_kb": 10.39,
+    "business_meaning": "发票。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：~1.2k。",
+    "grain_summary": "数据字典说明粒度：一行 = 一张发票。 数据字典说明主键：`invoice_id`。",
+    "row_count": 1248,
+    "column_count": 8,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "invoice_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "invoice_id",
+        "tenant_id",
+        "sub_id"
+      ],
+      "time_columns": [
+        "issued_at",
+        "paid_at"
+      ],
+      "metric_columns": [
+        "amount"
+      ],
+      "dimension_columns": [
+        "invoice_id",
+        "tenant_id",
+        "sub_id",
+        "currency",
+        "issued_at",
+        "paid_at",
+        "status"
+      ],
+      "enum_columns": [
+        "currency",
+        "status"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "entity_count",
+      "amount_sum"
+    ],
+    "join_targets": [
+      "fact_subscription"
+    ],
+    "keywords": [
+      "ai",
+      "amount",
+      "amount_sum",
+      "consequence",
+      "count",
+      "currency",
+      "distinct",
+      "duckdb",
+      "entity_count",
+      "fact_invoice",
+      "invoice_id",
+      "issued_at",
+      "join",
+      "k",
+      "paid_at",
+      "prevention",
+      "status",
+      "sub_id",
+      "tenant_id",
+      "trap",
+      "validation",
+      "付款",
+      "使用",
+      "发票",
+      "实收",
+      "收入",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "fact_message",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_message.yaml",
+    "file_size_kb": 9.62,
+    "business_meaning": "消息。\n数据字典将该表归入“协作与内容”域。\n数据字典行数说明为：~31.5 万。",
+    "grain_summary": "数据字典说明粒度：一行 = 一条消息。 数据字典说明主键：`msg_id`。",
+    "row_count": 314827,
+    "column_count": 6,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "msg_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "msg_id",
+        "sender_id",
+        "channel_id"
+      ],
+      "time_columns": [
+        "sent_at"
+      ],
+      "metric_columns": [
+        "word_count"
+      ],
+      "dimension_columns": [
+        "msg_id",
+        "sender_id",
+        "channel_id",
+        "msg_type",
+        "sent_at"
+      ],
+      "enum_columns": [
+        "msg_type"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "entity_count",
+      "word_count_sum"
+    ],
+    "join_targets": [
+      "dim_channel",
+      "dim_user"
+    ],
+    "keywords": [
+      "channel_id",
+      "consequence",
+      "count",
+      "distinct",
+      "duckdb",
+      "entity_count",
+      "fact_message",
+      "join",
+      "msg_id",
+      "msg_type",
+      "prevention",
+      "sender_id",
+      "sent_at",
+      "trap",
+      "validation",
+      "word_count",
+      "word_count_sum",
+      "使用",
+      "协作"
+    ]
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_nps_survey.yaml",
+    "file_size_kb": 21.91,
+    "business_meaning": "NPS 问卷与反馈事实表，记录用户的问卷提交、评分、文本反馈、所属租户与套餐信息。 该表可用于 NPS、完成率、反馈文本分布以及不同租户、套餐、时间维度下的满意度分析。 当前验证显示该表可正式用于 Agent 分析，但存在 `plan_tier` 大小写归一化和未完成问卷过滤规则， 因此应视为 validated_with_warnings。\n",
+    "grain_summary": "一行 = 一条 NPS 问卷/反馈记录。 当前验证显示主键候选唯一：row_count = 8000，distinct_primary_key_count = 8000， duplicate_primary_key_count = 0，因此记录级粒度成立。 但 NPS 业务分析不等于直接统计所有记录；计算 NPS 时只能使用 is_completed = 1 且 score != 'N/A' 的完成问卷。",
+    "row_count": 8000,
+    "column_count": 9,
+    "authoring_status": "validated_with_warnings",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": "partial",
+    "ready_for_agent": true,
+    "warning_level": "medium",
+    "primary_key": [
+      "survey_id"
+    ],
+    "natural_key_candidate": [
+      "survey_id"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "tested_key": [
+        "survey_id"
+      ],
+      "duplicated_group_count": 0,
+      "note": "当前验证显示 survey_id 唯一，可作为本表的物理主键与记录级唯一标识。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "survey_id",
+        "user_id",
+        "tenant_id"
+      ],
+      "time_columns": [
+        "survey_date"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "user_id",
+        "tenant_id",
+        "plan_tier",
+        "role",
+        "is_completed"
+      ],
+      "enum_columns": [
+        "plan_tier",
+        "role",
+        "is_completed",
+        "score"
+      ],
+      "json_columns": [],
+      "text_columns": [
+        "feedback_text"
+      ]
+    },
+    "metric_names": [
+      "survey_response_count",
+      "completed_response_count",
+      "respondent_user_count",
+      "respondent_tenant_count",
+      "average_score",
+      "nps_score",
+      "completion_rate"
+    ],
+    "join_targets": [
+      "dim_plan",
+      "dim_tenant",
+      "dim_user"
+    ],
+    "keywords": [
+      "a",
+      "agent",
+      "and",
+      "average_score",
+      "avg",
+      "cast",
+      "cast_score_to_integer_after_filter",
+      "completed_response_count",
+      "completion_rate",
+      "consequence",
+      "count",
+      "detractor",
+      "detractors",
+      "dim_plan",
+      "distinct",
+      "distinct_primary_key_count",
+      "do_not_sum_role",
+      "duplicate_primary_key_count",
+      "exclude_na_score_for_nps",
+      "fact_nps_survey",
+      "feedback_text",
+      "is_completed",
+      "join",
+      "lower",
+      "n",
+      "nps",
+      "nps_is_not_average_score",
+      "nps_score",
+      "passive",
+      "plan_tier",
+      "plan_tier_direct_join_is_invalid",
+      "plan_tier_join_requires_lower_normalization",
+      "prevention",
+      "promoter",
+      "promoters",
+      "respondent_tenant_count",
+      "respondent_user_count",
+      "role",
+      "role_is_enum_not_metric",
+      "row_count",
+      "score",
+      "sum",
+      "survey_date",
+      "survey_id",
+      "survey_response_count",
+      "tenant_id",
+      "to",
+      "trap",
+      "treat_2026_04_as_partial_month",
+      "true",
+      "unmatched",
+      "use_complete_month_range_for_trends",
+      "use_only_completed_responses_for_nps",
+      "user_id",
+      "validated_with_warnings",
+      "where",
+      "企业",
+      "使用",
+      "分布",
+      "套餐",
+      "满意度",
+      "用户",
+      "租户",
+      "评分",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_page_view",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_page_view.yaml",
+    "file_size_kb": 10.06,
+    "business_meaning": "页面浏览。\n数据字典将该表归入“产品使用”域。\n数据字典行数说明为：~180 万。",
+    "grain_summary": "数据字典说明粒度：一行 = 一次页面访问。 数据字典说明主键：`pv_id`。",
+    "row_count": 1801438,
+    "column_count": 6,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "pv_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "pv_id",
+        "session_id",
+        "user_id"
+      ],
+      "time_columns": [],
+      "metric_columns": [
+        "view_duration_ms"
+      ],
+      "dimension_columns": [
+        "pv_id",
+        "session_id",
+        "user_id",
+        "page_path",
+        "referrer"
+      ],
+      "enum_columns": [
+        "page_path",
+        "referrer"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "entity_count",
+      "view_duration_ms_sum"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "dim_user",
+      "fact_session"
+    ],
+    "keywords": [
+      "consequence",
+      "count",
+      "distinct",
+      "duckdb",
+      "entity_count",
+      "fact_page_view",
+      "join",
+      "page_path",
+      "prevention",
+      "pv_id",
+      "referrer",
+      "session_id",
+      "trap",
+      "user_id",
+      "validation",
+      "view_duration_ms",
+      "view_duration_ms_sum",
+      "使用"
+    ]
+  },
+  {
+    "table_name": "fact_payment",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_payment.yaml",
+    "file_size_kb": 9.89,
+    "business_meaning": "付款流水。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：~1.6k。",
+    "grain_summary": "数据字典说明粒度：一行 = 一次付款尝试。**一张发票可能对应多条付款记录**（尝试、部分支付、重试）。 数据字典说明主键：`payment_id`。",
+    "row_count": 1624,
+    "column_count": 6,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "payment_id"
+    ],
+    "natural_key_candidate": [],
+    "natural_key_status": {},
+    "field_groups": {
+      "id_columns": [
+        "payment_id",
+        "invoice_id"
+      ],
+      "time_columns": [
+        "paid_at"
+      ],
+      "metric_columns": [
+        "amount"
+      ],
+      "dimension_columns": [
+        "payment_id",
+        "invoice_id",
+        "method",
+        "status",
+        "paid_at"
+      ],
+      "enum_columns": [
+        "method",
+        "status"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "entity_count",
+      "amount_sum"
+    ],
+    "join_targets": [
+      "fact_invoice"
+    ],
+    "keywords": [
+      "actual_revenue",
+      "ai",
+      "amount",
+      "amount_sum",
+      "consequence",
+      "count",
+      "distinct",
+      "duckdb",
+      "entity_count",
+      "fact_payment",
+      "invoice",
+      "invoice_id",
+      "join",
+      "k",
+      "method",
+      "paid_at",
+      "payment",
+      "payment_id",
+      "prevention",
+      "status",
+      "trap",
+      "validation",
+      "付款",
+      "使用",
+      "发票",
+      "实收",
+      "收入",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "fact_session",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_session.yaml",
+    "file_size_kb": 14.7,
+    "business_meaning": "用户会话事实表，记录用户一次从开始到结束的访问或登录会话。 该表适合分析登录/访问会话数、活跃用户数、设备分布、国家分布和会话时长。 当前验证显示该表可作为正式会话分析事实表使用。\n",
+    "grain_summary": "一行代表一次用户 session。 当前验证显示主键候选 session_id 唯一：row_count = 1269417， distinct_primary_key_count = 1269417，duplicate_primary_key_count = 0。 同一个 user_id 可以有多条 session。 该表适合分析登录/访问会话数、活跃用户数、设备分布、国家分布和会话时长。",
+    "row_count": 1269417,
+    "column_count": 6,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "session_id"
+    ],
+    "natural_key_candidate": [
+      "session_id"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "tested_key": [
+        "session_id"
+      ],
+      "duplicated_group_count": 0,
+      "note": "当前验证显示 session_id 唯一，可作为本表的物理主键和会话级唯一标识。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "session_id",
+        "user_id"
+      ],
+      "time_columns": [
+        "start_time",
+        "end_time"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "user_id",
+        "device",
+        "ip_country"
+      ],
+      "enum_columns": [
+        "device",
+        "ip_country"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "session_count",
+      "active_user_count",
+      "avg_session_duration_sec",
+      "total_session_duration_sec",
+      "device_count",
+      "ip_country_count"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "dim_user"
+    ],
+    "keywords": [
+      "active_user_count",
+      "avg",
+      "avg_session_duration_sec",
+      "calculate_duration_from_start_and_end_time",
+      "consequence",
+      "count",
+      "count_sessions_with_distinct_session_id",
+      "count_users_with_distinct_user_id",
+      "country",
+      "datediff",
+      "device",
+      "device_count",
+      "device_is_enum_not_metric",
+      "dim_tenant",
+      "distinct",
+      "distinct_primary_key_count",
+      "duplicate_primary_key_count",
+      "end_time",
+      "event",
+      "event_log",
+      "fact_session",
+      "ip",
+      "ip_country",
+      "ip_country_count",
+      "ip_country_is_access_country_not_tenant_country",
+      "join",
+      "join_to_event_tables_can_duplicate_sessions",
+      "n",
+      "page",
+      "page_view",
+      "prevention",
+      "row_count",
+      "second",
+      "session",
+      "session_count",
+      "session_duration_sec",
+      "session_id",
+      "start_time",
+      "sum",
+      "total_session_duration_sec",
+      "trap",
+      "true",
+      "use_start_time_for_session_trends",
+      "user_id",
+      "view",
+      "企业",
+      "使用",
+      "分布",
+      "国家",
+      "时长",
+      "活跃",
+      "用户",
+      "租户",
+      "设备"
+    ]
+  },
+  {
+    "table_name": "fact_subscription",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_subscription.yaml",
+    "file_size_kb": 13.07,
+    "business_meaning": "订阅。\n数据字典将该表归入“计费与订阅”域。\n数据字典行数说明为：~340。",
+    "grain_summary": "数据字典说明粒度：一行 = 一个订阅周期。 数据字典说明主键：`sub_id`。",
+    "row_count": 343,
+    "column_count": 7,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "sub_id"
+    ],
+    "natural_key_candidate": [
+      "tenant_id",
+      "plan_tier",
+      "start_date"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "duplicated_group_count": 0,
+      "note": "该候选键仅用于验证业务粒度，不代表正式业务自然键。 即使当前样本唯一，也不应替代 sub_id 作为稳定主键。"
+    },
+    "field_groups": {
+      "id_columns": [
+        "sub_id",
+        "tenant_id"
+      ],
+      "time_columns": [
+        "start_date",
+        "end_date"
+      ],
+      "metric_columns": [
+        "mrr"
+      ],
+      "dimension_columns": [
+        "tenant_id",
+        "plan_tier",
+        "status"
+      ],
+      "enum_columns": [
+        "plan_tier",
+        "status"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "subscription_count",
+      "active_subscription_count",
+      "total_mrr"
+    ],
+    "join_targets": [
+      "dim_plan",
+      "dim_tenant"
+    ],
+    "keywords": [
+      "active_subscription_count",
+      "consequence",
+      "count",
+      "distinct",
+      "duckdb",
+      "end_date",
+      "fact_subscription",
+      "join",
+      "mrr",
+      "plan_tier",
+      "prevention",
+      "start_date",
+      "status",
+      "sub_id",
+      "subscription_count",
+      "tenant_id",
+      "total_mrr",
+      "trap",
+      "validation",
+      "使用",
+      "活跃",
+      "订阅"
+    ]
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_tenant_metrics_snapshot.yaml",
+    "file_size_kb": 20.78,
+    "business_meaning": "租户指标快照事实表，记录某个租户在某个快照日期的规模、内容、存储、收入、消息量和当日活跃用户等状态指标。 该表适合做租户总览、租户规模趋势、租户分层分析和租户日度状态监控。 当前验证显示该表可作为正式快照分析事实表使用。\n",
+    "grain_summary": "一行代表一个 tenant 在一个 snapshot_date 的指标快照。 当前验证显示主键候选 tenant_id + snapshot_date 唯一： row_count = 141684，distinct_primary_key_count = 141684，duplicate_primary_key_count = 0。 该表是快照表，不是事件流水表。 同一个 tenant_id 可以在多个 snapshot_date 出现。 total_users、total_docs、total_revenue、total_messages 等字段是快照状态值，跨多个日期直接 SUM 会重复累计。 按日期分析时应关注每个 snapshot_date 的 tenant 覆盖数量。",
+    "row_count": 141684,
+    "column_count": 8,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [],
+    "natural_key_candidate": [
+      "tenant_id",
+      "snapshot_date"
+    ],
+    "natural_key_status": {
+      "validation_status": "passed",
+      "is_unique": true,
+      "tested_key": [
+        "tenant_id",
+        "snapshot_date"
+      ],
+      "duplicated_group_count": 0,
+      "note": "tenant_id + snapshot_date 已验证唯一，可作为该快照表的业务唯一键 / grain key。 但它是复合业务键，不是单列物理主键。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "tenant_id",
+        "snapshot_date"
+      ],
+      "time_columns": [
+        "snapshot_date"
+      ],
+      "metric_columns": [
+        "total_users",
+        "total_docs",
+        "total_storage_mb",
+        "total_revenue",
+        "total_messages",
+        "active_users_today"
+      ],
+      "dimension_columns": [
+        "tenant_id"
+      ],
+      "enum_columns": [],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "snapshot_record_count",
+      "snapshot_tenant_count",
+      "total_users_on_date",
+      "avg_users_per_tenant",
+      "total_docs_on_date",
+      "total_storage_mb_on_date",
+      "total_revenue_snapshot_on_date",
+      "active_users_today"
+    ],
+    "join_targets": [
+      "dim_tenant"
+    ],
+    "keywords": [
+      "active_users_today",
+      "active_users_today_zero_is_valid",
+      "actual_revenue",
+      "amount",
+      "as",
+      "avg_users_per_tenant",
+      "consequence",
+      "count",
+      "dim_tenant",
+      "distinct",
+      "distinct_primary_key_count",
+      "do_not_sum_snapshot_metrics_across_dates_without_grouping",
+      "duplicate_primary_key_count",
+      "fact_actual_revenue",
+      "fact_invoice",
+      "fact_payment",
+      "fact_tenant_metrics_snapshot",
+      "filter_or_group_by_snapshot_date_before_aggregating_snapshot_metrics",
+      "include_tenant_count_when_comparing_dates",
+      "join",
+      "n",
+      "prevention",
+      "row_count",
+      "snapshot_date",
+      "snapshot_record_count",
+      "snapshot_tenant_count",
+      "sum",
+      "table_is_snapshot_not_event_log",
+      "tenant",
+      "tenant_count",
+      "tenant_id",
+      "total_docs",
+      "total_docs_on_date",
+      "total_messages",
+      "total_revenue",
+      "total_revenue_is_snapshot_metric_not_actual_revenue",
+      "total_revenue_snapshot_on_date",
+      "total_storage_mb",
+      "total_storage_mb_on_date",
+      "total_users",
+      "total_users_on_date",
+      "trap",
+      "treat_2026_04_as_partial_month",
+      "true",
+      "use_actual_revenue_table_for_actual_income",
+      "use_latest_snapshot_for_current_state",
+      "付款",
+      "使用",
+      "发票",
+      "实收",
+      "快照",
+      "收入",
+      "日活",
+      "活跃",
+      "用户",
+      "租户",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_ticket",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_ticket.yaml",
+    "file_size_kb": 17.97,
+    "business_meaning": "客服/支持工单事实表，记录工单的企业归属、提单用户、分类、优先级、状态、创建时间和解决时间。 该表适合分析工单数量、优先级、状态、类别、解决时长和租户支持负载。 当前验证显示该表可作为正式工单分析事实表使用。\n",
+    "grain_summary": "一行代表一个客服/支持工单。 当前验证显示主键候选 ticket_id 唯一：row_count = 3922， distinct_primary_key_count = 3922，duplicate_primary_key_count = 0。 同一个 ticket_id 可以在 fact_ticket_reply 中对应多条回复。 该表适合分析工单数量、优先级、状态、类别、解决时长和租户支持负载。",
+    "row_count": 3922,
+    "column_count": 8,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "ticket_id"
+    ],
+    "natural_key_candidate": [
+      "ticket_id"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "tested_key": [
+        "ticket_id"
+      ],
+      "duplicated_group_count": 0,
+      "note": "当前验证显示 ticket_id 唯一，可作为本表主键和工单级唯一标识。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "ticket_id",
+        "tenant_id"
+      ],
+      "time_columns": [
+        "created_at",
+        "resolved_at"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "tenant_id",
+        "category",
+        "priority",
+        "status"
+      ],
+      "enum_columns": [
+        "category",
+        "priority",
+        "status"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "ticket_count",
+      "open_ticket_count",
+      "in_progress_ticket_count",
+      "resolved_ticket_count",
+      "closed_ticket_count",
+      "unresolved_ticket_count",
+      "avg_resolution_hours"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "dim_ticket_category",
+      "fact_ticket_reply"
+    ],
+    "keywords": [
+      "avg",
+      "avg_resolution_hours",
+      "category",
+      "closed_ticket_count",
+      "consequence",
+      "count",
+      "count_tickets_with_distinct_ticket_id",
+      "created_at",
+      "dim_tenant",
+      "distinct",
+      "distinct_primary_key_count",
+      "do_not_count_star_after_join_reply_as_ticket_count",
+      "duplicate_primary_key_count",
+      "fact_ticket",
+      "fact_ticket_reply",
+      "in_progress",
+      "in_progress_ticket_count",
+      "is",
+      "join",
+      "join_to_reply_can_duplicate_ticket_rows",
+      "n",
+      "not",
+      "null",
+      "open",
+      "open_ticket_count",
+      "prevention",
+      "priority",
+      "priority_is_enum_not_metric",
+      "reporter_id",
+      "resolved_at",
+      "resolved_at_null_means_unresolved_or_not_closed",
+      "resolved_ticket_count",
+      "row_count",
+      "status",
+      "status_is_enum_not_metric",
+      "sum",
+      "tenant_id",
+      "ticket_can_have_multiple_replies",
+      "ticket_count",
+      "ticket_id",
+      "trap",
+      "true",
+      "unresolved_ticket_count",
+      "use_created_at_for_ticket_creation_trends",
+      "use_resolved_at_only_for_resolved_ticket_duration",
+      "where",
+      "企业",
+      "优先级",
+      "使用",
+      "回复",
+      "客服",
+      "工单",
+      "时长",
+      "用户",
+      "租户",
+      "解决"
+    ]
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_ticket_reply.yaml",
+    "file_size_kb": 14.77,
+    "business_meaning": "工单回复事实表，记录客服工单体系中的每一条回复记录。 该表适合分析工单回复量、回复者类型、回复时间趋势和回复内容长度。 当前验证显示该表可作为正式回复分析事实表使用。\n",
+    "grain_summary": "一行代表一条工单回复记录。 当前验证显示主键候选 reply_id 唯一：row_count = 21715， distinct_primary_key_count = 21715，duplicate_primary_key_count = 0。 同一个 ticket_id 可以对应多条回复。 该表适合分析工单回复量、回复者类型、回复时间趋势和回复内容长度。",
+    "row_count": 21715,
+    "column_count": 5,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "reply_id"
+    ],
+    "natural_key_candidate": [
+      "reply_id"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "tested_key": [
+        "reply_id"
+      ],
+      "duplicated_group_count": 0,
+      "note": "当前验证显示 reply_id 唯一，可作为本表的物理主键与回复记录唯一标识。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "reply_id",
+        "ticket_id"
+      ],
+      "time_columns": [
+        "replied_at"
+      ],
+      "metric_columns": [
+        "content_length"
+      ],
+      "dimension_columns": [
+        "ticket_id",
+        "author_type"
+      ],
+      "enum_columns": [
+        "author_type"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "reply_record_count",
+      "replied_ticket_count",
+      "avg_content_length",
+      "total_content_length",
+      "agent_reply_count",
+      "bot_reply_count",
+      "customer_reply_count"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "dim_user",
+      "fact_ticket"
+    ],
+    "keywords": [
+      "agent",
+      "agent_reply_count",
+      "author_type",
+      "author_type_is_enum_not_metric",
+      "avg",
+      "avg_content_length",
+      "bot",
+      "bot_reply_count",
+      "consequence",
+      "content_length",
+      "content_length_is_length_not_quality",
+      "count",
+      "count_replies_with_reply_primary_key",
+      "count_tickets_with_distinct_ticket_id",
+      "customer",
+      "customer_reply_count",
+      "distinct",
+      "distinct_primary_key_count",
+      "duplicate_primary_key_count",
+      "fact_ticket",
+      "fact_ticket_reply",
+      "join",
+      "join_to_ticket_before_tenant_or_user",
+      "n",
+      "prevention",
+      "replied_at",
+      "replied_ticket_count",
+      "reply_id",
+      "reply_record_count",
+      "row_count",
+      "sum",
+      "ticket_can_have_multiple_replies",
+      "ticket_id",
+      "total_content_length",
+      "trap",
+      "treat_2026_04_as_partial_month",
+      "true",
+      "use_replied_at_for_reply_trends",
+      "使用",
+      "回复",
+      "客服",
+      "工单",
+      "满意度",
+      "趋势"
+    ]
+  },
+  {
+    "table_name": "fact_user_activation",
+    "source_file": "/Users/zhang/Desktop/飞书比赛/knowledge_manual/table_cards/fact_user_activation.yaml",
+    "file_size_kb": 11.57,
+    "business_meaning": "用户激活里程碑事实表，记录用户何时达成某个关键激活动作。 该表适合分析用户激活路径、激活漏斗、不同里程碑的达成情况以及激活时间趋势。 当前验证显示该表可作为正式激活分析事实表使用。\n",
+    "grain_summary": "一行代表一个用户达成一个激活里程碑的记录。 当前验证显示主键候选 user_id + milestone_type + reached_at 唯一： row_count = 180072，distinct_primary_key_count = 180072，duplicate_primary_key_count = 0。 同一个 user_id 可以有多个 milestone_type。 该表适合分析用户激活路径、激活漏斗和激活时间趋势。",
+    "row_count": 180072,
+    "column_count": 3,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "ready_for_agent": true,
+    "warning_level": "low",
+    "primary_key": [
+      "user_id",
+      "milestone_type",
+      "reached_at"
+    ],
+    "natural_key_candidate": [
+      "user_id",
+      "milestone_type",
+      "reached_at"
+    ],
+    "natural_key_status": {
+      "is_unique": true,
+      "tested_key": [
+        "user_id",
+        "milestone_type",
+        "reached_at"
+      ],
+      "duplicated_group_count": 0,
+      "note": "当前验证显示 user_id + milestone_type + reached_at 唯一， 可作为本表的复合主键和记录级唯一标识。\n"
+    },
+    "field_groups": {
+      "id_columns": [
+        "user_id",
+        "milestone_type",
+        "reached_at"
+      ],
+      "time_columns": [
+        "reached_at"
+      ],
+      "metric_columns": [],
+      "dimension_columns": [
+        "user_id",
+        "milestone_type"
+      ],
+      "enum_columns": [
+        "milestone_type"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "metric_names": [
+      "activation_record_count",
+      "activated_user_count",
+      "milestone_type_count"
+    ],
+    "join_targets": [
+      "dim_tenant",
+      "dim_user"
+    ],
+    "keywords": [
+      "activated_user_count",
+      "activation_record_count",
+      "avg",
+      "consequence",
+      "count",
+      "count_users_with_distinct_user_id",
+      "dim_tenant",
+      "dim_user",
+      "distinct",
+      "distinct_primary_key_count",
+      "duplicate_primary_key_count",
+      "fact_user_activation",
+      "join",
+      "join_to_tenant_through_dim_user",
+      "milestone_type",
+      "milestone_type_count",
+      "milestone_type_is_enum_not_metric",
+      "n",
+      "prevention",
+      "reached_at",
+      "row_count",
+      "sum",
+      "trap",
+      "true",
+      "use_reached_at_for_activation_trends",
+      "user_can_have_multiple_milestones",
+      "user_id",
+      "使用",
+      "活动",
+      "用户",
+      "趋势"
+    ]
+  }
+]

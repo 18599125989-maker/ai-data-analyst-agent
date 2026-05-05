@@ -1,0 +1,922 @@
+# Compact Table Cards v2
+
+> Auto-generated for retrieval_v2.
+
+## dim_channel
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 群聊/频道维度。 数据字典将该表归入“协作与内容”域。 数据字典行数说明为：~5.6k。
+- grain: 数据字典说明粒度：一行 = 一个频道。 数据字典说明主键：`channel_id`。
+- primary_key: `['channel_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - entity_count: `COUNT(DISTINCT channel_id)`
+  - member_count_sum: `SUM(member_count)`
+- join_rules:
+  - dim_tenant.tenant_id | dim_channel.tenant_id = dim_tenant.tenant_id
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## dim_department
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 部门维度表，描述每个企业 tenant 下的部门信息，以及部门之间的上下级关系。 该表用于组织结构分析、部门分布分析，也可以作为用户分析中的部门维度表。
+- grain: 一行 = 一个部门。 每个部门属于一个 tenant。 一个 tenant 可以有多个部门。 parent_dept_id 表示上级部门，空值表示顶级部门。
+- primary_key: `['dept_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - department_count: `COUNT(DISTINCT dept_id)`
+  - tenant_count: `COUNT(DISTINCT tenant_id)`
+  - top_level_department_count: `SUM( CASE WHEN parent_dept_id IS NULL OR CAST(parent_dept_id AS VARCHAR) = '' THEN 1 ELSE 0 END )`
+- join_rules:
+  - dim_tenant.tenant_id | dim_department.tenant_id = dim_tenant.tenant_id
+  - dim_user.dept_id | dim_department.dept_id = dim_user.dept_id
+  - dim_department.dept_id | child_department.parent_dept_id = parent_department.dept_id
+- known_traps:
+  - dept_name 不是唯一部门 ID。
+  - parent_dept_id 空值率较高。
+  - dim_department JOIN dim_user 后直接 COUNT(*)。
+  - 使用 INNER JOIN 分析用户部门时可能降低未来数据版本的鲁棒性。
+
+## dim_feature
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 产品功能维度表，描述 CloudWork 中各个功能模块的稳定编码、展示名称、所属模块、类别和上线时间。 该表适合做功能目录、功能分组、功能上线时间分析，以及为 `fact_feature_usage` 等事实表补充功能属性。 当前验证显示该表可作为正式功能维度表使用。
+- grain: 一行代表一个产品功能。 feature_key 是功能主键和稳定功能编码。 feature_name 是展示名称，不建议作为 JOIN key。 当前验证显示主键候选唯一：row_count = 12，distinct_primary_key_count = 12， duplicate_primary_key_count = 0，因此功能维度粒度成立。
+- primary_key: `['feature_key']`
+- natural_key_candidate: `['feature_key']`
+- metrics:
+  - feature_count: `COUNT(DISTINCT feature_key)`
+  - feature_module_count: `COUNT(DISTINCT module)`
+- join_rules:
+  - fact_feature_usage.feature_key | dim_feature.feature_key = fact_feature_usage.feature_key
+- known_traps:
+  - 使用 feature_name 作为 JOIN key。
+  - JOIN fact_feature_usage 后直接 COUNT(*) 当作功能数。
+  - 将 module 或 category 当作唯一功能标识。
+
+## dim_org_structure
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 组织节点（团队/虚拟组）。 数据字典将该表归入“租户与组织”域。 数据字典行数说明为：~1.9k。
+- grain: 数据字典说明粒度：一行 = 一个组织节点；只覆盖前 200 个 tenant。 数据字典说明主键：`node_id`。
+- primary_key: `['node_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - entity_count: `COUNT(DISTINCT node_id)`
+  - level_sum: `SUM(level)`
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## dim_plan
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 套餐维度。 数据字典将该表归入“计费与订阅”域。 数据字典行数说明为：5。
+- grain: 数据字典说明主键：`plan_tier`。
+- primary_key: `['plan_tier']`
+- natural_key_candidate: `['plan_name']`
+- metrics:
+  - plan_count: `COUNT(DISTINCT plan_tier)`
+  - listed_monthly_price: `monthly_price`
+- join_rules:
+  - fact_subscription.plan_tier | dim_plan.plan_tier = fact_subscription.plan_tier
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## dim_tenant
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 企业客户维度表，描述 CloudWork 中每个 tenant 的基础企业画像信息。 该表是一切租户级分析的核心维度表，可用于补充企业名称、行业、规模、国家和创建时间。 当前验证显示该表可作为企业实体统计和企业画像分析的正式维度表使用。
+- grain: 一行 = 一个企业。 当前验证显示 tenant_id 唯一，row_count = 500，distinct_tenant_id_count = 500， 因此“一个 tenant 一行”的粒度成立。
+- primary_key: `['tenant_id']`
+- natural_key_candidate: `['name']`
+- metrics:
+  - tenant_count: `COUNT(DISTINCT tenant_id)`
+  - tenant_created_count: `COUNT(DISTINCT tenant_id)`
+- join_rules:
+  - dim_user.tenant_id | dim_tenant.tenant_id = dim_user.tenant_id
+  - fact_subscription.tenant_id | dim_tenant.tenant_id = fact_subscription.tenant_id
+- known_traps:
+  - 统计企业数时在 JOIN fact 表后直接使用 COUNT(*)。
+  - 将 name 当作主键或稳定 JOIN 键。
+  - JOIN 用户表或订阅表后继续把 COUNT(*) 解释为企业数量。
+
+## dim_tenant_config
+- authoring_status: `validated_with_warnings`
+- grain_validated: `True`
+- dq_validated: `partial`
+- warning_level: `medium`
+- business_meaning: 租户功能开关与配置维度表。 用于记录每个 tenant 对各 feature 的启用状态和可选配置， 适合分析功能启用率、租户功能覆盖情况和配置分布。
+- grain: 一行代表一个 tenant_id 对一个 feature_key 的配置记录。 tenant_id + feature_key 是业务自然键/配置粒度。
+- primary_key: `[]`
+- natural_key_candidate: `['tenant_id', 'feature_key']`
+- metrics:
+  - config_record_count: `COUNT(*)`
+  - tenant_count: `COUNT(DISTINCT tenant_id)`
+  - feature_count: `COUNT(DISTINCT feature_key)`
+  - enabled_config_count: `SUM(enabled)`
+  - enabled_rate: `AVG(enabled)`
+- join_rules:
+  - dim_tenant.tenant_id | dim_tenant_config.tenant_id = dim_tenant.tenant_id
+  - dim_feature.feature_key | dim_tenant_config.feature_key = dim_feature.feature_key
+  - dim_tenant.tenant_id | ["dim_tenant_config.tenant_id = dim_tenant.tenant_id"]
+  - dim_feature.feature_key | ["dim_tenant_config.feature_key = dim_feature.feature_key"]
+- known_traps:
+  - 不要把 config_json 为空当成严重数据质量错误。
+  - 只有 config_json 非空时才解析 JSON。
+  - 把 enabled 当作普通连续数值。
+  - 统计企业数时直接使用 COUNT(*)。
+- policy_flags:
+  - table_grain_is_tenant_feature_config: True
+  - natural_key_is_tenant_id_feature_key: True
+  - enabled_is_binary_flag: True
+  - config_json_nullable_is_expected: True
+  - parse_config_json_only_when_non_null: True
+  - count_tenants_with_distinct_tenant_id: True
+  - count_features_with_distinct_feature_key: True
+
+## dim_tenant_plan
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 租户套餐历史（SCD2）。 数据字典将该表归入“租户与组织”域。 数据字典行数说明为：~2.3k。
+- grain: 数据字典说明粒度：一行 = 一个租户在某个时间区间使用的套餐。 数据字典说明主键：`tenant_id` + `effective_from`。
+- primary_key: `['tenant_id', 'effective_from']`
+- natural_key_candidate: `['tenant_id', 'effective_from']`
+- metrics:
+  - entity_count: `COUNT(*)`
+- join_rules:
+  - dim_tenant.tenant_id | dim_tenant_plan.tenant_id = dim_tenant.tenant_id
+  - dim_plan.plan_tier | dim_tenant_plan.plan_tier = dim_plan.plan_tier
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 忽略数据字典中对空字符串、N/A 或混合类型的特别说明。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## dim_ticket_category
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 工单分类。 数据字典将该表归入“客服工单”域。 数据字典行数说明为：12，**含两级层级**（通过 `parent_category_id` 构建）。
+- grain: 数据字典说明主键：`category_id`。
+- primary_key: `['category_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - entity_count: `COUNT(DISTINCT category_id)`
+  - sla_hours_sum: `SUM(sla_hours)`
+- join_rules:
+  - dim_ticket_category.category_id | dim_ticket_category.parent_category_id = dim_ticket_category.category_id
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## dim_user
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 用户维度。 数据字典将该表归入“用户”域。 数据字典行数说明为：50,000。
+- grain: 数据字典说明粒度：一行 = 一个用户。 数据字典说明主键：`user_id`。
+- primary_key: `['user_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - user_count: `COUNT(DISTINCT user_id)`
+  - registered_user_count: `COUNT(DISTINCT user_id)`
+  - active_status_user_count: `COUNT(DISTINCT CASE WHEN status = 'active' THEN user_id END)`
+- join_rules:
+  - dim_tenant.tenant_id | dim_user.tenant_id = dim_tenant.tenant_id
+  - dim_department.dept_id | dim_user.dept_id = dim_department.dept_id
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## dim_user_id_mapping
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 用户 ID 哈希映射表，用于把隐私保护场景中的哈希用户 ID 映射回明文 user_id。 该表是 `fact_ai_usage_log.user_id_hash` 与 `dim_user.user_id` 之间的桥接维度。 当前验证显示该表可作为正式桥接表使用。
+- grain: 一行代表一个 user_id_hash 与明文 user_id 的映射关系。 当前验证显示主键候选已唯一：row_count = 40016，distinct_primary_key_count = 40016， duplicate_primary_key_count = 0，因此映射关系粒度成立。 该表用于把隐私保护后的 user_id_hash 映射回 dim_user.user_id。
+- primary_key: `['user_id']`
+- natural_key_candidate: `['user_id']`
+- metrics:
+  - mapped_user_count: `COUNT(DISTINCT user_id)`
+  - hash_mapping_count: `COUNT(DISTINCT user_id_hash)`
+- join_rules:
+  - dim_user.user_id | dim_user_id_mapping.user_id = dim_user.user_id
+  - dim_user.user_id | ["fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash", "dim_user_id_mapping.user_id = dim_user.user_id"]
+  - dim_tenant.tenant_id | ["fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash", "dim_user_id_mapping.user_id = dim_user.user_id", "dim_user.tenant_id = dim_tenant.tenant_id"]
+- known_traps:
+  - 直接将 fact_ai_usage_log.user_id_hash 与 dim_user.user_id JOIN。
+  - JOIN 到用户行为事实表后直接 COUNT(*) 当作用户数。
+
+## dim_user_profile
+- authoring_status: `validated_with_warnings`
+- grain_validated: `partial`
+- dq_validated: `True`
+- warning_level: `high`
+- business_meaning: 用户 profile / device preference 记录表。 用于描述用户的语言偏好、时区、设备系统和客户端版本分布， 更适合做用户画像分层和设备偏好分析，而不是作为唯一用户维表。
+- grain: 一行代表一个用户的一条 profile/device preference 记录。 user_id 不唯一，不能把该表当作一人一行的用户维表。 重复 user_id 多数是 device_os 不同，可能表示一人多设备。 也存在部分完全重复 profile 行。 当前缺少 updated_at / version / is_primary_device 字段，无法判断最新画像或主设备。
+- primary_key: `[]`
+- natural_key_candidate: `['user_id']`
+- metrics:
+  - profile_record_count: `COUNT(*)`
+  - profile_user_count: `COUNT(DISTINCT user_id)`
+  - user_count_by_language: `COUNT(DISTINCT user_id) GROUP BY language`
+  - user_count_by_timezone: `COUNT(DISTINCT user_id) GROUP BY timezone`
+  - user_count_by_device_os: `COUNT(DISTINCT user_id) GROUP BY device_os`
+  - multi_profile_user_count: `COUNT(*) over users where COUNT(*) > 1`
+- join_rules:
+  - dim_user.user_id | dim_user_profile.user_id = dim_user.user_id
+  - dim_tenant.tenant_id | ["dim_user_profile.user_id = dim_user.user_id", "dim_user.tenant_id = dim_tenant.tenant_id"]
+- known_traps:
+  - 不要把 dim_user_profile 当作一人一行的用户维表。
+  - JOIN dim_user_profile 后直接用 COUNT(*) 当用户数。
+  - 按 device_os 分析时假设一个用户只会出现在一个 device_os 组中。
+  - 如果需要一人一条画像，直接默认取一条记录。
+- policy_flags:
+  - table_is_not_unique_user_dimension: True
+  - user_id_not_unique: True
+  - count_users_with_distinct_user_id: True
+  - count_profile_records_with_count_star: True
+  - device_os_can_be_multi_valued_per_user: True
+  - do_not_assume_primary_device: True
+  - require_dedup_strategy_for_one_profile_per_user: True
+
+## dim_user_role_history
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 角色变更流水。 数据字典将该表归入“用户”域。 数据字典行数说明为：~1.5 万。
+- grain: 数据字典说明粒度：一行 = 一次角色变更。 数据字典说明主键：无业务主键。
+- primary_key: `[]`
+- natural_key_candidate: `[]`
+- metrics:
+  - row_count: `COUNT(*)`
+- join_rules:
+  - dim_user.user_id | dim_user_role_history.user_id = dim_user.user_id
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_actual_revenue
+- authoring_status: `validated_with_warnings`
+- grain_validated: `partial`
+- dq_validated: `partial`
+- warning_level: `high`
+- business_meaning: 月度实收收入事实表，记录订阅在月份维度上的席位数、标价收入、 折扣率、优惠券扣减金额以及实际入账收入。 该表是分析“实收收入”“实际收入”“折扣后收入”“收入缺口”的核心事实表。 当前验证显示该表可用于 Agent 收入分析，但需要遵守两个规则： 第一，sub_id + month 不是严格唯一键；第二，actual_revenue 公式只适合作为近似解释， 不应重新计算 actual_revenue 替代表字段。
+- grain: 物理粒度：一行 = 一条 revenue_id 标识的收入记录。 业务分析时可以按 month、tenant_id + month、plan_tier + month、 tenant_id + sub_id + month 等维度聚合。 当前验证和人工复查显示，tenant_id + sub_id + month 存在 15 组重复。 这些重复组不是完全重复行，而是同一租户、同一订阅、同一月份下， discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同的多条收入明细。 因此订阅月份级收入必须先 GROUP BY tenant_id, sub_id, month 后 SUM(actual_revenue)， 不能只取单条记录。
+- primary_key: `['revenue_id']`
+- natural_key_candidate: `['tenant_id', 'sub_id', 'month']`
+- metrics:
+  - actual_revenue: `SUM(actual_revenue)`
+  - list_revenue: `SUM(list_revenue)`
+  - revenue_gap: `SUM(list_revenue - actual_revenue)`
+  - coupon_amount: `SUM(coupon_amount)`
+  - avg_discount_rate: `AVG(discount_rate)`
+  - weighted_discount_rate: `SUM(list_revenue * discount_rate) / NULLIF(SUM(list_revenue), 0)`
+- join_rules:
+  - dim_tenant.tenant_id | fact_actual_revenue.tenant_id = dim_tenant.tenant_id
+  - fact_subscription.sub_id | fact_actual_revenue.sub_id = fact_subscription.sub_id
+  - fact_invoice.sub_id | fact_actual_revenue.sub_id = fact_invoice.sub_id
+- known_traps:
+  - 将 actual_revenue 与 MRR 混用。
+  - 将 actual_revenue 与 invoice amount 混用。
+  - 将 tenant_id + sub_id + month 当作严格唯一键。
+  - 把重复的 tenant_id + sub_id + month 当作脏数据删除。
+- policy_flags:
+  - can_use_for_revenue_analysis: True
+  - ready_for_agent: True
+  - use_revenue_id_as_physical_key: True
+  - tenant_sub_month_requires_aggregation: True
+  - monthly_revenue_should_sum_records: True
+  - subscription_month_revenue_should_sum_records: True
+  - actual_revenue_should_be_summed_not_selected_single_row: True
+  - must_use_actual_revenue_field_for_actual_income: True
+
+## fact_ai_usage_log
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: AI 调用日志事实表，记录用户发生的一次 AI credits 操作，例如扣减、赠送或退款。 该表是分析 AI 使用量、AI credits 消耗、不同模型使用情况、AI 使用用户画像 和租户级 AI 使用强度的核心事实表。 由于该表出于隐私考虑只存储 user_id_hash，不直接存储明文 user_id， 因此如需关联用户、租户、部门、角色等维度，必须通过 dim_user_id_mapping 做 ID 映射。
+- grain: 一行 = 一次 AI credits 操作或 AI 使用日志。 log_id 唯一标识一条 AI 使用日志。 operation_type 表示本次 credits 是扣减、赠送还是退款。 当前验证显示 log_id 唯一，因此“一行 = 一次 AI 操作”的粒度成立。
+- primary_key: `['log_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - ai_operation_count: `COUNT(DISTINCT log_id)`
+  - ai_deduct_count: `COUNT(DISTINCT CASE WHEN operation_type = 'deduct' THEN log_id END)`
+  - credits_consumed: `SUM(CASE WHEN operation_type = 'deduct' THEN credits_amount ELSE 0 END)`
+  - credits_earned: `SUM(CASE WHEN operation_type = 'earn' THEN credits_amount ELSE 0 END)`
+  - credits_refunded: `SUM(CASE WHEN operation_type = 'refund' THEN credits_amount ELSE 0 END)`
+  - net_credits_change: `SUM( CASE WHEN operation_type IN ('earn', 'refund') THEN credits_amount WHEN operation_type = 'deduct' THEN -credits_...`
+- join_rules:
+  - dim_user_id_mapping.user_id_hash | fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash
+  - dim_user.user_id | fact_ai_usage_log.user_id_hash = dim_user.user_id
+  - dim_user.user_id | ["fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash", "dim_user_id_mapping.user_id = dim_user.user_id"]
+  - dim_tenant.tenant_id | ["fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash", "dim_user_id_mapping.user_id = dim_user.user_id", "dim_user.tenant_id = dim_tenant.tenant_id"]
+  - fact_daily_usage.user_id | ["fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash", "dim_user_id_mapping.user_id = fact_daily_usage.user_id"]
+- known_traps:
+  - 直接将 user_id_hash 与 dim_user.user_id JOIN。
+  - 忘记过滤 operation_type。
+  - 把 deduct、earn、refund 都当作消耗。
+  - 把 created_at 当作普通时间戳。
+- policy_flags:
+  - can_use_for_ai_usage_analysis: True
+  - ready_for_agent: True
+  - use_log_id_as_physical_key: True
+  - use_deduct_for_ai_consumption: True
+  - net_credits_change_rule: deduct 记为负，earn/refund 记为正。
+  - must_use_mapping_table_before_joining_user: True
+  - must_not_direct_join_user_id_hash_to_dim_user: True
+  - convert_created_at_from_unix_seconds: True
+
+## fact_campaign
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 营销活动。 数据字典将该表归入“增长与实验”域。 数据字典行数说明为：30。
+- grain: 数据字典说明主键：`campaign_id`。
+- primary_key: `['campaign_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - entity_count: `COUNT(DISTINCT campaign_id)`
+  - budget_sum: `SUM(budget)`
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_campaign_attribution
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 营销归因触点事实表，记录用户与营销活动之间的一次触点或归因记录。 该表适合分析营销触点、转化触点、转化率、campaign 归因路径和用户转化行为。 当前验证显示该表可作为正式营销归因分析事实表使用。
+- grain: 一行代表一次 campaign attribution / marketing touch 记录。 当前验证显示主键候选 user_id + campaign_id + touch_type + touch_at 唯一： row_count = 78414，distinct_primary_key_count = 78414，duplicate_primary_key_count = 0。 同一个 user_id 可以有多条 campaign touch。 同一个 campaign_id 可以对应多个 user_id 和多种 touch_type。 该表适合分析营销触点、转化触点、转化率、campaign 归因路径和用户转化行为。
+- primary_key: `['user_id', 'campaign_id', 'touch_type', 'touch_at']`
+- natural_key_candidate: `['user_id', 'campaign_id', 'touch_type', 'touch_at']`
+- metrics:
+  - attribution_record_count: `COUNT(*)`
+  - touched_user_count: `COUNT(DISTINCT user_id)`
+  - campaign_count: `COUNT(DISTINCT campaign_id)`
+  - converted_touch_count: `SUM(is_converted)`
+  - conversion_rate: `AVG(is_converted)`
+  - touch_type_count: `COUNT(DISTINCT touch_type)`
+- join_rules:
+  - dim_user.user_id | fact_campaign_attribution.user_id = dim_user.user_id
+  - fact_campaign.campaign_id | fact_campaign_attribution.campaign_id = fact_campaign.campaign_id
+  - dim_tenant.tenant_id | ["fact_campaign_attribution.user_id = dim_user.user_id", "dim_user.tenant_id = dim_tenant.tenant_id"]
+  - fact_campaign.campaign_id | ["fact_campaign_attribution.campaign_id = fact_campaign.campaign_id"]
+- known_traps:
+  - 直接 COUNT(*) 当作用户数或 campaign 数。
+  - 把 touch_type 当作数值指标。
+  - 把 is_converted = 0 当作异常。
+  - JOIN dim_user 或 dim_tenant 后直接 COUNT(*) 当作用户数或企业数。
+- policy_flags:
+  - count_attributions_with_primary_key: True
+  - count_users_with_distinct_user_id: True
+  - count_campaigns_with_distinct_campaign_id: True
+  - touch_type_is_enum_not_metric: True
+  - is_converted_is_binary_metric: True
+  - is_converted_zero_is_valid: True
+  - use_sum_is_converted_for_conversion_count: True
+  - use_avg_is_converted_for_conversion_rate: True
+
+## fact_credit_usage
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 资源消耗与信用使用事实表，记录租户在某一天对某类资源的使用数量及其单位成本。 该表适合分析资源消耗、信用额度使用、资源成本和租户级资源使用趋势。 当前验证显示该表可作为正式资源消耗分析事实表使用。
+- grain: 一行代表一个 tenant 在某个 dt 对某类 resource_type 的资源用量或计费记录。 当前验证显示主键候选 usage_id 唯一：row_count = 64456， distinct_primary_key_count = 64456，duplicate_primary_key_count = 0。 同一个 tenant_id 可以在多个 dt、多个 resource_type 下出现。 该表适合分析资源消耗、信用额度使用、资源成本和租户级资源使用趋势。
+- primary_key: `['usage_id']`
+- natural_key_candidate: `['usage_id']`
+- metrics:
+  - credit_usage_record_count: `COUNT(DISTINCT usage_id)`
+  - tenant_count: `COUNT(DISTINCT tenant_id)`
+  - resource_type_count: `COUNT(DISTINCT resource_type)`
+  - total_quantity_by_resource_type: `SUM(quantity)`
+  - total_cost: `SUM(quantity * unit_cost)`
+  - avg_unit_cost: `AVG(unit_cost)`
+- join_rules:
+  - dim_tenant.tenant_id | fact_credit_usage.tenant_id = dim_tenant.tenant_id
+  - dim_tenant.tenant_id | ["fact_credit_usage.tenant_id = dim_tenant.tenant_id"]
+- known_traps:
+  - 直接 SUM(quantity) 并解释为总资源使用量。
+  - 把 resource_type 当作数值指标。
+  - 忽略 unit_cost 直接比较不同 resource_type 的 quantity。
+  - JOIN dim_tenant 后直接 COUNT(*) 当作企业数。
+- policy_flags:
+  - count_records_with_primary_key: True
+  - count_tenants_with_distinct_tenant_id: True
+  - resource_type_is_enum_not_metric: True
+  - quantity_unit_depends_on_resource_type: True
+  - do_not_sum_quantity_across_resource_types_without_grouping: True
+  - use_quantity_times_unit_cost_for_cost: True
+  - use_dt_for_usage_trends: True
+  - join_to_tenant_for_tenant_profile: True
+
+## fact_daily_usage
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 用户日级使用汇总事实表，记录用户在某一天的 session 数、活跃时长和功能使用摘要。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。 当前验证显示该表可作为正式用户日活分析事实表使用。
+- grain: 一行代表一个 user_id 在一个 dt 的日级使用汇总记录。 user_id + dt 已验证唯一，可以作为该表的业务自然键 / grain key。 该表没有单列物理主键；不要把 user_id 单独当主键。 同一个 user_id 可以在多个 dt 出现。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。
+- primary_key: `[]`
+- natural_key_candidate: `['user_id', 'dt']`
+- metrics:
+  - daily_usage_record_count: `COUNT(*)`
+  - daily_active_user_count: `COUNT(DISTINCT user_id)`
+  - total_session_count: `SUM(session_count)`
+  - avg_session_count_per_user_day: `AVG(session_count)`
+  - total_active_duration_sec: `SUM(active_duration_sec)`
+  - avg_active_duration_sec_per_user_day: `AVG(active_duration_sec)`
+- join_rules:
+  - dim_user.user_id | fact_daily_usage.user_id = dim_user.user_id
+  - dim_tenant.tenant_id | ["fact_daily_usage.user_id = dim_user.user_id", "dim_user.tenant_id = dim_tenant.tenant_id"]
+  - fact_ai_usage_log.user_id_hash | ["fact_daily_usage.user_id = dim_user_id_mapping.user_id", "dim_user_id_mapping.user_id_hash = fact_ai_usage_log.user_id_hash"]
+  - fact_feature_usage.dt | ["fact_daily_usage.user_id = fact_feature_usage.user_id", "fact_daily_usage.dt = fact_feature_usage.dt"]
+- known_traps:
+  - 直接 COUNT(*) 当作用户数。
+  - 把 user_id 单独当作主键。
+  - 和 fact_ai_usage_log 只按 user_id JOIN。
+  - 和 fact_feature_usage 只按 user_id JOIN。
+- policy_flags:
+  - table_grain_is_user_day: True
+  - natural_key_is_user_id_dt: True
+  - count_dau_with_distinct_user_id: True
+  - count_records_with_count_star: True
+  - sum_session_count_for_total_sessions: True
+  - sum_active_duration_sec_for_total_duration: True
+  - active_duration_sec_unit_is_seconds: True
+  - feature_usage_json_is_parseable_but_not_default: True
+
+## fact_doc_collaboration
+- authoring_status: `validated_with_warnings`
+- grain_validated: `partial`
+- dq_validated: `True`
+- warning_level: `high`
+- business_meaning: 文档协作明细事实表。 用于记录用户对文档的协作行为明细，可用于分析协作文档数、协作用户数、 编辑时长、评论数量以及协作时间趋势。
+- grain: 一行代表一个用户对一个文档的一条协作明细记录。 doc_id + user_id 不唯一；同一用户可以在多天协作同一文档。 doc_id + user_id + dt 也不是严格唯一；人工检查发现仍有 33 组重复。 完全重复行不存在，因此重复不是整行脏重复，不应删除。 如果要分析文档-用户-日期级协作，应先 GROUP BY doc_id, user_id, dt，并 SUM(edit_duration_sec)、SUM(comment_count)。 如果要分析文档级协作，应按 doc_id 聚合。 如果要分析用户级协作，应按 user_id 聚合。
+- primary_key: `[]`
+- natural_key_candidate: `['doc_id', 'user_id', 'dt']`
+- metrics:
+  - collaboration_record_count: `COUNT(*)`
+  - collaborating_user_count: `COUNT(DISTINCT user_id)`
+  - collaborated_doc_count: `COUNT(DISTINCT doc_id)`
+  - total_edit_duration_sec: `SUM(edit_duration_sec)`
+  - total_edit_duration_hours: `SUM(edit_duration_sec) / 3600.0`
+  - total_comment_count: `SUM(comment_count)`
+- join_rules:
+  - fact_document.doc_id | fact_doc_collaboration.doc_id = fact_document.doc_id
+  - dim_user.user_id | fact_doc_collaboration.user_id = dim_user.user_id
+  - dim_tenant.tenant_id | ["fact_doc_collaboration.user_id = dim_user.user_id", "dim_user.tenant_id = dim_tenant.tenant_id"]
+  - fact_document.doc_id | ["fact_doc_collaboration.doc_id = fact_document.doc_id"]
+- known_traps:
+  - 把 doc_id + user_id 当作唯一粒度。
+  - 把 doc_id + user_id + dt 当作严格唯一粒度。
+  - 把重复记录当作脏数据删除。
+  - 直接 COUNT(*) 当作文档数或用户数。
+- policy_flags:
+  - table_has_no_strict_primary_key: True
+  - grain_validated_partial: True
+  - doc_user_dt_not_unique: True
+  - do_not_drop_duplicate_doc_user_dt_records: True
+  - aggregate_to_doc_user_dt_before_doc_user_day_analysis: True
+  - sum_edit_duration_sec_for_duration: True
+  - sum_comment_count_for_comments: True
+  - count_docs_with_distinct_doc_id: True
+
+## fact_document
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 文档。 数据字典将该表归入“协作与内容”域。 数据字典行数说明为：80,000。
+- grain: 数据字典说明粒度：一行 = 一个文档。 数据字典说明主键：`doc_id`。
+- primary_key: `['doc_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - entity_count: `COUNT(DISTINCT doc_id)`
+  - edit_count_sum: `SUM(edit_count)`
+- join_rules:
+  - dim_user.user_id | fact_document.owner_id = dim_user.user_id
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_event_log
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 事件日志（埋点流水）。 数据字典将该表归入“产品使用”域。 数据字典行数说明为：~200 万（本数据集体量最大）。
+- grain: 数据字典说明粒度：一行 = 一次用户行为事件。 数据字典说明主键：`event_id`。
+- primary_key: `['event_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - entity_count: `COUNT(DISTINCT event_id)`
+- join_rules:
+  - dim_user.user_id | fact_event_log.user_id = dim_user.user_id
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_experiment
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: AB 实验。 数据字典将该表归入“增长与实验”域。 数据字典行数说明为：50。
+- grain: 数据字典说明主键：`exp_id`。
+- primary_key: `['exp_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - entity_count: `COUNT(DISTINCT exp_id)`
+- join_rules:
+  - dim_feature.feature_key | fact_experiment.feature_key = dim_feature.feature_key
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_experiment_assignment
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 实验分流。 数据字典将该表归入“增长与实验”域。 数据字典行数说明为：~13.4 万。
+- grain: 数据字典说明粒度：一行 = 一个用户在一个实验中的分组。
+- primary_key: `[]`
+- natural_key_candidate: `['user_id', 'exp_id']`
+- metrics:
+  - row_count: `COUNT(*)`
+- join_rules:
+  - dim_user.user_id | fact_experiment_assignment.user_id = dim_user.user_id
+  - fact_experiment.exp_id | fact_experiment_assignment.exp_id = fact_experiment.exp_id
+- known_traps:
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_experiment_metric
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 实验指标日度。 数据字典将该表归入“增长与实验”域。 数据字典行数说明为：~8k。
+- grain: 数据字典说明粒度：一行 = 一个实验的一个分组一个指标在某天的值。
+- primary_key: `[]`
+- natural_key_candidate: `['exp_id', 'variant', 'metric_name', 'dt']`
+- metrics:
+  - row_count: `COUNT(*)`
+  - sample_size_sum: `SUM(sample_size)`
+  - metric_value_sum: `SUM(metric_value)`
+  - ci_lower_sum: `SUM(ci_lower)`
+- join_rules:
+  - fact_experiment.exp_id | fact_experiment_metric.exp_id = fact_experiment.exp_id
+- known_traps:
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_feature_usage
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 功能使用事实表，记录用户在某一天对某个产品功能的使用情况。 该表适合分析功能采用、功能活跃用户、功能操作次数和功能使用时长。 当前验证显示该表可作为正式的功能使用分析事实表使用。
+- grain: 一行 = 一个 user_id 在某一天 dt 对一个 feature_key 的一条功能使用记录。 当前验证显示 user_id + feature_key + dt 在现有数据中唯一， row_count = 2700092，distinct_primary_key_count = 2700092， duplicate_primary_key_count = 0，因此该粒度成立。
+- primary_key: `['user_id', 'feature_key', 'dt']`
+- natural_key_candidate: `['user_id', 'feature_key', 'dt']`
+- metrics:
+  - feature_usage_record_count: `COUNT(DISTINCT (user_id, feature_key, dt))`
+  - active_feature_user_count: `COUNT(DISTINCT user_id)`
+  - feature_count: `COUNT(DISTINCT feature_key)`
+  - total_action_count: `SUM(action_count)`
+  - total_duration_sec: `SUM(duration_sec)`
+- join_rules:
+  - dim_user.user_id | fact_feature_usage.user_id = dim_user.user_id
+  - dim_feature.feature_key | fact_feature_usage.feature_key = dim_feature.feature_key
+  - dim_tenant.tenant_id | ["fact_feature_usage.user_id = dim_user.user_id", "dim_user.tenant_id = dim_tenant.tenant_id"]
+  - dim_tenant.tenant_id | ["fact_feature_usage.user_id = dim_user.user_id", "dim_user.tenant_id = dim_tenant.tenant_id"]
+- known_traps:
+  - JOIN dim_user 或 dim_tenant 后直接用 COUNT(*) 当作用户数或企业数。
+  - 统计功能数时直接使用 COUNT(*)。
+  - 统计功能使用量时只看记录条数，不聚合 action_count 或 duration_sec。
+  - 与 fact_daily_usage 或 fact_ai_usage_log 关联时只按 user_id JOIN。
+
+## fact_invoice
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 发票。 数据字典将该表归入“计费与订阅”域。 数据字典行数说明为：~1.2k。
+- grain: 数据字典说明粒度：一行 = 一张发票。 数据字典说明主键：`invoice_id`。
+- primary_key: `['invoice_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - entity_count: `COUNT(DISTINCT invoice_id)`
+  - amount_sum: `SUM(amount)`
+- join_rules:
+  - fact_subscription.sub_id | fact_invoice.sub_id = fact_subscription.sub_id
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 把发票金额直接当作实收收入。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_message
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 消息。 数据字典将该表归入“协作与内容”域。 数据字典行数说明为：~31.5 万。
+- grain: 数据字典说明粒度：一行 = 一条消息。 数据字典说明主键：`msg_id`。
+- primary_key: `['msg_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - entity_count: `COUNT(DISTINCT msg_id)`
+  - word_count_sum: `SUM(word_count)`
+- join_rules:
+  - dim_user.user_id | fact_message.sender_id = dim_user.user_id
+  - dim_channel.channel_id | fact_message.channel_id = dim_channel.channel_id
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_nps_survey
+- authoring_status: `validated_with_warnings`
+- grain_validated: `True`
+- dq_validated: `partial`
+- warning_level: `medium`
+- business_meaning: NPS 问卷与反馈事实表，记录用户的问卷提交、评分、文本反馈、所属租户与套餐信息。 该表可用于 NPS、完成率、反馈文本分布以及不同租户、套餐、时间维度下的满意度分析。 当前验证显示该表可正式用于 Agent 分析，但存在 `plan_tier` 大小写归一化和未完成问卷过滤规则， 因此应视为 validated_with_warnings。
+- grain: 一行 = 一条 NPS 问卷/反馈记录。 当前验证显示主键候选唯一：row_count = 8000，distinct_primary_key_count = 8000， duplicate_primary_key_count = 0，因此记录级粒度成立。 但 NPS 业务分析不等于直接统计所有记录；计算 NPS 时只能使用 is_completed = 1 且 score != 'N/A' 的完成问卷。
+- primary_key: `['survey_id']`
+- natural_key_candidate: `['survey_id']`
+- metrics:
+  - survey_response_count: `COUNT(DISTINCT survey_id)`
+  - completed_response_count: `COUNT(DISTINCT CASE WHEN is_completed = 1 THEN survey_id END)`
+  - respondent_user_count: `COUNT(DISTINCT user_id)`
+  - respondent_tenant_count: `COUNT(DISTINCT tenant_id)`
+  - average_score: `AVG(CAST(score AS INTEGER))`
+  - nps_score: `%Promoters - %Detractors`
+- join_rules:
+  - dim_user.user_id | fact_nps_survey.user_id = dim_user.user_id
+  - dim_tenant.tenant_id | fact_nps_survey.tenant_id = dim_tenant.tenant_id
+  - dim_plan.plan_tier | LOWER(fact_nps_survey.plan_tier) = LOWER(dim_plan.plan_tier)
+  - dim_tenant.tenant_id | ["fact_nps_survey.tenant_id = dim_tenant.tenant_id"]
+  - dim_plan.plan_tier | ["LOWER(fact_nps_survey.plan_tier) = LOWER(dim_plan.plan_tier)"]
+- known_traps:
+  - 把 NPS 当作 AVG(score)。
+  - 将 score = 'N/A' 或 is_completed = 0 的记录纳入 NPS 计算。
+  - 直接使用 fact_nps_survey.plan_tier = dim_plan.plan_tier JOIN。
+  - 把 role 当作可求和指标。
+- policy_flags:
+  - use_only_completed_responses_for_nps: True
+  - exclude_na_score_for_nps: True
+  - cast_score_to_integer_after_filter: True
+  - nps_is_not_average_score: True
+  - plan_tier_join_requires_lower_normalization: True
+  - plan_tier_direct_join_is_invalid: True
+  - role_is_enum_not_metric: True
+  - do_not_sum_role: True
+
+## fact_page_view
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 页面浏览。 数据字典将该表归入“产品使用”域。 数据字典行数说明为：~180 万。
+- grain: 数据字典说明粒度：一行 = 一次页面访问。 数据字典说明主键：`pv_id`。
+- primary_key: `['pv_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - entity_count: `COUNT(DISTINCT pv_id)`
+  - view_duration_ms_sum: `SUM(view_duration_ms)`
+- join_rules:
+  - fact_session.session_id | fact_page_view.session_id = fact_session.session_id
+  - dim_user.user_id | fact_page_view.user_id = dim_user.user_id
+  - dim_tenant.tenant_id | ["fact_page_view.user_id = dim_user.user_id", "dim_user.tenant_id = dim_tenant.tenant_id"]
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_payment
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 付款流水。 数据字典将该表归入“计费与订阅”域。 数据字典行数说明为：~1.6k。
+- grain: 数据字典说明粒度：一行 = 一次付款尝试。**一张发票可能对应多条付款记录**（尝试、部分支付、重试）。 数据字典说明主键：`payment_id`。
+- primary_key: `['payment_id']`
+- natural_key_candidate: `[]`
+- metrics:
+  - entity_count: `COUNT(DISTINCT payment_id)`
+  - amount_sum: `SUM(amount)`
+- join_rules:
+  - fact_invoice.invoice_id | fact_payment.invoice_id = fact_invoice.invoice_id
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 把付款金额与发票金额或实收收入当成完全相同口径。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_session
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 用户会话事实表，记录用户一次从开始到结束的访问或登录会话。 该表适合分析登录/访问会话数、活跃用户数、设备分布、国家分布和会话时长。 当前验证显示该表可作为正式会话分析事实表使用。
+- grain: 一行代表一次用户 session。 当前验证显示主键候选 session_id 唯一：row_count = 1269417， distinct_primary_key_count = 1269417，duplicate_primary_key_count = 0。 同一个 user_id 可以有多条 session。 该表适合分析登录/访问会话数、活跃用户数、设备分布、国家分布和会话时长。
+- primary_key: `['session_id']`
+- natural_key_candidate: `['session_id']`
+- metrics:
+  - session_count: `COUNT(DISTINCT session_id)`
+  - active_user_count: `COUNT(DISTINCT user_id)`
+  - avg_session_duration_sec: `AVG(DATEDIFF('second', start_time, end_time))`
+  - total_session_duration_sec: `SUM(DATEDIFF('second', start_time, end_time))`
+  - device_count: `COUNT(DISTINCT device)`
+  - ip_country_count: `COUNT(DISTINCT ip_country)`
+- join_rules:
+  - dim_user.user_id | fact_session.user_id = dim_user.user_id
+  - dim_tenant.tenant_id | ["fact_session.user_id = dim_user.user_id", "dim_user.tenant_id = dim_tenant.tenant_id"]
+- known_traps:
+  - 直接 COUNT(*) 当作用户数。
+  - 把 device 或 ip_country 当作数值指标。
+  - 把 ip_country 等同于租户注册国家。
+  - 计算 session 时长时没有使用 end_time - start_time。
+- policy_flags:
+  - count_sessions_with_distinct_session_id: True
+  - count_users_with_distinct_user_id: True
+  - device_is_enum_not_metric: True
+  - ip_country_is_access_country_not_tenant_country: True
+  - calculate_duration_from_start_and_end_time: True
+  - use_start_time_for_session_trends: True
+  - join_to_event_tables_can_duplicate_sessions: True
+
+## fact_subscription
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 订阅。 数据字典将该表归入“计费与订阅”域。 数据字典行数说明为：~340。
+- grain: 数据字典说明粒度：一行 = 一个订阅周期。 数据字典说明主键：`sub_id`。
+- primary_key: `['sub_id']`
+- natural_key_candidate: `['tenant_id', 'plan_tier', 'start_date']`
+- metrics:
+  - subscription_count: `COUNT(DISTINCT sub_id)`
+  - active_subscription_count: `COUNT( DISTINCT CASE WHEN status = 'active' THEN sub_id END )`
+  - total_mrr: `SUM(mrr)`
+- join_rules:
+  - dim_tenant.tenant_id | fact_subscription.tenant_id = dim_tenant.tenant_id
+  - dim_plan.plan_tier | fact_subscription.plan_tier = dim_plan.plan_tier
+- known_traps:
+  - 把数据字典声明的主键直接当作已验证事实。
+  - 仅根据 status 判断某月有效订阅，而忽略时间区间。
+  - 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+
+## fact_tenant_metrics_snapshot
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 租户指标快照事实表，记录某个租户在某个快照日期的规模、内容、存储、收入、消息量和当日活跃用户等状态指标。 该表适合做租户总览、租户规模趋势、租户分层分析和租户日度状态监控。 当前验证显示该表可作为正式快照分析事实表使用。
+- grain: 一行代表一个 tenant 在一个 snapshot_date 的指标快照。 当前验证显示主键候选 tenant_id + snapshot_date 唯一： row_count = 141684，distinct_primary_key_count = 141684，duplicate_primary_key_count = 0。 该表是快照表，不是事件流水表。 同一个 tenant_id 可以在多个 snapshot_date 出现。 total_users、total_docs、total_revenue、total_messages 等字段是快照状态值，跨多个日期直接 SUM 会重复累计。 按日期分析时应关注每个 snapshot_date 的 tenant 覆盖数量。
+- primary_key: `[]`
+- natural_key_candidate: `['tenant_id', 'snapshot_date']`
+- metrics:
+  - snapshot_record_count: `COUNT(*)`
+  - snapshot_tenant_count: `COUNT(DISTINCT tenant_id)`
+  - total_users_on_date: `SUM(total_users)`
+  - avg_users_per_tenant: `AVG(total_users)`
+  - total_docs_on_date: `SUM(total_docs)`
+  - total_storage_mb_on_date: `SUM(total_storage_mb)`
+- join_rules:
+  - dim_tenant.tenant_id | fact_tenant_metrics_snapshot.tenant_id = dim_tenant.tenant_id
+  - dim_tenant.tenant_id | ["fact_tenant_metrics_snapshot.tenant_id = dim_tenant.tenant_id"]
+- known_traps:
+  - 跨多个 snapshot_date 直接 SUM(total_users)、SUM(total_docs)、SUM(total_revenue)。
+  - 把 total_revenue 当作期间实收收入。
+  - 忽略 snapshot_date 的 tenant 覆盖数量。
+  - 把 active_users_today 的 0 当作异常值。
+- policy_flags:
+  - table_is_snapshot_not_event_log: True
+  - do_not_sum_snapshot_metrics_across_dates_without_grouping: True
+  - filter_or_group_by_snapshot_date_before_aggregating_snapshot_metrics: True
+  - use_latest_snapshot_for_current_state: True
+  - include_tenant_count_when_comparing_dates: True
+  - active_users_today_zero_is_valid: True
+  - total_revenue_is_snapshot_metric_not_actual_revenue: True
+  - use_actual_revenue_table_for_actual_income: True
+
+## fact_ticket
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 客服/支持工单事实表，记录工单的企业归属、提单用户、分类、优先级、状态、创建时间和解决时间。 该表适合分析工单数量、优先级、状态、类别、解决时长和租户支持负载。 当前验证显示该表可作为正式工单分析事实表使用。
+- grain: 一行代表一个客服/支持工单。 当前验证显示主键候选 ticket_id 唯一：row_count = 3922， distinct_primary_key_count = 3922，duplicate_primary_key_count = 0。 同一个 ticket_id 可以在 fact_ticket_reply 中对应多条回复。 该表适合分析工单数量、优先级、状态、类别、解决时长和租户支持负载。
+- primary_key: `['ticket_id']`
+- natural_key_candidate: `['ticket_id']`
+- metrics:
+  - ticket_count: `COUNT(DISTINCT ticket_id)`
+  - open_ticket_count: `COUNT(DISTINCT CASE WHEN status = 'open' THEN ticket_id END)`
+  - in_progress_ticket_count: `COUNT(DISTINCT CASE WHEN status = 'in_progress' THEN ticket_id END)`
+  - resolved_ticket_count: `COUNT(DISTINCT CASE WHEN status = 'resolved' THEN ticket_id END)`
+  - closed_ticket_count: `COUNT(DISTINCT CASE WHEN status = 'closed' THEN ticket_id END)`
+  - unresolved_ticket_count: `COUNT(DISTINCT CASE WHEN resolved_at IS NULL THEN ticket_id END)`
+- join_rules:
+  - dim_tenant.tenant_id | fact_ticket.tenant_id = dim_tenant.tenant_id
+  - dim_ticket_category.category_id | fact_ticket.category = dim_ticket_category.category_id
+  - fact_ticket_reply.ticket_id | fact_ticket.ticket_id = fact_ticket_reply.ticket_id
+- known_traps:
+  - JOIN fact_ticket_reply 后直接 COUNT(*) 当作工单数。
+  - 计算解决时长时没有过滤 resolved_at IS NOT NULL。
+  - 把 resolved_at 为空当作数据质量错误。
+  - 把 priority 或 status 当作数值指标。
+- policy_flags:
+  - count_tickets_with_distinct_ticket_id: True
+  - priority_is_enum_not_metric: True
+  - status_is_enum_not_metric: True
+  - use_created_at_for_ticket_creation_trends: True
+  - use_resolved_at_only_for_resolved_ticket_duration: True
+  - resolved_at_null_means_unresolved_or_not_closed: True
+  - ticket_can_have_multiple_replies: True
+  - join_to_reply_can_duplicate_ticket_rows: True
+
+## fact_ticket_reply
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 工单回复事实表，记录客服工单体系中的每一条回复记录。 该表适合分析工单回复量、回复者类型、回复时间趋势和回复内容长度。 当前验证显示该表可作为正式回复分析事实表使用。
+- grain: 一行代表一条工单回复记录。 当前验证显示主键候选 reply_id 唯一：row_count = 21715， distinct_primary_key_count = 21715，duplicate_primary_key_count = 0。 同一个 ticket_id 可以对应多条回复。 该表适合分析工单回复量、回复者类型、回复时间趋势和回复内容长度。
+- primary_key: `['reply_id']`
+- natural_key_candidate: `['reply_id']`
+- metrics:
+  - reply_record_count: `COUNT(DISTINCT reply_id)`
+  - replied_ticket_count: `COUNT(DISTINCT ticket_id)`
+  - avg_content_length: `AVG(content_length)`
+  - total_content_length: `SUM(content_length)`
+  - agent_reply_count: `COUNT(DISTINCT CASE WHEN author_type = 'agent' THEN reply_id END)`
+  - bot_reply_count: `COUNT(DISTINCT CASE WHEN author_type = 'bot' THEN reply_id END)`
+- join_rules:
+  - fact_ticket.ticket_id | fact_ticket_reply.ticket_id = fact_ticket.ticket_id
+  - dim_tenant.tenant_id | ["fact_ticket_reply.ticket_id = fact_ticket.ticket_id", "fact_ticket.tenant_id = dim_tenant.tenant_id"]
+  - dim_user.user_id | ["fact_ticket_reply.ticket_id = fact_ticket.ticket_id", "fact_ticket.user_id = dim_user.user_id"]
+- known_traps:
+  - JOIN fact_ticket 后直接 COUNT(*) 当作工单数。
+  - 把 author_type 当作数值指标。
+  - 把 content_length 当作服务质量指标。
+  - 分析回复趋势时忘记使用 replied_at。
+- policy_flags:
+  - count_replies_with_reply_primary_key: True
+  - count_tickets_with_distinct_ticket_id: True
+  - author_type_is_enum_not_metric: True
+  - content_length_is_length_not_quality: True
+  - use_replied_at_for_reply_trends: True
+  - ticket_can_have_multiple_replies: True
+  - join_to_ticket_before_tenant_or_user: True
+  - treat_2026_04_as_partial_month: True
+
+## fact_user_activation
+- authoring_status: `validated`
+- grain_validated: `True`
+- dq_validated: `True`
+- warning_level: `low`
+- business_meaning: 用户激活里程碑事实表，记录用户何时达成某个关键激活动作。 该表适合分析用户激活路径、激活漏斗、不同里程碑的达成情况以及激活时间趋势。 当前验证显示该表可作为正式激活分析事实表使用。
+- grain: 一行代表一个用户达成一个激活里程碑的记录。 当前验证显示主键候选 user_id + milestone_type + reached_at 唯一： row_count = 180072，distinct_primary_key_count = 180072，duplicate_primary_key_count = 0。 同一个 user_id 可以有多个 milestone_type。 该表适合分析用户激活路径、激活漏斗和激活时间趋势。
+- primary_key: `['user_id', 'milestone_type', 'reached_at']`
+- natural_key_candidate: `['user_id', 'milestone_type', 'reached_at']`
+- metrics:
+  - activation_record_count: `COUNT(DISTINCT (user_id, milestone_type, reached_at))`
+  - activated_user_count: `COUNT(DISTINCT user_id)`
+  - milestone_type_count: `COUNT(DISTINCT milestone_type)`
+- join_rules:
+  - dim_user.user_id | fact_user_activation.user_id = dim_user.user_id
+  - dim_tenant.tenant_id | ["fact_user_activation.user_id = dim_user.user_id", "dim_user.tenant_id = dim_tenant.tenant_id"]
+- known_traps:
+  - JOIN dim_user 或 dim_tenant 后直接 COUNT(*) 当作激活用户数。
+  - 把 milestone_type 当作数值指标。
+  - 认为一个用户只有一条激活记录。
+  - 分析激活趋势时忘记使用 reached_at。
+- policy_flags:
+  - count_users_with_distinct_user_id: True
+  - milestone_type_is_enum_not_metric: True
+  - use_reached_at_for_activation_trends: True
+  - user_can_have_multiple_milestones: True
+  - join_to_tenant_through_dim_user: True

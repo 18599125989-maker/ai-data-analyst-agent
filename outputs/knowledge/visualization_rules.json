@@ -1,0 +1,82 @@
+{
+  "version": "v1",
+  "description": "CloudWork AI 数据分析 Agent 的可视化推荐规则。",
+  "chart_types": {
+    "line": {
+      "best_for": [
+        "时间趋势",
+        "连续时间变化",
+        "按天/周/月趋势"
+      ],
+      "required_roles": [
+        "x=time",
+        "y=metric"
+      ]
+    },
+    "bar": {
+      "best_for": [
+        "类别对比",
+        "排名",
+        "分布对比"
+      ],
+      "required_roles": [
+        "x=dimension",
+        "y=metric"
+      ]
+    },
+    "table_only": {
+      "best_for": [
+        "明细行",
+        "宽表结果",
+        "没有数值指标"
+      ],
+      "required_roles": []
+    }
+  },
+  "chart_rules": [
+    {
+      "rule_id": "time_series_default",
+      "priority": 100,
+      "question_keywords": [
+        "趋势",
+        "走势",
+        "变化",
+        "按月",
+        "月度",
+        "每日",
+        "每周"
+      ],
+      "result_shape": "time_series",
+      "recommended_chart": "line",
+      "reason_template": "问题目标是观察时间序列变化，折线图更适合展示趋势。"
+    },
+    {
+      "rule_id": "distribution_default",
+      "priority": 90,
+      "question_keywords": [
+        "分布",
+        "占比",
+        "排名",
+        "对比",
+        "头部",
+        "拆解"
+      ],
+      "result_shape": "categorical_comparison",
+      "recommended_chart": "bar",
+      "reason_template": "问题目标是比较类别间差异，柱状图更适合展示排序和对比。"
+    },
+    {
+      "rule_id": "fallback_table",
+      "priority": 10,
+      "question_keywords": [],
+      "result_shape": "tabular_answer",
+      "recommended_chart": "table_only",
+      "reason_template": "当前结果更适合表格展示。"
+    }
+  ],
+  "render_constraints": {
+    "max_categories_for_bar": 20,
+    "max_series_for_grouped_chart": 8,
+    "max_points_for_line": 200
+  }
+}

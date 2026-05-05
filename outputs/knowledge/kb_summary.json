@@ -1,0 +1,36 @@
+{
+  "knowledge_base_name": "CloudWork Knowledge Base",
+  "version": "v1_rule_based",
+  "description": "First offline knowledge base built from schema, data profiles, sample questions, and data dictionary.",
+  "input_files": {
+    "table_profiles": "outputs/profiles/table_profiles.json",
+    "column_profiles": "outputs/profiles/column_profiles.json",
+    "data_dictionary": "for_contestants/DATA_DICTIONARY.md",
+    "sample_questions_output": "outputs/sample"
+  },
+  "output_files": {
+    "schema_raw": "outputs/knowledge/schema_raw.json",
+    "table_cards": "outputs/knowledge/table_cards.json",
+    "column_cards": "outputs/knowledge/column_cards.json",
+    "dq_rules": "outputs/knowledge/dq_rules.json",
+    "grain_rules": "outputs/knowledge/grain_rules.json",
+    "recipes": "outputs/knowledge/recipes.json"
+  },
+  "statistics": {
+    "table_count": 37,
+    "column_count": 217,
+    "total_rows": 11240516,
+    "table_card_count": 37,
+    "column_card_count": 217,
+    "dq_rule_count": 86,
+    "grain_rule_count": 37,
+    "recipe_count": 3,
+    "data_dictionary_char_count": 18158
+  },
+  "notes": [
+    "This version does not build vector embeddings yet.",
+    "possible_primary_keys are generated from data profile and must be verified.",
+    "dq_rules and grain_rules are first-version rule-based outputs.",
+    "Next step is to build a retriever and compact context for SQL generation."
+  ]
+}

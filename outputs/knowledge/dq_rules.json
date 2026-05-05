@@ -1,0 +1,1177 @@
+[
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_channel",
+    "column_name": "channel_type",
+    "distinct_count": 4,
+    "sample_values": [
+      "announcement",
+      "group",
+      "private",
+      "topic"
+    ],
+    "message": "dim_channel.channel_type looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_department",
+    "column_name": "dept_name",
+    "distinct_count": 10,
+    "sample_values": [
+      "Design",
+      "Engineering",
+      "Finance",
+      "HR",
+      "Legal"
+    ],
+    "message": "dim_department.dept_name looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "high_null_rate",
+    "severity": "medium",
+    "table_name": "dim_department",
+    "column_name": "parent_dept_id",
+    "null_rate": 0.7613,
+    "message": "dim_department.parent_dept_id has high null rate (0.7613). Need business interpretation before using it."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_feature",
+    "column_name": "feature_key",
+    "distinct_count": 12,
+    "sample_values": [
+      "approval",
+      "base",
+      "calendar",
+      "docs",
+      "email"
+    ],
+    "message": "dim_feature.feature_key looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_feature",
+    "column_name": "feature_name",
+    "distinct_count": 12,
+    "sample_values": [
+      "Approval",
+      "Bitable",
+      "Calendar",
+      "Cloud Documents",
+      "Email"
+    ],
+    "message": "dim_feature.feature_name looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_feature",
+    "column_name": "module",
+    "distinct_count": 4,
+    "sample_values": [
+      "Communication",
+      "Knowledge",
+      "Productivity",
+      "Workflow"
+    ],
+    "message": "dim_feature.module looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_feature",
+    "column_name": "category",
+    "distinct_count": 3,
+    "sample_values": [
+      "advanced",
+      "core",
+      "premium"
+    ],
+    "message": "dim_feature.category looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_feature",
+    "column_name": "launched_at",
+    "distinct_count": 12,
+    "sample_values": [
+      "2023-04-20",
+      "2023-08-20",
+      "2024-02-04",
+      "2024-06-01",
+      "2024-06-06"
+    ],
+    "message": "dim_feature.launched_at looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_org_structure",
+    "column_name": "node_type",
+    "distinct_count": 3,
+    "sample_values": [
+      "department",
+      "team",
+      "virtual_group"
+    ],
+    "message": "dim_org_structure.node_type looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_org_structure",
+    "column_name": "level",
+    "distinct_count": 6,
+    "sample_values": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "message": "dim_org_structure.level looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_plan",
+    "column_name": "plan_name",
+    "distinct_count": 5,
+    "sample_values": [
+      "Business",
+      "Enterprise",
+      "Free",
+      "Professional",
+      "Starter"
+    ],
+    "message": "dim_plan.plan_name looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_plan",
+    "column_name": "plan_tier",
+    "distinct_count": 5,
+    "sample_values": [
+      "business",
+      "enterprise",
+      "free",
+      "pro",
+      "starter"
+    ],
+    "message": "dim_plan.plan_tier looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_plan",
+    "column_name": "monthly_price",
+    "distinct_count": 5,
+    "sample_values": [
+      "0",
+      "29",
+      "79",
+      "199",
+      "499"
+    ],
+    "message": "dim_plan.monthly_price looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_plan",
+    "column_name": "annual_price",
+    "distinct_count": 5,
+    "sample_values": [
+      "0",
+      "290",
+      "790",
+      "1990",
+      "4990"
+    ],
+    "message": "dim_plan.annual_price looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_plan",
+    "column_name": "seat_limit",
+    "distinct_count": 5,
+    "sample_values": [
+      "100",
+      "20",
+      "5",
+      "500",
+      "unlimited"
+    ],
+    "message": "dim_plan.seat_limit looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_plan",
+    "column_name": "features",
+    "distinct_count": 5,
+    "sample_values": [
+      "all",
+      "im,docs",
+      "im,docs,sheets,calendar",
+      "im,docs,sheets,calendar,video_conf,task",
+      "im,docs,sheets,calendar,video_conf,task,base,wiki,approval"
+    ],
+    "message": "dim_plan.features looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_tenant",
+    "column_name": "industry",
+    "distinct_count": 15,
+    "sample_values": [
+      "Consulting",
+      "Education",
+      "Energy",
+      "Finance",
+      "Government"
+    ],
+    "message": "dim_tenant.industry looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_tenant",
+    "column_name": "size_tier",
+    "distinct_count": 5,
+    "sample_values": [
+      "enterprise",
+      "large",
+      "medium",
+      "small",
+      "startup"
+    ],
+    "message": "dim_tenant.size_tier looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_tenant",
+    "column_name": "country",
+    "distinct_count": 10,
+    "sample_values": [
+      "AU",
+      "BR",
+      "CN",
+      "DE",
+      "GB"
+    ],
+    "message": "dim_tenant.country looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_tenant_config",
+    "column_name": "feature_key",
+    "distinct_count": 12,
+    "sample_values": [
+      "approval",
+      "base",
+      "calendar",
+      "docs",
+      "email"
+    ],
+    "message": "dim_tenant_config.feature_key looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_tenant_config",
+    "column_name": "enabled",
+    "distinct_count": 2,
+    "sample_values": [
+      "0",
+      "1"
+    ],
+    "message": "dim_tenant_config.enabled looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "high_null_rate",
+    "severity": "medium",
+    "table_name": "dim_tenant_config",
+    "column_name": "config_json",
+    "null_rate": 0.8333,
+    "message": "dim_tenant_config.config_json has high null rate (0.8333). Need business interpretation before using it."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_tenant_config",
+    "column_name": "config_json",
+    "distinct_count": 7,
+    "sample_values": [
+      "{\"max_participants\": 100}",
+      "{\"max_participants\": 300}",
+      "{\"max_participants\": 500}",
+      "{\"max_participants\": 50}",
+      "{\"max_tables\": 100}"
+    ],
+    "message": "dim_tenant_config.config_json looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_tenant_plan",
+    "column_name": "plan_name",
+    "distinct_count": 5,
+    "sample_values": [
+      "Business",
+      "Enterprise",
+      "Free",
+      "Professional",
+      "Starter"
+    ],
+    "message": "dim_tenant_plan.plan_name looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_tenant_plan",
+    "column_name": "plan_tier",
+    "distinct_count": 5,
+    "sample_values": [
+      "business",
+      "enterprise",
+      "free",
+      "pro",
+      "starter"
+    ],
+    "message": "dim_tenant_plan.plan_tier looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "high_null_rate",
+    "severity": "medium",
+    "table_name": "dim_tenant_plan",
+    "column_name": "effective_to",
+    "null_rate": 0.2134,
+    "message": "dim_tenant_plan.effective_to has high null rate (0.2134). Need business interpretation before using it."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_ticket_category",
+    "column_name": "category_id",
+    "distinct_count": 12,
+    "sample_values": [
+      "account",
+      "account_login",
+      "account_permission",
+      "billing",
+      "billing_invoice"
+    ],
+    "message": "dim_ticket_category.category_id looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_ticket_category",
+    "column_name": "category_name",
+    "distinct_count": 12,
+    "sample_values": [
+      "Account Issues",
+      "App Crashes",
+      "Billing & Payment",
+      "Bug Report",
+      "Data Loss"
+    ],
+    "message": "dim_ticket_category.category_name looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "high_null_rate",
+    "severity": "medium",
+    "table_name": "dim_ticket_category",
+    "column_name": "parent_category_id",
+    "null_rate": 0.5,
+    "message": "dim_ticket_category.parent_category_id has high null rate (0.5). Need business interpretation before using it."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_ticket_category",
+    "column_name": "parent_category_id",
+    "distinct_count": 3,
+    "sample_values": [
+      "account",
+      "billing",
+      "bug"
+    ],
+    "message": "dim_ticket_category.parent_category_id looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_ticket_category",
+    "column_name": "sla_hours",
+    "distinct_count": 6,
+    "sample_values": [
+      "4",
+      "8",
+      "12",
+      "24",
+      "48"
+    ],
+    "message": "dim_ticket_category.sla_hours looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_user",
+    "column_name": "role",
+    "distinct_count": 4,
+    "sample_values": [
+      "admin",
+      "guest",
+      "member",
+      "viewer"
+    ],
+    "message": "dim_user.role looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_user",
+    "column_name": "status",
+    "distinct_count": 3,
+    "sample_values": [
+      "active",
+      "inactive",
+      "suspended"
+    ],
+    "message": "dim_user.status looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_user_profile",
+    "column_name": "language",
+    "distinct_count": 5,
+    "sample_values": [
+      "de-DE",
+      "en-US",
+      "ja-JP",
+      "pt-BR",
+      "zh-CN"
+    ],
+    "message": "dim_user_profile.language looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_user_profile",
+    "column_name": "timezone",
+    "distinct_count": 10,
+    "sample_values": [
+      "America/New_York",
+      "America/Sao_Paulo",
+      "Asia/Kolkata",
+      "Asia/Seoul",
+      "Asia/Shanghai"
+    ],
+    "message": "dim_user_profile.timezone looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_user_profile",
+    "column_name": "device_os",
+    "distinct_count": 5,
+    "sample_values": [
+      "Android",
+      "Linux",
+      "Windows",
+      "iOS",
+      "macOS"
+    ],
+    "message": "dim_user_profile.device_os looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_user_role_history",
+    "column_name": "old_role",
+    "distinct_count": 4,
+    "sample_values": [
+      "admin",
+      "guest",
+      "member",
+      "viewer"
+    ],
+    "message": "dim_user_role_history.old_role looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "dim_user_role_history",
+    "column_name": "new_role",
+    "distinct_count": 4,
+    "sample_values": [
+      "admin",
+      "guest",
+      "member",
+      "viewer"
+    ],
+    "message": "dim_user_role_history.new_role looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_actual_revenue",
+    "column_name": "month",
+    "distinct_count": 12,
+    "sample_values": [
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08"
+    ],
+    "message": "fact_actual_revenue.month looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_actual_revenue",
+    "column_name": "list_price_per_seat",
+    "distinct_count": 4,
+    "sample_values": [
+      "29.0",
+      "79.0",
+      "199.0",
+      "499.0"
+    ],
+    "message": "fact_actual_revenue.list_price_per_seat looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "hashed_user_id",
+    "severity": "high",
+    "table_name": "fact_ai_usage_log",
+    "column_name": "user_id_hash",
+    "message": "fact_ai_usage_log uses hashed user IDs. Join with dim_user_id_mapping before joining to dim_user."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_ai_usage_log",
+    "column_name": "operation_type",
+    "distinct_count": 3,
+    "sample_values": [
+      "deduct",
+      "earn",
+      "refund"
+    ],
+    "message": "fact_ai_usage_log.operation_type looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_ai_usage_log",
+    "column_name": "model_name",
+    "distinct_count": 5,
+    "sample_values": [
+      "claude-3.5",
+      "doubao-pro",
+      "glm-4",
+      "gpt-4o",
+      "moonshot-v1"
+    ],
+    "message": "fact_ai_usage_log.model_name looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "special_time_format",
+    "severity": "high",
+    "table_name": "fact_ai_usage_log",
+    "column_name": "created_at",
+    "data_type": "BIGINT",
+    "message": "fact_ai_usage_log.created_at is unix epoch seconds, not a normal timestamp string. Convert it before date filtering."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_campaign",
+    "column_name": "channel",
+    "distinct_count": 6,
+    "sample_values": [
+      "content_marketing",
+      "email_drip",
+      "google_ads",
+      "linkedin",
+      "referral"
+    ],
+    "message": "fact_campaign.channel looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_campaign",
+    "column_name": "target_segment",
+    "distinct_count": 5,
+    "sample_values": [
+      "all",
+      "dormant",
+      "enterprise",
+      "new_users",
+      "trial"
+    ],
+    "message": "fact_campaign.target_segment looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_campaign_attribution",
+    "column_name": "touch_type",
+    "distinct_count": 4,
+    "sample_values": [
+      "click",
+      "demo_request",
+      "impression",
+      "signup"
+    ],
+    "message": "fact_campaign_attribution.touch_type looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_campaign_attribution",
+    "column_name": "is_converted",
+    "distinct_count": 2,
+    "sample_values": [
+      "0",
+      "1"
+    ],
+    "message": "fact_campaign_attribution.is_converted looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_credit_usage",
+    "column_name": "resource_type",
+    "distinct_count": 4,
+    "sample_values": [
+      "ai_token",
+      "api_calls",
+      "storage_gb",
+      "video_minutes"
+    ],
+    "message": "fact_credit_usage.resource_type looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_daily_usage",
+    "column_name": "session_count",
+    "distinct_count": 15,
+    "sample_values": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "message": "fact_daily_usage.session_count looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_document",
+    "column_name": "doc_type",
+    "distinct_count": 5,
+    "sample_values": [
+      "bitable",
+      "docx",
+      "mindnote",
+      "sheet",
+      "slides"
+    ],
+    "message": "fact_document.doc_type looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_event_log",
+    "column_name": "event_name",
+    "distinct_count": 20,
+    "sample_values": [
+      "approval_approve",
+      "approval_submit",
+      "button_click",
+      "calendar_create",
+      "calendar_rsvp"
+    ],
+    "message": "fact_event_log.event_name looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_event_log",
+    "column_name": "page",
+    "distinct_count": 16,
+    "sample_values": [
+      "/approval/list",
+      "/base/table",
+      "/calendar",
+      "/docs/editor",
+      "/drive/folder"
+    ],
+    "message": "fact_event_log.page looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_experiment",
+    "column_name": "feature_key",
+    "distinct_count": 11,
+    "sample_values": [
+      "approval",
+      "base",
+      "calendar",
+      "docs",
+      "im"
+    ],
+    "message": "fact_experiment.feature_key looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_experiment",
+    "column_name": "status",
+    "distinct_count": 3,
+    "sample_values": [
+      "completed",
+      "running",
+      "stopped"
+    ],
+    "message": "fact_experiment.status looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_experiment_assignment",
+    "column_name": "variant",
+    "distinct_count": 3,
+    "sample_values": [
+      "control",
+      "treatment_a",
+      "treatment_b"
+    ],
+    "message": "fact_experiment_assignment.variant looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_experiment_metric",
+    "column_name": "variant",
+    "distinct_count": 3,
+    "sample_values": [
+      "control",
+      "treatment_a",
+      "treatment_b"
+    ],
+    "message": "fact_experiment_metric.variant looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_experiment_metric",
+    "column_name": "metric_name",
+    "distinct_count": 5,
+    "sample_values": [
+      "conversion_rate",
+      "feature_adoption",
+      "nps_score",
+      "retention_d7",
+      "session_duration"
+    ],
+    "message": "fact_experiment_metric.metric_name looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_feature_usage",
+    "column_name": "feature_key",
+    "distinct_count": 12,
+    "sample_values": [
+      "approval",
+      "base",
+      "calendar",
+      "docs",
+      "email"
+    ],
+    "message": "fact_feature_usage.feature_key looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_invoice",
+    "column_name": "currency",
+    "distinct_count": 4,
+    "sample_values": [
+      "CNY",
+      "EUR",
+      "JPY",
+      "USD"
+    ],
+    "message": "fact_invoice.currency looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "multi_currency",
+    "severity": "high",
+    "table_name": "fact_invoice",
+    "column_name": "currency",
+    "sample_values": [
+      "CNY",
+      "EUR",
+      "JPY",
+      "USD"
+    ],
+    "message": "fact_invoice contains multiple currencies. Do not sum amount directly across currencies without conversion."
+  },
+  {
+    "rule_type": "high_null_rate",
+    "severity": "medium",
+    "table_name": "fact_invoice",
+    "column_name": "paid_at",
+    "null_rate": 0.2003,
+    "message": "fact_invoice.paid_at has high null rate (0.2003). Need business interpretation before using it."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_invoice",
+    "column_name": "status",
+    "distinct_count": 4,
+    "sample_values": [
+      "overdue",
+      "paid",
+      "pending",
+      "void"
+    ],
+    "message": "fact_invoice.status looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_message",
+    "column_name": "msg_type",
+    "distinct_count": 5,
+    "sample_values": [
+      "file",
+      "image",
+      "rich_text",
+      "sticker",
+      "text"
+    ],
+    "message": "fact_message.msg_type looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_nps_survey",
+    "column_name": "role",
+    "distinct_count": 3,
+    "sample_values": [
+      "1",
+      "2",
+      "3"
+    ],
+    "message": "fact_nps_survey.role looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_nps_survey",
+    "column_name": "score",
+    "distinct_count": 12,
+    "sample_values": [
+      "0",
+      "1",
+      "10",
+      "2",
+      "3"
+    ],
+    "message": "fact_nps_survey.score looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "mixed_numeric_string",
+    "severity": "high",
+    "table_name": "fact_nps_survey",
+    "column_name": "score",
+    "sample_values": [
+      "0",
+      "1",
+      "10",
+      "2",
+      "3"
+    ],
+    "message": "fact_nps_survey.score is stored as VARCHAR and may contain N/A. Use TRY_CAST and filter invalid values before numeric analysis."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_nps_survey",
+    "column_name": "plan_tier",
+    "distinct_count": 5,
+    "sample_values": [
+      "Business",
+      "Enterprise",
+      "Free",
+      "Pro",
+      "Starter"
+    ],
+    "message": "fact_nps_survey.plan_tier looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "case_mismatch",
+    "severity": "medium",
+    "table_name": "fact_nps_survey",
+    "column_name": "plan_tier",
+    "sample_values": [
+      "Business",
+      "Enterprise",
+      "Free",
+      "Pro",
+      "Starter"
+    ],
+    "message": "fact_nps_survey.plan_tier uses capitalized values, while dim_plan.plan_tier uses lowercase values. Normalize case before joining."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_nps_survey",
+    "column_name": "feedback_text",
+    "distinct_count": 8,
+    "sample_values": [
+      "Best tool ever",
+      "Crashes often",
+      "Great product!",
+      "Integration issues",
+      "Love the collaboration"
+    ],
+    "message": "fact_nps_survey.feedback_text looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_nps_survey",
+    "column_name": "is_completed",
+    "distinct_count": 2,
+    "sample_values": [
+      "0",
+      "1"
+    ],
+    "message": "fact_nps_survey.is_completed looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_page_view",
+    "column_name": "page_path",
+    "distinct_count": 16,
+    "sample_values": [
+      "/approval/list",
+      "/base/table",
+      "/calendar",
+      "/docs/editor",
+      "/drive/folder"
+    ],
+    "message": "fact_page_view.page_path looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_page_view",
+    "column_name": "referrer",
+    "distinct_count": 16,
+    "sample_values": [
+      "/approval/list",
+      "/base/table",
+      "/calendar",
+      "/docs/editor",
+      "/drive/folder"
+    ],
+    "message": "fact_page_view.referrer looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_payment",
+    "column_name": "method",
+    "distinct_count": 4,
+    "sample_values": [
+      "alipay",
+      "bank_transfer",
+      "credit_card",
+      "wechat_pay"
+    ],
+    "message": "fact_payment.method looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_payment",
+    "column_name": "status",
+    "distinct_count": 3,
+    "sample_values": [
+      "failed",
+      "pending",
+      "success"
+    ],
+    "message": "fact_payment.status looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "high_null_rate",
+    "severity": "medium",
+    "table_name": "fact_payment",
+    "column_name": "paid_at",
+    "null_rate": 0.258,
+    "message": "fact_payment.paid_at has high null rate (0.258). Need business interpretation before using it."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_session",
+    "column_name": "device",
+    "distinct_count": 5,
+    "sample_values": [
+      "Android",
+      "Linux",
+      "Windows",
+      "iOS",
+      "macOS"
+    ],
+    "message": "fact_session.device looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_session",
+    "column_name": "ip_country",
+    "distinct_count": 10,
+    "sample_values": [
+      "AU",
+      "BR",
+      "CN",
+      "DE",
+      "GB"
+    ],
+    "message": "fact_session.ip_country looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_subscription",
+    "column_name": "plan_tier",
+    "distinct_count": 4,
+    "sample_values": [
+      "business",
+      "enterprise",
+      "pro",
+      "starter"
+    ],
+    "message": "fact_subscription.plan_tier looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_subscription",
+    "column_name": "status",
+    "distinct_count": 3,
+    "sample_values": [
+      "active",
+      "churned",
+      "trial"
+    ],
+    "message": "fact_subscription.status looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_ticket",
+    "column_name": "category",
+    "distinct_count": 12,
+    "sample_values": [
+      "account",
+      "account_login",
+      "account_permission",
+      "billing",
+      "billing_invoice"
+    ],
+    "message": "fact_ticket.category looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_ticket",
+    "column_name": "priority",
+    "distinct_count": 4,
+    "sample_values": [
+      "critical",
+      "high",
+      "low",
+      "medium"
+    ],
+    "message": "fact_ticket.priority looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_ticket",
+    "column_name": "status",
+    "distinct_count": 4,
+    "sample_values": [
+      "closed",
+      "in_progress",
+      "open",
+      "resolved"
+    ],
+    "message": "fact_ticket.status looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "high_null_rate",
+    "severity": "medium",
+    "table_name": "fact_ticket",
+    "column_name": "resolved_at",
+    "null_rate": 0.3195,
+    "message": "fact_ticket.resolved_at has high null rate (0.3195). Need business interpretation before using it."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_ticket_reply",
+    "column_name": "author_type",
+    "distinct_count": 3,
+    "sample_values": [
+      "agent",
+      "bot",
+      "customer"
+    ],
+    "message": "fact_ticket_reply.author_type looks like an enum-like column. Check allowed values before filtering or grouping."
+  },
+  {
+    "rule_type": "enum_like_column",
+    "severity": "low",
+    "table_name": "fact_user_activation",
+    "column_name": "milestone_type",
+    "distinct_count": 6,
+    "sample_values": [
+      "created_first_task",
+      "first_doc_create",
+      "first_login",
+      "first_meeting_join",
+      "first_msg_send"
+    ],
+    "message": "fact_user_activation.milestone_type looks like an enum-like column. Check allowed values before filtering or grouping."
+  }
+]

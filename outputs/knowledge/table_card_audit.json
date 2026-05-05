@@ -1,0 +1,1688 @@
+{
+  "summary": {
+    "total_cards": 37,
+    "parse_success_count": 37,
+    "parse_failed_count": 0,
+    "ready_for_agent_count": 37,
+    "manual_draft_count": 0,
+    "too_long_count": 2,
+    "missing_policy_count": 23
+  },
+  "attention_cards": [
+    {
+      "table_name": "dim_channel",
+      "file": "knowledge_manual/table_cards/dim_channel.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 10.45,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few"
+    },
+    {
+      "table_name": "dim_department",
+      "file": "knowledge_manual/table_cards/dim_department.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 16.4,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; size_review_size"
+    },
+    {
+      "table_name": "dim_feature",
+      "file": "knowledge_manual/table_cards/dim_feature.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 10.64,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy"
+    },
+    {
+      "table_name": "dim_org_structure",
+      "file": "knowledge_manual/table_cards/dim_org_structure.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 9.67,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "dim_plan",
+      "file": "knowledge_manual/table_cards/dim_plan.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 11.64,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "dim_tenant",
+      "file": "knowledge_manual/table_cards/dim_tenant.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 13.58,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "dim_tenant_plan",
+      "file": "knowledge_manual/table_cards/dim_tenant_plan.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 12.03,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "dim_ticket_category",
+      "file": "knowledge_manual/table_cards/dim_ticket_category.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 9.12,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "dim_user",
+      "file": "knowledge_manual/table_cards/dim_user.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 13.93,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "dim_user_id_mapping",
+      "file": "knowledge_manual/table_cards/dim_user_id_mapping.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 8.18,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "dim_user_role_history",
+      "file": "knowledge_manual/table_cards/dim_user_role_history.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 9.91,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "fact_actual_revenue",
+      "file": "knowledge_manual/table_cards/fact_actual_revenue.yaml",
+      "status": "validated_with_warnings",
+      "ready_for_agent": true,
+      "size_kb": 32.96,
+      "issue_summary": "size_too_long; known_traps_maybe_too_many"
+    },
+    {
+      "table_name": "fact_ai_usage_log",
+      "file": "knowledge_manual/table_cards/fact_ai_usage_log.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 27.33,
+      "issue_summary": "size_too_long"
+    },
+    {
+      "table_name": "fact_campaign",
+      "file": "knowledge_manual/table_cards/fact_campaign.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 10.51,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "fact_campaign_attribution",
+      "file": "knowledge_manual/table_cards/fact_campaign_attribution.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 17.08,
+      "issue_summary": "size_review_size; sql_patterns_maybe_too_many"
+    },
+    {
+      "table_name": "fact_credit_usage",
+      "file": "knowledge_manual/table_cards/fact_credit_usage.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 15.21,
+      "issue_summary": "size_review_size"
+    },
+    {
+      "table_name": "fact_daily_usage",
+      "file": "knowledge_manual/table_cards/fact_daily_usage.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 18.48,
+      "issue_summary": "size_review_size; sql_patterns_maybe_too_many"
+    },
+    {
+      "table_name": "fact_doc_collaboration",
+      "file": "knowledge_manual/table_cards/fact_doc_collaboration.yaml",
+      "status": "validated_with_warnings",
+      "ready_for_agent": true,
+      "size_kb": 16.87,
+      "issue_summary": "size_review_size; sql_patterns_maybe_too_many"
+    },
+    {
+      "table_name": "fact_document",
+      "file": "knowledge_manual/table_cards/fact_document.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 11.9,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few"
+    },
+    {
+      "table_name": "fact_event_log",
+      "file": "knowledge_manual/table_cards/fact_event_log.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 11.66,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "fact_experiment",
+      "file": "knowledge_manual/table_cards/fact_experiment.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 10.4,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "fact_experiment_assignment",
+      "file": "knowledge_manual/table_cards/fact_experiment_assignment.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 10.21,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "fact_experiment_metric",
+      "file": "knowledge_manual/table_cards/fact_experiment_metric.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 12.73,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few"
+    },
+    {
+      "table_name": "fact_feature_usage",
+      "file": "knowledge_manual/table_cards/fact_feature_usage.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 15.81,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; size_review_size"
+    },
+    {
+      "table_name": "fact_invoice",
+      "file": "knowledge_manual/table_cards/fact_invoice.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 13.12,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy"
+    },
+    {
+      "table_name": "fact_message",
+      "file": "knowledge_manual/table_cards/fact_message.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 11.84,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few"
+    },
+    {
+      "table_name": "fact_nps_survey",
+      "file": "knowledge_manual/table_cards/fact_nps_survey.yaml",
+      "status": "validated_with_warnings",
+      "ready_for_agent": true,
+      "size_kb": 21.91,
+      "issue_summary": "size_review_size"
+    },
+    {
+      "table_name": "fact_page_view",
+      "file": "knowledge_manual/table_cards/fact_page_view.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 12.25,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; known_traps_maybe_too_few; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "fact_payment",
+      "file": "knowledge_manual/table_cards/fact_payment.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 12.04,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy"
+    },
+    {
+      "table_name": "fact_subscription",
+      "file": "knowledge_manual/table_cards/fact_subscription.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 14.34,
+      "issue_summary": "missing_required_fields: agent_usage_policy; ready_for_agent_true_but_missing_agent_usage_policy; sql_patterns_maybe_too_few"
+    },
+    {
+      "table_name": "fact_tenant_metrics_snapshot",
+      "file": "knowledge_manual/table_cards/fact_tenant_metrics_snapshot.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 20.78,
+      "issue_summary": "size_review_size"
+    },
+    {
+      "table_name": "fact_ticket",
+      "file": "knowledge_manual/table_cards/fact_ticket.yaml",
+      "status": "validated",
+      "ready_for_agent": true,
+      "size_kb": 17.97,
+      "issue_summary": "size_review_size; sql_patterns_maybe_too_many"
+    }
+  ],
+  "cards": [
+    {
+      "file": "knowledge_manual/table_cards/dim_channel.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_channel",
+      "size_kb": 10.45,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "channel_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 4,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_department.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_department",
+      "size_kb": 16.4,
+      "size_status": "review_size",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "size_review_size"
+      ],
+      "key_check": {
+        "primary_key": [
+          "dept_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 4,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 6,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_feature.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_feature",
+      "size_kb": 10.64,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy"
+      ],
+      "key_check": {
+        "primary_key": [
+          "feature_key"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "feature_key"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 3,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 4,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_org_structure.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_org_structure",
+      "size_kb": 9.67,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "node_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_plan.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_plan",
+      "size_kb": 11.64,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "plan_tier"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "plan_name"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_tenant.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_tenant",
+      "size_kb": 13.58,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "tenant_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "name"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 3,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_tenant_config.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_tenant_config",
+      "size_kb": 10.96,
+      "size_status": "ok",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated_with_warnings",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": "partial",
+        "ready_for_agent": true
+      },
+      "issues": [],
+      "key_check": {
+        "primary_key": [],
+        "primary_key_empty": true,
+        "natural_key_candidate": [
+          "tenant_id",
+          "feature_key"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "primary_key_empty",
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 5,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 5,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_tenant_plan.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_tenant_plan",
+      "size_kb": 12.03,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "tenant_id",
+          "effective_from"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "tenant_id",
+          "effective_from"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present",
+          "primary_key_has_multiple_fields_maybe_composite_business_key"
+        ]
+      },
+      "known_traps_count": 3,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_ticket_category.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_ticket_category",
+      "size_kb": 9.12,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "category_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 2,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_user.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_user",
+      "size_kb": 13.93,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "user_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_user_id_mapping.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_user_id_mapping",
+      "size_kb": 8.18,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "user_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "user_id"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_user_profile.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_user_profile",
+      "size_kb": 12.28,
+      "size_status": "ok",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated_with_warnings",
+        "profile_filled": true,
+        "grain_validated": "partial",
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [],
+      "key_check": {
+        "primary_key": [],
+        "primary_key_empty": true,
+        "natural_key_candidate": [
+          "user_id"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "primary_key_empty",
+          "natural_key_candidate_present",
+          "natural_key_status_present",
+          "natural_key_failed_ready_for_agent_check_duplicate_handling_rules"
+        ]
+      },
+      "known_traps_count": 5,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 8,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/dim_user_role_history.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "dim_user_role_history",
+      "size_kb": 9.91,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [],
+        "primary_key_empty": true,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": [
+          "primary_key_empty"
+        ]
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_actual_revenue.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_actual_revenue",
+      "size_kb": 32.96,
+      "size_status": "too_long",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated_with_warnings",
+        "profile_filled": true,
+        "grain_validated": "partial",
+        "dq_validated": "partial",
+        "ready_for_agent": true
+      },
+      "issues": [
+        "size_too_long",
+        "known_traps_maybe_too_many"
+      ],
+      "key_check": {
+        "primary_key": [
+          "revenue_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "tenant_id",
+          "sub_id",
+          "month"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 8,
+      "known_traps_status": "maybe_too_many",
+      "sql_patterns_count": 5,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_ai_usage_log.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_ai_usage_log",
+      "size_kb": 27.33,
+      "size_status": "too_long",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "size_too_long"
+      ],
+      "key_check": {
+        "primary_key": [
+          "log_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 7,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 8,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_campaign.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_campaign",
+      "size_kb": 10.51,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "campaign_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_campaign_attribution.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_campaign_attribution",
+      "size_kb": 17.08,
+      "size_status": "review_size",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "size_review_size",
+        "sql_patterns_maybe_too_many"
+      ],
+      "key_check": {
+        "primary_key": [
+          "user_id",
+          "campaign_id",
+          "touch_type",
+          "touch_at"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "user_id",
+          "campaign_id",
+          "touch_type",
+          "touch_at"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present",
+          "primary_key_has_multiple_fields_maybe_composite_business_key"
+        ]
+      },
+      "known_traps_count": 5,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 9,
+      "sql_patterns_status": "maybe_too_many"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_credit_usage.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_credit_usage",
+      "size_kb": 15.21,
+      "size_status": "review_size",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "size_review_size"
+      ],
+      "key_check": {
+        "primary_key": [
+          "usage_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "usage_id"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 5,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 8,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_daily_usage.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_daily_usage",
+      "size_kb": 18.48,
+      "size_status": "review_size",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "size_review_size",
+        "sql_patterns_maybe_too_many"
+      ],
+      "key_check": {
+        "primary_key": [],
+        "primary_key_empty": true,
+        "natural_key_candidate": [
+          "user_id",
+          "dt"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "primary_key_empty",
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 6,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 9,
+      "sql_patterns_status": "maybe_too_many"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_doc_collaboration.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_doc_collaboration",
+      "size_kb": 16.87,
+      "size_status": "review_size",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated_with_warnings",
+        "profile_filled": true,
+        "grain_validated": "partial",
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "size_review_size",
+        "sql_patterns_maybe_too_many"
+      ],
+      "key_check": {
+        "primary_key": [],
+        "primary_key_empty": true,
+        "natural_key_candidate": [
+          "doc_id",
+          "user_id",
+          "dt"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "primary_key_empty",
+          "natural_key_candidate_present",
+          "natural_key_status_present",
+          "natural_key_failed_ready_for_agent_check_duplicate_handling_rules"
+        ]
+      },
+      "known_traps_count": 6,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 9,
+      "sql_patterns_status": "maybe_too_many"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_document.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_document",
+      "size_kb": 11.9,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "doc_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 4,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_event_log.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_event_log",
+      "size_kb": 11.66,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "event_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_experiment.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_experiment",
+      "size_kb": 10.4,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "exp_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_experiment_assignment.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_experiment_assignment",
+      "size_kb": 10.21,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [],
+        "primary_key_empty": true,
+        "natural_key_candidate": [
+          "user_id",
+          "exp_id"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "primary_key_empty",
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 1,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_experiment_metric.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_experiment_metric",
+      "size_kb": 12.73,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [],
+        "primary_key_empty": true,
+        "natural_key_candidate": [
+          "exp_id",
+          "variant",
+          "metric_name",
+          "dt"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "primary_key_empty",
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 1,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 4,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_feature_usage.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_feature_usage",
+      "size_kb": 15.81,
+      "size_status": "review_size",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "size_review_size"
+      ],
+      "key_check": {
+        "primary_key": [
+          "user_id",
+          "feature_key",
+          "dt"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "user_id",
+          "feature_key",
+          "dt"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present",
+          "primary_key_has_multiple_fields_maybe_composite_business_key"
+        ]
+      },
+      "known_traps_count": 4,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 5,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_invoice.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_invoice",
+      "size_kb": 13.12,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy"
+      ],
+      "key_check": {
+        "primary_key": [
+          "invoice_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 3,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 4,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_message.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_message",
+      "size_kb": 11.84,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "msg_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 4,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_nps_survey.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_nps_survey",
+      "size_kb": 21.91,
+      "size_status": "review_size",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated_with_warnings",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": "partial",
+        "ready_for_agent": true
+      },
+      "issues": [
+        "size_review_size"
+      ],
+      "key_check": {
+        "primary_key": [
+          "survey_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "survey_id"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 6,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 7,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_page_view.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_page_view",
+      "size_kb": 12.25,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "known_traps_maybe_too_few",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "pv_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 2,
+      "known_traps_status": "maybe_too_few",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_payment.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_payment",
+      "size_kb": 12.04,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy"
+      ],
+      "key_check": {
+        "primary_key": [
+          "payment_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [],
+        "natural_key_status_exists": false,
+        "issues": []
+      },
+      "known_traps_count": 3,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 4,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_session.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_session",
+      "size_kb": 14.7,
+      "size_status": "ok",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [],
+      "key_check": {
+        "primary_key": [
+          "session_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "session_id"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 5,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 8,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_subscription.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_subscription",
+      "size_kb": 14.34,
+      "size_status": "ok",
+      "missing_required_fields": [
+        "agent_usage_policy"
+      ],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "missing_required_fields: agent_usage_policy",
+        "ready_for_agent_true_but_missing_agent_usage_policy",
+        "sql_patterns_maybe_too_few"
+      ],
+      "key_check": {
+        "primary_key": [
+          "sub_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "tenant_id",
+          "plan_tier",
+          "start_date"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 3,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 3,
+      "sql_patterns_status": "maybe_too_few"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_tenant_metrics_snapshot.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_tenant_metrics_snapshot",
+      "size_kb": 20.78,
+      "size_status": "review_size",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "size_review_size"
+      ],
+      "key_check": {
+        "primary_key": [],
+        "primary_key_empty": true,
+        "natural_key_candidate": [
+          "tenant_id",
+          "snapshot_date"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "primary_key_empty",
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 6,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 8,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_ticket.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_ticket",
+      "size_kb": 17.97,
+      "size_status": "review_size",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [
+        "size_review_size",
+        "sql_patterns_maybe_too_many"
+      ],
+      "key_check": {
+        "primary_key": [
+          "ticket_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "ticket_id"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 5,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 10,
+      "sql_patterns_status": "maybe_too_many"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_ticket_reply.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_ticket_reply",
+      "size_kb": 14.77,
+      "size_status": "ok",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [],
+      "key_check": {
+        "primary_key": [
+          "reply_id"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "reply_id"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present"
+        ]
+      },
+      "known_traps_count": 5,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 7,
+      "sql_patterns_status": "ok"
+    },
+    {
+      "file": "knowledge_manual/table_cards/fact_user_activation.yaml",
+      "parse_success": true,
+      "parse_error": null,
+      "table_name": "fact_user_activation",
+      "size_kb": 11.57,
+      "size_status": "ok",
+      "missing_required_fields": [],
+      "status": {
+        "authoring_status": "validated",
+        "profile_filled": true,
+        "grain_validated": true,
+        "dq_validated": true,
+        "ready_for_agent": true
+      },
+      "issues": [],
+      "key_check": {
+        "primary_key": [
+          "user_id",
+          "milestone_type",
+          "reached_at"
+        ],
+        "primary_key_empty": false,
+        "natural_key_candidate": [
+          "user_id",
+          "milestone_type",
+          "reached_at"
+        ],
+        "natural_key_status_exists": true,
+        "issues": [
+          "natural_key_candidate_present",
+          "natural_key_status_present",
+          "primary_key_has_multiple_fields_maybe_composite_business_key"
+        ]
+      },
+      "known_traps_count": 4,
+      "known_traps_status": "ok",
+      "sql_patterns_count": 6,
+      "sql_patterns_status": "ok"
+    }
+  ]
+}

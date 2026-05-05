@@ -1,0 +1,573 @@
+[
+  {
+    "table_name": "dim_channel",
+    "columns": [
+      "channel_id",
+      "tenant_id",
+      "channel_type",
+      "member_count",
+      "created_at"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_department",
+    "columns": [
+      "dept_id",
+      "tenant_id",
+      "dept_name",
+      "parent_dept_id"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_feature",
+    "columns": [
+      "feature_key",
+      "feature_name",
+      "module",
+      "category",
+      "launched_at"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_org_structure",
+    "columns": [
+      "node_id",
+      "parent_node_id",
+      "tenant_id",
+      "node_type",
+      "level"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_plan",
+    "columns": [
+      "plan_name",
+      "plan_tier",
+      "monthly_price",
+      "annual_price",
+      "seat_limit",
+      "features"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_tenant",
+    "columns": [
+      "tenant_id",
+      "name",
+      "industry",
+      "size_tier",
+      "country",
+      "created_at"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "columns": [
+      "tenant_id",
+      "feature_key",
+      "enabled",
+      "config_json"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_tenant_plan",
+    "columns": [
+      "tenant_id",
+      "plan_name",
+      "plan_tier",
+      "effective_from",
+      "effective_to"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_ticket_category",
+    "columns": [
+      "category_id",
+      "category_name",
+      "parent_category_id",
+      "sla_hours"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_user",
+    "columns": [
+      "user_id",
+      "tenant_id",
+      "dept_id",
+      "role",
+      "status",
+      "register_at",
+      "last_active_at"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_user_id_mapping",
+    "columns": [
+      "user_id",
+      "user_id_hash"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_user_profile",
+    "columns": [
+      "user_id",
+      "language",
+      "timezone",
+      "device_os",
+      "app_version"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "dim_user_role_history",
+    "columns": [
+      "user_id",
+      "old_role",
+      "new_role",
+      "changed_at",
+      "changed_by"
+    ],
+    "inferred_grain": "dimension_table",
+    "risk_notes": [
+      "Usually safe to join from fact tables if using the declared key."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "columns": [
+      "revenue_id",
+      "tenant_id",
+      "sub_id",
+      "month",
+      "seats",
+      "list_price_per_seat",
+      "list_revenue",
+      "discount_rate",
+      "coupon_amount",
+      "actual_revenue",
+      "currency"
+    ],
+    "inferred_grain": "one row per subscription per month",
+    "risk_notes": [
+      "Use actual_revenue for realized commercial revenue analysis."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "columns": [
+      "log_id",
+      "user_id_hash",
+      "operation_type",
+      "credits_amount",
+      "model_name",
+      "created_at",
+      "remark"
+    ],
+    "inferred_grain": "one row per AI usage operation",
+    "risk_notes": [
+      "Uses user_id_hash, not user_id. Must bridge through dim_user_id_mapping."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_campaign",
+    "columns": [
+      "campaign_id",
+      "name",
+      "channel",
+      "start_date",
+      "end_date",
+      "budget",
+      "target_segment"
+    ],
+    "inferred_grain": "unknown",
+    "risk_notes": [],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "columns": [
+      "user_id",
+      "campaign_id",
+      "touch_type",
+      "touch_at",
+      "is_converted"
+    ],
+    "inferred_grain": "one row per user campaign touch",
+    "risk_notes": [
+      "A user can have multiple touches. Count distinct users for user-level conversion analysis."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "columns": [
+      "usage_id",
+      "tenant_id",
+      "resource_type",
+      "quantity",
+      "unit_cost",
+      "dt"
+    ],
+    "inferred_grain": "unknown",
+    "risk_notes": [],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "columns": [
+      "user_id",
+      "dt",
+      "session_count",
+      "active_duration_sec",
+      "feature_usage_json"
+    ],
+    "inferred_grain": "one row per user_id + dt",
+    "risk_notes": [
+      "feature_usage_json and fact_feature_usage.action_count have different metric definitions."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "columns": [
+      "doc_id",
+      "user_id",
+      "dt",
+      "edit_duration_sec",
+      "comment_count"
+    ],
+    "inferred_grain": "one row per doc_id + user_id + dt",
+    "risk_notes": [
+      "Document collaboration is daily user-doc grain."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_document",
+    "columns": [
+      "doc_id",
+      "creator_id",
+      "tenant_id",
+      "doc_type",
+      "created_at",
+      "last_edit_at",
+      "edit_count"
+    ],
+    "inferred_grain": "unknown",
+    "risk_notes": [],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_event_log",
+    "columns": [
+      "event_id",
+      "user_id",
+      "event_name",
+      "event_time",
+      "page",
+      "properties_json"
+    ],
+    "inferred_grain": "one row per user event",
+    "risk_notes": [
+      "Event log is detailed behavior data. COUNT(*) means event count, not user count."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_experiment",
+    "columns": [
+      "exp_id",
+      "exp_name",
+      "feature_key",
+      "start_date",
+      "end_date",
+      "status"
+    ],
+    "inferred_grain": "unknown",
+    "risk_notes": [],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_experiment_assignment",
+    "columns": [
+      "user_id",
+      "exp_id",
+      "variant",
+      "assigned_at"
+    ],
+    "inferred_grain": "unknown",
+    "risk_notes": [],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "columns": [
+      "exp_id",
+      "variant",
+      "metric_name",
+      "dt",
+      "sample_size",
+      "metric_value",
+      "ci_lower",
+      "ci_upper"
+    ],
+    "inferred_grain": "one row per exp_id + variant + metric_name + dt",
+    "risk_notes": [
+      "Metric table is already aggregated by experiment, variant, metric, and date."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "columns": [
+      "user_id",
+      "feature_key",
+      "dt",
+      "action_count",
+      "duration_sec"
+    ],
+    "inferred_grain": "one row per user_id + feature_key + dt",
+    "risk_notes": [
+      "Do not directly join with another daily fact table before aggregation."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_invoice",
+    "columns": [
+      "invoice_id",
+      "tenant_id",
+      "sub_id",
+      "amount",
+      "currency",
+      "issued_at",
+      "paid_at",
+      "status"
+    ],
+    "inferred_grain": "one row per invoice",
+    "risk_notes": [
+      "Invoice amount may be in multiple currencies."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_message",
+    "columns": [
+      "msg_id",
+      "sender_id",
+      "channel_id",
+      "msg_type",
+      "sent_at",
+      "word_count"
+    ],
+    "inferred_grain": "unknown",
+    "risk_notes": [],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "columns": [
+      "survey_id",
+      "user_id",
+      "tenant_id",
+      "survey_date",
+      "role",
+      "score",
+      "plan_tier",
+      "feedback_text",
+      "is_completed"
+    ],
+    "inferred_grain": "unknown",
+    "risk_notes": [],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_page_view",
+    "columns": [
+      "pv_id",
+      "session_id",
+      "user_id",
+      "page_path",
+      "referrer",
+      "view_duration_ms"
+    ],
+    "inferred_grain": "one row per page view",
+    "risk_notes": [
+      "Page view is lower grain than session. Aggregate carefully."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_payment",
+    "columns": [
+      "payment_id",
+      "invoice_id",
+      "method",
+      "amount",
+      "status",
+      "paid_at"
+    ],
+    "inferred_grain": "one row per payment attempt",
+    "risk_notes": [
+      "One invoice may have multiple payments. Joining to invoice may expand rows."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_session",
+    "columns": [
+      "session_id",
+      "user_id",
+      "start_time",
+      "end_time",
+      "device",
+      "ip_country"
+    ],
+    "inferred_grain": "one row per session",
+    "risk_notes": [
+      "Joining session to page_view may expand rows because one session has many page views."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_subscription",
+    "columns": [
+      "sub_id",
+      "tenant_id",
+      "plan_tier",
+      "start_date",
+      "end_date",
+      "mrr",
+      "status"
+    ],
+    "inferred_grain": "one row per subscription period",
+    "risk_notes": [
+      "Use start_date and end_date to determine whether a subscription is active in a period."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "columns": [
+      "tenant_id",
+      "snapshot_date",
+      "total_users",
+      "total_docs",
+      "total_storage_mb",
+      "total_revenue",
+      "total_messages",
+      "active_users_today"
+    ],
+    "inferred_grain": "one row per tenant per snapshot_date",
+    "risk_notes": [
+      "total_* fields are cumulative; do not treat them as daily increments."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_ticket",
+    "columns": [
+      "ticket_id",
+      "tenant_id",
+      "reporter_id",
+      "category",
+      "priority",
+      "status",
+      "created_at",
+      "resolved_at"
+    ],
+    "inferred_grain": "unknown",
+    "risk_notes": [],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "columns": [
+      "reply_id",
+      "ticket_id",
+      "author_type",
+      "content_length",
+      "replied_at"
+    ],
+    "inferred_grain": "one row per ticket reply",
+    "risk_notes": [
+      "One ticket may have multiple replies. Joining to fact_ticket may expand rows."
+    ],
+    "source": "rule_based_first_version"
+  },
+  {
+    "table_name": "fact_user_activation",
+    "columns": [
+      "user_id",
+      "milestone_type",
+      "reached_at"
+    ],
+    "inferred_grain": "one row per user activation milestone",
+    "risk_notes": [
+      "A user can have multiple milestones. Count distinct users if measuring activated users."
+    ],
+    "source": "rule_based_first_version"
+  }
+]
