@@ -1,5 +1,135 @@
 [
   {
+    "recipe_id": "question_1",
+    "title": "企业画像分布",
+    "analysis_type": "single_table_distribution",
+    "main_tables": [
+      "dim_tenant"
+    ],
+    "query_sql": "-- Question 1: 企业画像分布\n\n-- 1. 按国家统计企业数\nSELECT\n    country,\n    COUNT(*) AS tenant_count\nFROM dim_tenant\nGROUP BY country\nORDER BY tenant_count DESC, country;\n\n-- 2. 按规模统计企业数和占比\nSELECT\n    size_tier,\n    COUNT(*) AS tenant_count,\n    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS percentage\nFROM dim_tenant\nGROUP BY size_tier\nORDER BY tenant_count DESC, size_tier;\n\n-- 3. 国家 × 行业二维分布\nSELECT\n    country,\n    industry,\n    COUNT(*) AS tenant_count\nFROM dim_tenant\nGROUP BY country, industry\nORDER BY country, industry;\n",
+    "insight": "# Question 1 Insight：企业画像分布\n\n## 使用表\n- dim_tenant\n\n## 使用字段\n- tenant_id\n- country\n- industry\n- size_tier\n\n## 主要结论\n- 企业数量最多的国家是 US，共有 63 家企业。\n- 占比最高的规模段是 large，占比 21.6%。\n- 已生成国家 × 行业二维分布表，用于观察不同国家的行业结构差异。\n\n## 口径说明\n- dim_tenant 的粒度是一行一个企业。\n- 因此本题可以直接使用 COUNT(*) 统计企业数量。\n",
+    "output_files": [
+      "country_distribution.csv",
+      "country_distribution.png",
+      "country_industry_distribution.csv",
+      "country_industry_pivot.csv",
+      "insight.md",
+      "query.sql",
+      "size_distribution.csv",
+      "size_distribution.png"
+    ],
+    "source_dir": "outputs/sample/question_1"
+  },
+  {
+    "recipe_id": "question_2",
+    "title": "月度新注册用户",
+    "analysis_type": "time_trend",
+    "main_tables": [
+      "dim_user"
+    ],
+    "query_sql": "SELECT\n    STRFTIME(DATE_TRUNC('month', register_at), '%Y-%m') AS register_month,\n    COUNT(*) AS new_users,\n    SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS active_users,\n    SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) AS inactive_users,\n    SUM(CASE WHEN status = 'suspended' THEN 1 ELSE 0 END) AS suspended_users\nFROM dim_user\nWHERE register_at >= TIMESTAMP '2025-04-01'\n  AND register_at <  TIMESTAMP '2026-04-01'\nGROUP BY register_month\nORDER BY register_month;\n",
+    "insight": "# Question 2 Insight：月度新注册用户\n\n## 使用表\n- dim_user\n\n## 使用字段\n- user_id\n- register_at\n- status\n\n## 主要结论\n- 注册量最高的月份是 2025-07，新增用户 3604 人。\n- 注册量最低的月份是 2025-04，新增用户 2469 人。\n- 已计算每个月注册用户在当前时点下的 active / inactive / suspended 状态占比。\n\n## 重要口径说明\n- dim_user.status 是用户当前状态，不是注册当月状态。\n- 因此，状态占比只能说明这些注册用户现在的账户状态，不能直接解释为注册当月留存率。\n- 如果要分析真实留存，需要使用 fact_daily_usage、fact_session 或其他行为表重新定义活跃口径。\n\n## 可能业务解释\n- 注册高峰可能与营销活动、产品发布或季节性采购周期有关。\n- 注册低谷可能与假期、预算周期或推广减少有关。\n",
+    "output_files": [
+      "insight.md",
+      "monthly_new_users.csv",
+      "monthly_new_users.png",
+      "query.sql"
+    ],
+    "source_dir": "outputs/sample/question_2"
+  },
+  {
+    "recipe_id": "question_3",
+    "title": "各套餐月收入对比",
+    "analysis_type": "join_and_revenue_aggregation",
+    "main_tables": [
+      "fact_subscription",
+      "dim_plan"
+    ],
+    "query_sql": "WITH active_subs AS (\n    SELECT\n        sub_id,\n        tenant_id,\n        plan_tier,\n        start_date,\n        end_date,\n        mrr,\n        status\n    FROM fact_subscription\n    WHERE status = 'active'\n      AND start_date <= DATE '2025-10-31'\n      AND COALESCE(end_date, DATE '9999-12-31') >= DATE '2025-10-01'\n)\n\nSELECT\n    a.plan_tier,\n    COUNT(*) AS active_subscription_count,\n    ROUND(SUM(a.mrr), 2) AS total_mrr,\n    ROUND(SUM(a.mrr / NULLIF(p.monthly_price, 0)), 2) AS estimated_seats,\n    ROUND(SUM((a.mrr / NULLIF(p.monthly_price, 0)) * p.monthly_price), 2) AS nominal_revenue\nFROM active_subs a\nLEFT JOIN dim_plan p\n    ON a.plan_tier = p.plan_tier\nGROUP BY a.plan_tier\nORDER BY total_mrr DESC;\n",
+    "insight": "# Question 3 Insight：各套餐月收入对比\n\n## 使用表\n- fact_subscription\n- dim_plan\n\n## 使用字段\n- fact_subscription.sub_id\n- fact_subscription.plan_tier\n- fact_subscription.start_date\n- fact_subscription.end_date\n- fact_subscription.status\n- fact_subscription.mrr\n- dim_plan.plan_tier\n- dim_plan.monthly_price\n\n## 主要结论\n- 2025-10 当月 MRR 最高的套餐是 business，总 MRR 为 299296.0。\n- 已按套餐统计活跃订阅数量、总 MRR、估算 seats 和 nominal revenue。\n\n## 有效订阅口径\n本题将满足以下条件的订阅视为 2025-10 当月有效订阅：\n1. status = active\n2. start_date <= 2025-10-31\n3. end_date >= 2025-10-01；如果 end_date 为空，则视为仍然有效。\n\n## 重要口径说明\n- fact_subscription.mrr 是月度经常性收入，即确认收入口径。\n- estimated_seats 是通过 mrr / monthly_price 反推得到，不是真实 seats 字段。\n- nominal_revenue = estimated_seats * monthly_price，所以它通常会非常接近 total_mrr。\n- 如果正式分析要求真实商业收入，应优先考虑 fact_actual_revenue.actual_revenue。\n- 如果使用发票或付款表，还需要考虑折扣、优惠券、未付款、退款、多币种和账期错位等问题。\n",
+    "output_files": [
+      "active_subscription_count.png",
+      "insight.md",
+      "plan_revenue_comparison.csv",
+      "query.sql",
+      "total_mrr.png"
+    ],
+    "source_dir": "outputs/sample/question_3"
+  },
+  {
+    "recipe_id": "monthly_active_users_by_industry",
+    "title": "按行业的月度活跃用户趋势",
+    "analysis_type": "time_trend_with_tenant_profile_join",
+    "intent": "按月、按行业统计活跃用户数趋势",
+    "canonical_question": "按月统计不同行业的活跃用户数趋势，并生成折线图。",
+    "typical_questions": [
+      "按月统计不同行业的活跃用户数趋势，并生成折线图。",
+      "不同行业的月度活跃用户趋势如何？",
+      "请按行业分组展示每月活跃用户数变化。"
+    ],
+    "main_tables": [
+      "fact_daily_usage",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "required_fields": [
+      "fact_daily_usage.user_id",
+      "fact_daily_usage.dt",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.industry"
+    ],
+    "optional_fields": [
+      "dim_tenant.country",
+      "dim_tenant.size_tier",
+      "dim_tenant.name"
+    ],
+    "metrics": [
+      {
+        "name": "monthly_active_users",
+        "expression": "COUNT(DISTINCT fact_daily_usage.user_id)",
+        "meaning": "月度活跃用户数"
+      }
+    ],
+    "dimensions": [
+      "month",
+      "industry"
+    ],
+    "join_paths": [
+      "fact_daily_usage.user_id = dim_user.user_id",
+      "dim_user.tenant_id = dim_tenant.tenant_id"
+    ],
+    "grain": "先按 fact_daily_usage 的 user_id + dt 用户日级粒度识别活跃记录，再按月份和租户行业聚合，活跃用户数使用 COUNT(DISTINCT user_id)。",
+    "query_sql": "SELECT\n    DATE_TRUNC('month', d.dt) AS month,\n    t.industry,\n    COUNT(DISTINCT d.user_id) AS monthly_active_users\nFROM fact_daily_usage d\nJOIN dim_user u\n    ON d.user_id = u.user_id\nJOIN dim_tenant t\n    ON u.tenant_id = t.tenant_id\nGROUP BY month, t.industry\nORDER BY month, t.industry;\n",
+    "insight": "# Monthly Active Users by Industry Insight\n\n## 使用表\n- fact_daily_usage\n- dim_user\n- dim_tenant\n\n## 使用字段\n- fact_daily_usage.user_id\n- fact_daily_usage.dt\n- dim_user.user_id\n- dim_user.tenant_id\n- dim_tenant.tenant_id\n- dim_tenant.industry\n\n## 口径说明\n- fact_daily_usage 的粒度是一行一个 user_id 在一个 dt 的日级使用汇总记录。\n- 统计月度活跃用户数时，应按月份和行业聚合，并使用 COUNT(DISTINCT d.user_id)。\n- fact_daily_usage 没有 tenant_id，如需关联 industry / country / size_tier / tenant name，必须先通过 dim_user 再关联 dim_tenant。\n- 禁止使用 fact_daily_usage.user_id = dim_tenant.user_id。\n",
+    "risks": [
+      "fact_daily_usage 没有 tenant_id，不能直接 JOIN dim_tenant。",
+      "必须通过 dim_user 将 user_id 映射到 tenant_id。",
+      "活跃用户数应使用 COUNT(DISTINCT user_id)，不要使用 COUNT(*)。",
+      "按行业分组时，industry 来自 dim_tenant，不是 fact_daily_usage 字段。"
+    ],
+    "keywords": [
+      "月度",
+      "活跃用户",
+      "行业",
+      "趋势",
+      "折线图",
+      "fact_daily_usage",
+      "dim_user",
+      "dim_tenant",
+      "industry"
+    ],
+    "confidence": "high",
+    "output_files": [
+      "monthly_active_users_by_industry.csv",
+      "monthly_active_users_by_industry.png",
+      "query.sql",
+      "insight.md"
+    ],
+    "source_dir": "manual_recipe_extension"
+  },
+  {
     "recipe_id": "tenant_count_by_country",
     "name": "国家客户数量分布",
     "intent": "按国家统计客户数量并做分布对比",
@@ -537,7 +667,9 @@
       "user mapping",
       "credits_amount",
       "使用量"
-    ]
+    ],
+    "validation_mode": "manual_approved",
+    "validation_note": "Manually verified and appended back to the formal recipe source."
   },
   {
     "recipe_id": "ai_usage_outlier_tenants_via_user_mapping",
@@ -614,6 +746,8 @@
       "user mapping",
       "异常客户",
       "credits_amount"
-    ]
+    ],
+    "validation_mode": "manual_approved",
+    "validation_note": "Manually verified and appended back to the formal recipe source."
   }
 ]

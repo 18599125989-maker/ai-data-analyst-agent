@@ -1,0 +1,591 @@
+table_name: fact_daily_usage
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: C
+  name: 产品使用
+
+business_meaning: >
+  用户日级使用汇总事实表，记录用户在某一天的 session 数、活跃时长和功能使用摘要。
+  该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。
+  该表只有 user_id，没有 tenant_id。
+  如需关联租户画像字段，例如 tenant name、industry、country、size_tier，
+  必须先通过 dim_user 将 user_id 映射到 tenant_id，再关联 dim_tenant。
+  当前验证显示该表可作为正式用户日活分析事实表使用。
+
+grain: >
+  一行代表一个 user_id 在一个 dt 的日级使用汇总记录。
+  user_id + dt 已验证唯一，可以作为该表的业务自然键 / grain key。
+  该表没有单列物理主键；不要把 user_id 单独当主键。
+  同一个 user_id 可以在多个 dt 出现。
+  该表没有 tenant_id。
+  该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。
+
+primary_key: []
+
+natural_key_candidate:
+  - user_id
+  - dt
+
+natural_key_status:
+  validation_status: passed
+  is_unique: true
+  tested_key:
+    - user_id
+    - dt
+  duplicate_count: 0
+  note: >
+    user_id + dt 已验证唯一，可作为该日级使用表的业务唯一键 / grain key。
+    但它是复合业务键，不是单列物理主键。
+
+profile:
+  row_count: 1915210
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/fact_daily_usage_validation.md
+  profile_status: validated
+
+columns:
+  user_id:
+    type: string
+    semantic_type: foreign_key
+    business_meaning: >
+      用户 ID。
+      用于将日级使用记录关联到用户维度，并进一步映射到租户、部门等组织属性。
+    references: dim_user.user_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 20000
+      distinct_rate: 0.0104
+      min: U000001
+      max: U049999
+      sample_values:
+        - U000001
+        - U000005
+        - U000011
+        - U000014
+        - U000020
+      is_possible_primary_key: false
+    notes:
+      - >
+        user_id 外键覆盖率已验证通过，unmatched_daily_usage_user_count = 0。
+      - >
+        user_id 单独不是唯一键，同一用户可有多天记录。
+
+  dt:
+    type: date
+    semantic_type: date
+    business_meaning: >
+      日级使用日期。
+      适合做日、月活跃趋势分析和用户日级行为对齐分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 365
+      distinct_rate: 0.0002
+      min: "2025-04-01"
+      max: "2026-03-31"
+      sample_values:
+        - "2025-04-01"
+        - "2025-04-02"
+        - "2025-04-03"
+        - "2025-04-04"
+        - "2025-04-05"
+      is_possible_primary_key: false
+    notes:
+      - >
+        dt 是日级使用日期，适合做日/月趋势分析。
+      - >
+        当前覆盖 2025-04-01 到 2026-03-31，共 365 天。
+
+  session_count:
+    type: integer
+    semantic_type: metric
+    business_meaning: >
+      用户当天 session 数。
+      可用于衡量用户访问频率。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 15
+      distinct_rate: 0.0
+      min: 1
+      max: 15
+      sample_values:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      is_possible_primary_key: false
+    notes:
+      - >
+        session_count 是用户当天 session 数，可 SUM 得到总 session 数，也可 AVG 得到平均每用户日 session 数。
+      - >
+        当前验证范围为 1 到 15，未发现负值或 0 值。
+
+  active_duration_sec:
+    type: integer
+    semantic_type: metric
+    business_meaning: >
+      用户当天活跃时长秒数。
+      可用于衡量使用深度。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 7141
+      distinct_rate: 0.0037
+      min: 60
+      max: 7200
+      sample_values:
+        - 60
+        - 61
+        - 62
+        - 63
+        - 64
+      is_possible_primary_key: false
+    notes:
+      - >
+        active_duration_sec 是用户当天活跃时长秒数，可 SUM 得到总活跃时长，也可 AVG 得到平均活跃时长。
+      - >
+        当前验证范围为 60 到 7200，未发现负值或 0 值。
+
+  feature_usage_json:
+    type: string
+    semantic_type: json_text
+    business_meaning: >
+      用户当天功能使用摘要 JSON。
+      用于记录某些功能的日级计数汇总。
+    references: dim_feature.feature_key
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 1380148
+      distinct_rate: 0.7206
+      min: '{"approval": 0, "base": 0, "calendar": 41}'
+      max: '{"wiki": 9}'
+      sample_values:
+        - '{"approval": 0, "base": 0, "calendar": 41}'
+        - '{"approval": 0, "base": 0, "docs": 18, "calendar": 7}'
+        - '{"approval": 0, "base": 0, "minutes": 35}'
+        - '{"approval": 0, "base": 0, "task": 19, "video_conf": 25}'
+        - '{"approval": 0, "base": 0}'
+      is_possible_primary_key: false
+    notes:
+      - >
+        feature_usage_json 无空值。
+      - >
+        当前全部可解析为 JSON。
+      - >
+        第一版 Agent 默认不解析该字段。
+      - >
+        只有用户明确询问 feature_usage_json 内部功能明细时再解析 JSON。
+      - >
+        若只分析功能使用，优先使用 fact_feature_usage 这类结构化功能使用表。
+
+join_keys:
+  - column: user_id
+    references: dim_user.user_id
+    relationship: many_to_one
+    join_condition: fact_daily_usage.user_id = dim_user.user_id
+    purpose: 将用户日级使用记录关联到用户维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      user_id 外键覆盖率已验证通过，unmatched_daily_usage_user_count = 0。
+
+derived_join_paths:
+  daily_usage_to_tenant:
+    path:
+      - fact_daily_usage.user_id = dim_user.user_id
+      - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: 将用户日级使用记录关联到租户维度，用于按行业、国家、企业规模、企业名称等租户画像维度分析活跃用户趋势。
+    risk_level: low
+    validation_status: passed
+    note: >
+      fact_daily_usage 没有 tenant_id，不能直接 JOIN dim_tenant。
+      必须先通过 dim_user 将 user_id 映射到 tenant_id，再关联 dim_tenant。
+      禁止使用 fact_daily_usage.user_id = dim_tenant.user_id。
+      同一用户有多天记录。按租户统计用户数时应 COUNT(DISTINCT user_id)，统计用户日记录数时才 COUNT(*)。
+  daily_usage_to_ai_usage:
+    path:
+      - fact_daily_usage.user_id = dim_user_id_mapping.user_id
+      - dim_user_id_mapping.user_id_hash = fact_ai_usage_log.user_id_hash
+    purpose: 对比日级活跃和 AI 使用情况
+    risk_level: high
+    validation_status: pending
+    note: >
+      与 fact_ai_usage_log 关联时，必须先把 fact_ai_usage_log.created_at 转成日期，并按 user_id + 日期对齐。
+      不能只按 user_id JOIN，否则会造成多对多膨胀。
+  daily_usage_to_feature_usage:
+    path:
+      - fact_daily_usage.user_id = fact_feature_usage.user_id
+      - fact_daily_usage.dt = fact_feature_usage.dt
+    purpose: 对比日级活跃和功能使用明细
+    risk_level: medium
+    validation_status: pending
+    note: >
+      与 fact_feature_usage 关联时，应按 user_id + dt 对齐。
+      fact_feature_usage 可能一人一天多功能多记录，JOIN 后统计用户数要 COUNT(DISTINCT user_id)。
+
+field_groups:
+  id_columns:
+    - user_id
+  time_columns:
+    - dt
+  metric_columns:
+    - session_count
+    - active_duration_sec
+  dimension_columns:
+    - user_id
+    - dt
+  enum_columns: []
+  json_columns:
+    - feature_usage_json
+  text_columns:
+    - feature_usage_json
+
+recommended_use_cases:
+  - 统计 DAU、用户日记录数、总 session 数和总活跃时长。
+  - 分析用户日活跃趋势和租户级日使用情况。
+  - 结合 dim_user 和 dim_tenant 做用户或企业分层使用分析。
+  - 按行业、国家、企业规模等租户画像维度分析月度或日度活跃用户趋势。
+  - 与 AI 使用日志或功能使用明细表做按 user_id + 日期对齐的联合分析。
+
+preferred_metrics:
+  daily_usage_record_count:
+    expression: COUNT(*)
+    meaning: 用户日使用记录数
+    applicable_grain: fact_daily_usage 原子粒度
+    note: >
+      当前 user_id + dt 已验证唯一，因此 COUNT(*) 表示用户日记录数。
+  daily_active_user_count:
+    expression: COUNT(DISTINCT user_id)
+    meaning: 日活跃用户数 / DAU
+    applicable_grain: 单日或任意按日期汇总层级
+    note: >
+      DAU 应使用 COUNT(DISTINCT user_id)。
+  total_session_count:
+    expression: SUM(session_count)
+    meaning: session 总数
+    applicable_grain: 任意分析层级
+    note: >
+      适合衡量整体访问频率。
+  avg_session_count_per_user_day:
+    expression: AVG(session_count)
+    meaning: 平均每用户日 session 数
+    applicable_grain: 任意分析层级
+    note: >
+      反映单个用户日的平均访问频率。
+  total_active_duration_sec:
+    expression: SUM(active_duration_sec)
+    meaning: 总活跃时长秒数
+    applicable_grain: 任意分析层级
+    note: >
+      active_duration_sec 单位为秒。
+  avg_active_duration_sec_per_user_day:
+    expression: AVG(active_duration_sec)
+    meaning: 平均每用户日活跃时长秒数
+    applicable_grain: 任意分析层级
+    note: >
+      反映单个用户日的平均使用深度。
+  total_active_duration_hours:
+    expression: SUM(active_duration_sec) / 3600.0
+    meaning: 总活跃时长小时数
+    applicable_grain: 任意分析层级
+    note: >
+      换算小时必须除以 3600。
+
+known_traps:
+  - trap: >
+      直接 COUNT(*) 当作用户数。
+    consequence: >
+      COUNT(*) 是用户日记录数，不是用户数。
+    prevention: >
+      统计 DAU 或用户数使用 COUNT(DISTINCT user_id)。
+  - trap: >
+      将 fact_daily_usage.user_id 直接与 dim_tenant.user_id 关联。
+    consequence: >
+      dim_tenant 没有 user_id。直接这样 JOIN 会导致 SQL 错误或幻觉字段问题。
+    prevention: >
+      关联租户画像字段时必须先 JOIN dim_user，再用 dim_user.tenant_id JOIN dim_tenant.tenant_id。
+  - trap: >
+      把 user_id 单独当作主键。
+    consequence: >
+      同一个 user_id 可以出现在多个 dt，单独 user_id 不唯一。
+    prevention: >
+      该表业务自然键是 user_id + dt。
+  - trap: >
+      和 fact_ai_usage_log 只按 user_id JOIN。
+    consequence: >
+      AI 日志是多条操作记录，daily_usage 是用户日级记录，只按 user_id JOIN 会产生跨日期多对多膨胀。
+    prevention: >
+      先将 fact_ai_usage_log.created_at 转为日期，再按 user_id + 日期对齐。
+  - trap: >
+      和 fact_feature_usage 只按 user_id JOIN。
+    consequence: >
+      fact_feature_usage 可能一人一天多个 feature_key，直接按 user_id JOIN 会重复放大。
+    prevention: >
+      至少按 user_id + dt 对齐，并根据问题使用 COUNT(DISTINCT user_id)、SUM(action_count)、SUM(duration_sec)。
+  - trap: >
+      默认解析 feature_usage_json。
+    consequence: >
+      JSON 字段虽然可解析，但比结构化 fact_feature_usage 更复杂，容易产生不稳定逻辑。
+    prevention: >
+      第一版默认使用 session_count、active_duration_sec 和结构化功能表。
+      只有用户明确询问 JSON 内部功能明细时再解析 feature_usage_json。
+  - trap: >
+      把 active_duration_sec 当作分钟或小时。
+    consequence: >
+      active_duration_sec 单位是秒，直接解释为分钟或小时会出错。
+    prevention: >
+      需要分钟时除以 60，需要小时时除以 3600。
+
+aggregation_notes:
+  - >
+    DAU 使用 COUNT(DISTINCT user_id)。
+  - >
+    按行业、国家、企业规模等租户画像维度统计活跃用户时，必须先 JOIN dim_user，再 JOIN dim_tenant。
+  - >
+    session 总数使用 SUM(session_count)。
+  - >
+    活跃时长总数使用 SUM(active_duration_sec)。
+  - >
+    和 AI / feature 表关联时必须按 user_id + 日期对齐。
+  - >
+    active_duration_sec 是秒，换小时要除以 3600。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_daily_usage_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 1915210
+    column_count: 5
+    user_dt_unique: true
+    duplicate_user_dt_count: 0
+    user_id_fk_unmatched_count: 0
+    dt_min: "2025-04-01"
+    dt_max: "2026-03-31"
+    distinct_dt_count: 365
+    session_count_min: 1
+    session_count_max: 15
+    session_count_negative_count: 0
+    session_count_zero_count: 0
+    active_duration_sec_min: 60
+    active_duration_sec_max: 7200
+    active_duration_sec_negative_count: 0
+    active_duration_sec_zero_count: 0
+    feature_usage_json_blank_count: 0
+    feature_usage_json_invalid_count: 0
+  interpretation:
+    - >
+      user_id + dt 已验证唯一，用户日级使用记录粒度成立。
+    - >
+      user_id 全部可以关联到 dim_user.user_id。
+    - >
+      dt 覆盖 2025-04-01 至 2026-03-31，共 365 天。
+    - >
+      session_count 和 active_duration_sec 均未发现负值或 0。
+    - >
+      feature_usage_json 非空且全部可解析，但默认不作为主分析字段。
+    - >
+      与 AI 日志或功能使用表关联时必须按 user_id + 日期对齐，避免多对多膨胀。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - user_dt_uniqueness
+  - duplicated_user_dt_examples
+  - user_id_fk_coverage
+  - unmatched_user_examples
+  - dt_range_check
+  - session_count_range_check
+  - active_duration_range_check
+  - feature_usage_json_null_check
+  - feature_usage_json_parse_check
+  - sql_pattern_daily_active_users
+  - sql_pattern_session_and_duration_by_day
+  - sql_pattern_tenant_level_daily_usage
+
+sql_patterns:
+  daily_active_users: |
+    SELECT
+        dt,
+        COUNT(DISTINCT user_id) AS daily_active_user_count
+    FROM fact_daily_usage
+    GROUP BY dt
+    ORDER BY dt;
+  monthly_active_users: |
+    SELECT
+        STRFTIME(dt, '%Y-%m') AS month_key,
+        COUNT(DISTINCT user_id) AS monthly_active_user_count
+    FROM fact_daily_usage
+    GROUP BY STRFTIME(dt, '%Y-%m')
+    ORDER BY month_key;
+  session_and_duration_by_day: |
+    SELECT
+        dt,
+        COUNT(DISTINCT user_id) AS daily_active_user_count,
+        SUM(session_count) AS total_session_count,
+        SUM(active_duration_sec) AS total_active_duration_sec
+    FROM fact_daily_usage
+    GROUP BY dt
+    ORDER BY dt;
+  session_and_duration_by_month: |
+    SELECT
+        STRFTIME(dt, '%Y-%m') AS month_key,
+        COUNT(DISTINCT user_id) AS active_user_count,
+        SUM(session_count) AS total_session_count,
+        SUM(active_duration_sec) AS total_active_duration_sec
+    FROM fact_daily_usage
+    GROUP BY STRFTIME(dt, '%Y-%m')
+    ORDER BY month_key;
+  daily_usage_by_tenant: |
+    SELECT
+        u.tenant_id,
+        dt,
+        COUNT(DISTINCT f.user_id) AS daily_active_user_count,
+        SUM(f.session_count) AS total_session_count,
+        SUM(f.active_duration_sec) AS total_active_duration_sec
+    FROM fact_daily_usage f
+    JOIN dim_user u
+      ON f.user_id = u.user_id
+    GROUP BY u.tenant_id, dt
+    ORDER BY dt, u.tenant_id;
+  daily_usage_by_tenant_profile: |
+    SELECT
+        t.country,
+        t.industry,
+        t.size_tier,
+        f.dt,
+        COUNT(DISTINCT f.user_id) AS daily_active_user_count,
+        SUM(f.session_count) AS total_session_count,
+        SUM(f.active_duration_sec) AS total_active_duration_sec
+    FROM fact_daily_usage f
+    JOIN dim_user u
+      ON f.user_id = u.user_id
+    JOIN dim_tenant t
+      ON u.tenant_id = t.tenant_id
+    GROUP BY t.country, t.industry, t.size_tier, f.dt
+    ORDER BY f.dt, t.country, t.industry, t.size_tier;
+  monthly_active_users_by_industry: |
+    SELECT
+        DATE_TRUNC('month', f.dt) AS month,
+        t.industry,
+        COUNT(DISTINCT f.user_id) AS monthly_active_users
+    FROM fact_daily_usage f
+    JOIN dim_user u
+      ON f.user_id = u.user_id
+    JOIN dim_tenant t
+      ON u.tenant_id = t.tenant_id
+    GROUP BY month, t.industry
+    ORDER BY month, t.industry;
+  avg_active_duration_by_tenant: |
+    SELECT
+        u.tenant_id,
+        AVG(f.active_duration_sec) AS avg_active_duration_sec_per_user_day
+    FROM fact_daily_usage f
+    JOIN dim_user u
+      ON f.user_id = u.user_id
+    GROUP BY u.tenant_id
+    ORDER BY avg_active_duration_sec_per_user_day DESC, u.tenant_id;
+  compare_ai_user_days_vs_non_ai_user_days: |
+    WITH ai_user_days AS (
+        SELECT
+            m.user_id,
+            CAST(a.created_at AS DATE) AS dt
+        FROM fact_ai_usage_log a
+        JOIN dim_user_id_mapping m
+          ON a.user_id_hash = m.user_id_hash
+        GROUP BY m.user_id, CAST(a.created_at AS DATE)
+    )
+    SELECT
+        CASE WHEN a.user_id IS NULL THEN 'non_ai_user_day' ELSE 'ai_user_day' END AS user_day_type,
+        COUNT(*) AS daily_usage_record_count,
+        COUNT(DISTINCT d.user_id) AS daily_active_user_count,
+        AVG(d.session_count) AS avg_session_count_per_user_day,
+        AVG(d.active_duration_sec) AS avg_active_duration_sec_per_user_day
+    FROM fact_daily_usage d
+    LEFT JOIN ai_user_days a
+      ON d.user_id = a.user_id
+     AND d.dt = a.dt
+    GROUP BY CASE WHEN a.user_id IS NULL THEN 'non_ai_user_day' ELSE 'ai_user_day' END
+    ORDER BY user_day_type;
+  compare_feature_usage_with_daily_usage: |
+    SELECT
+        d.dt,
+        COUNT(DISTINCT d.user_id) AS daily_active_user_count,
+        COUNT(DISTINCT f.user_id) AS feature_user_count,
+        SUM(d.session_count) AS total_session_count,
+        SUM(f.action_count) AS total_action_count,
+        SUM(f.duration_sec) AS total_feature_duration_sec
+    FROM fact_daily_usage d
+    LEFT JOIN fact_feature_usage f
+      ON d.user_id = f.user_id
+     AND d.dt = f.dt
+    GROUP BY d.dt
+    ORDER BY d.dt;
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_daily_usage_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        user_id + dt 唯一已验证。
+    - confirmed: true
+      item: >
+        user_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        dt 时间范围覆盖 365 天。
+    - confirmed: true
+      item: >
+        session_count 数值范围正常。
+    - confirmed: true
+      item: >
+        active_duration_sec 数值范围正常。
+    - confirmed: true
+      item: >
+        feature_usage_json 非空且可解析。
+    - confirmed: true
+      item: >
+        统计 DAU 应使用 COUNT(DISTINCT user_id)。
+    - confirmed: true
+      item: >
+        与 AI 日志或功能表关联时应按 user_id + 日期对齐。
+
+agent_usage_policy:
+  table_grain_is_user_day: true
+  natural_key_is_user_id_dt: true
+  count_dau_with_distinct_user_id: true
+  count_records_with_count_star: true
+  sum_session_count_for_total_sessions: true
+  sum_active_duration_sec_for_total_duration: true
+  active_duration_sec_unit_is_seconds: true
+  feature_usage_json_is_parseable_but_not_default: true
+  prefer_fact_feature_usage_for_feature_analysis: true
+  join_ai_usage_by_user_and_date: true
+  join_feature_usage_by_user_and_dt: true
+
+prompt_summary: >
+  fact_daily_usage 是用户日级使用汇总表，一行代表一个 user_id 在某天 dt 的使用记录，
+  业务自然键 user_id + dt 已验证唯一，但该表没有单列物理主键。
+  常用路径包括 user_id -> dim_user -> dim_tenant，以及与 AI 使用或功能使用表按 user_id + 日期对齐关联。
+  DAU 使用 COUNT(DISTINCT user_id)，session 总数使用 SUM(session_count)，活跃时长总数使用 SUM(active_duration_sec)。
+  feature_usage_json 虽然可解析，但第一版默认不解析；如分析功能使用，优先使用 fact_feature_usage。
+  关键陷阱是不要把 COUNT(*) 当作用户数，也不要只按 user_id 去 JOIN AI 或功能表。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

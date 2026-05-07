@@ -1,0 +1,37 @@
+{
+  "source_dir": "knowledge_manual/table_cards",
+  "output_dir": "outputs/knowledge/manual_cards",
+  "card_count": 3,
+  "ready_for_agent_count": 3,
+  "not_ready_count": 0,
+  "tables": [
+    {
+      "table_name": "dim_department",
+      "ready_for_agent": true,
+      "authoring_status": "validated",
+      "grain_validated": true,
+      "dq_validated": true
+    },
+    {
+      "table_name": "fact_actual_revenue",
+      "ready_for_agent": true,
+      "authoring_status": "validated_with_warnings",
+      "grain_validated": "partial",
+      "dq_validated": "partial"
+    },
+    {
+      "table_name": "fact_ai_usage_log",
+      "ready_for_agent": true,
+      "authoring_status": "validated",
+      "grain_validated": true,
+      "dq_validated": true
+    }
+  ],
+  "errors": [],
+  "outputs": {
+    "full_json": "outputs/knowledge/manual_cards/table_cards_manual.json",
+    "compact_md": "outputs/knowledge/manual_cards/compact_table_cards.md",
+    "index_json": "outputs/knowledge/manual_cards/table_card_index.json",
+    "summary_json": "outputs/knowledge/manual_cards/build_summary.json"
+  }
+}

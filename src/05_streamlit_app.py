@@ -35,7 +35,23 @@ def init_runtime(agent_cli_mtime_ns: int):
     return module, kb, conn
 
 
-def render_sidebar(module) -> None:
+def render_sidebar(module, kb, last_result: dict | None = None) -> None:
+    retrieval = kb.get("retrieval_v2", {}) if isinstance(kb, dict) else {}
+    embedding_available = any(
+        retrieval.get(name)
+        for name in [
+            "table_embedding_index",
+            "field_embedding_index",
+            "metric_embedding_index",
+            "recipe_embedding_index",
+        ]
+    )
+    embedding_used = None
+    if isinstance(last_result, dict):
+        embedding_used = (
+            last_result.get("retrieval_context", {}) or {}
+        ).get("embedding_used")
+
     st.sidebar.title("CloudWork AI 数据分析")
     st.sidebar.markdown("**当前前端可输出内容**")
     st.sidebar.markdown(
@@ -61,6 +77,12 @@ def render_sidebar(module) -> None:
             ]
         )
     )
+    st.sidebar.markdown("**检索模式**")
+    st.sidebar.write(f"Embedding available: `{embedding_available}`")
+    if embedding_used is None:
+        st.sidebar.write("Embedding used: `尚未执行查询`")
+    else:
+        st.sidebar.write(f"Embedding used: `{embedding_used}`")
     st.sidebar.caption(f"数据库: `{module.DB_PATH.name}`")
 
 
@@ -165,8 +187,10 @@ def render_success(result: dict) -> None:
         st.subheader("风险提示")
         warnings = result_json.get("warnings", [])
         if warnings:
-            for item in warnings:
+            for item in warnings[:3]:
                 st.warning(item)
+            if len(warnings) > 3:
+                st.info("仅展示前 3 条风险提示，完整风险已记录在查询日志中。")
         else:
             st.info("无明显风险提示")
 
@@ -183,6 +207,23 @@ def render_success(result: dict) -> None:
                 for item in retrieval_context["candidate_recipes"]
             ]
         )
+        st.markdown("**历史相似案例**")
+        answer_memories = retrieval_context.get("candidate_answer_memories", []) or []
+        if not answer_memories:
+            st.info("当前未检索到历史相似案例")
+        else:
+            memory = answer_memories[0]
+            st.markdown(f"**历史问题**：{memory.get('source_question', '')}")
+            st.markdown(f"**可回答内容**：{memory.get('answerable_description', '')}")
+            st.markdown("**使用表**")
+            st.write(memory.get("used_tables", []))
+            st.markdown("**结果列**")
+            st.write(memory.get("result_columns", []))
+            limitations = memory.get("limitations", []) or []
+            if limitations:
+                st.markdown("**限制说明**")
+                for item in limitations[:3]:
+                    st.write(f"- {item}")
 
     with st.expander("Agent3 守卫规则", expanded=False):
         for item in guard["guardrails"]:
@@ -227,10 +268,12 @@ def main() -> None:
 
     if "last_analysis_context" not in st.session_state:
         st.session_state["last_analysis_context"] = None
+    if "last_result" not in st.session_state:
+        st.session_state["last_result"] = None
 
     agent_cli_mtime_ns = AGENT_CLI_PATH.stat().st_mtime_ns if AGENT_CLI_PATH.exists() else 0
     module, kb, conn = init_runtime(agent_cli_mtime_ns)
-    render_sidebar(module)
+    render_sidebar(module, kb, st.session_state.get("last_result"))
     show_er_graph = st.sidebar.checkbox("显示全局 ER 图 / 知识图谱", value=False)
 
     if show_er_graph:
@@ -238,8 +281,7 @@ def main() -> None:
         render_global_er_graph()
         st.divider()
 
-    default_question = "统计 2025-10 各套餐的总 MRR 对比，并给一个合适的图表"
-    question = st.text_area("请输入问题", value=default_question, height=120)
+    question = st.text_area("请输入问题", value="", height=120)
     last_context = st.session_state.get("last_analysis_context")
 
     st.markdown("**追问模式**")
@@ -266,6 +308,7 @@ def main() -> None:
 
     if st.button("清除上一轮上下文", use_container_width=True):
         st.session_state["last_analysis_context"] = None
+        st.session_state["last_result"] = None
         st.rerun()
 
     if st.button("开始分析", type="primary", use_container_width=True):
@@ -282,6 +325,8 @@ def main() -> None:
                 conn,
                 previous_context=previous_context,
             )
+        st.session_state["last_result"] = result
+        render_sidebar(module, kb, result)
 
         if result["success"]:
             st.session_state["last_analysis_context"] = module.build_analysis_context(result)

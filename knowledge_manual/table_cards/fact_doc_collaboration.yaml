@@ -1,0 +1,508 @@
+table_name: fact_doc_collaboration
+card_version: v1
+card_type: table_card
+domain:
+  id: D
+  name: 协作与内容
+business_meaning: >
+  文档协作明细事实表。
+  用于记录用户对文档的协作行为明细，可用于分析协作文档数、协作用户数、
+  编辑时长、评论数量以及协作时间趋势。
+grain: >
+  一行代表一个用户对一个文档的一条协作明细记录。
+  doc_id + user_id 不唯一；同一用户可以在多天协作同一文档。
+  doc_id + user_id + dt 也不是严格唯一；人工检查发现仍有 33 组重复。
+  完全重复行不存在，因此重复不是整行脏重复，不应删除。
+  如果要分析文档-用户-日期级协作，应先 GROUP BY doc_id, user_id, dt，并
+  SUM(edit_duration_sec)、SUM(comment_count)。
+  如果要分析文档级协作，应按 doc_id 聚合。
+  如果要分析用户级协作，应按 user_id 聚合。
+primary_key: []
+natural_key_candidate:
+  - doc_id
+  - user_id
+  - dt
+natural_key_status:
+  validation_status: failed
+  is_unique: false
+  tested_key:
+    - doc_id
+    - user_id
+    - dt
+  duplicated_group_count: 33
+  exact_duplicate_row_count: 0
+  note: >
+    doc_id + user_id + dt 仍存在 33 组重复，因此不能作为严格自然键。
+    但完全重复行不存在，说明重复不是整行脏重复。
+    更合理的业务解释是同一用户、同一文档、同一天内可能存在多条协作明细记录。
+  required_agent_behavior: >
+    分析文档-用户-日期级协作时必须 GROUP BY doc_id, user_id, dt，
+    并聚合 SUM(edit_duration_sec)、SUM(comment_count)。
+profile:
+  row_count: 89676
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/fact_doc_collaboration_validation.md
+  profile_status: validated_with_warnings
+columns:
+  doc_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      被协作的文档 ID。
+    references: fact_document.doc_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 30000
+      distinct_rate: 0.3345
+      min: DOC0001e50fc43d
+      max: DOCffff5ba43954
+      sample_values:
+        - DOC0001e50fc43d
+        - DOC0002bb299e07
+        - DOC0005cbc980db
+        - DOC0005d8f06015
+        - DOC0008b8837801
+      is_possible_primary_key: false
+    notes:
+      - >
+        doc_id 外键覆盖率 100%。
+      - >
+        doc_id 单独不唯一，一个文档可以有多个协作用户和多条协作记录。
+  user_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      协作用户 ID。
+    references: dim_user.user_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 35558
+      distinct_rate: 0.3965
+      min: U000001
+      max: U049999
+      sample_values:
+        - U000001
+        - U000003
+        - U000004
+        - U000005
+        - U000006
+      is_possible_primary_key: false
+    notes:
+      - >
+        user_id 外键覆盖率 100%。
+      - >
+        user_id 单独不唯一，一个用户可以协作多个文档、多天、多条记录。
+  dt:
+    type: date
+    semantic_type: date
+    business_meaning: >
+      协作日期。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 363
+      distinct_rate: 0.004
+      min: "2025-04-02"
+      max: "2026-03-30"
+      sample_values:
+        - "2025-04-02"
+        - "2025-04-03"
+        - "2025-04-04"
+        - "2025-04-05"
+        - "2025-04-06"
+      is_possible_primary_key: false
+    notes:
+      - >
+        dt 是协作日期。
+      - >
+        doc_id + user_id + dt 仍不是严格唯一，需要按目标粒度聚合。
+  edit_duration_sec:
+    type: bigint
+    semantic_type: metric
+    business_meaning: >
+      协作编辑时长，单位为秒。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3601
+      distinct_rate: 0.0402
+      min: "0"
+      max: "3600"
+      sample_values:
+        - "0"
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+      is_possible_primary_key: false
+    notes:
+      - >
+        edit_duration_sec 是协作编辑时长秒数。
+      - >
+        0 是允许值，不是异常。
+      - >
+        可用 SUM(edit_duration_sec) 聚合协作时长。
+      - >
+        转换为小时需要除以 3600。
+  comment_count:
+    type: bigint
+    semantic_type: metric
+    business_meaning: >
+      协作评论数。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 21
+      distinct_rate: 0.0002
+      min: "0"
+      max: "20"
+      sample_values:
+        - "0"
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+      is_possible_primary_key: false
+    notes:
+      - >
+        comment_count 是评论数。
+      - >
+        0 是允许值，不是异常。
+      - >
+        可用 SUM(comment_count) 聚合评论总数。
+join_keys:
+  - column: doc_id
+    references: fact_document.doc_id
+    relationship: many_to_one
+    join_condition: fact_doc_collaboration.doc_id = fact_document.doc_id
+    purpose: >
+      将协作记录关联到文档维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      unmatched_count = 0。
+  - column: user_id
+    references: dim_user.user_id
+    relationship: many_to_one
+    join_condition: fact_doc_collaboration.user_id = dim_user.user_id
+    purpose: >
+      将协作记录关联到用户维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      unmatched_count = 0。
+derived_join_paths:
+  collaboration_to_tenant:
+    path:
+      - fact_doc_collaboration.user_id = dim_user.user_id
+      - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: 将文档协作记录关联到租户维度
+    risk_level: medium
+    validation_status: pending_or_passed_if_already_checked
+    note: >
+      同一用户/文档/日期可能有多条协作记录。统计用户数或文档数时必须
+      COUNT(DISTINCT user_id/doc_id)，统计协作量时才聚合记录。
+  collaboration_to_document:
+    path:
+      - fact_doc_collaboration.doc_id = fact_document.doc_id
+    purpose: 将协作记录关联到文档维度
+    risk_level: low
+    validation_status: passed
+field_groups:
+  id_columns:
+    - doc_id
+    - user_id
+  time_columns:
+    - dt
+  metric_columns:
+    - edit_duration_sec
+    - comment_count
+  dimension_columns:
+    - doc_id
+    - user_id
+    - dt
+  enum_columns: []
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+  - 分析文档协作记录数、协作文档数和协作用户数
+  - 分析文档级、用户级、租户级协作强度
+  - 按日或按月观察编辑时长与评论量趋势
+  - 结合 fact_document 分析高协作文档
+preferred_metrics:
+  collaboration_record_count:
+    expression: COUNT(*)
+    meaning: 协作明细记录数
+  collaborating_user_count:
+    expression: COUNT(DISTINCT user_id)
+    meaning: 参与协作用户数
+  collaborated_doc_count:
+    expression: COUNT(DISTINCT doc_id)
+    meaning: 被协作的文档数
+  total_edit_duration_sec:
+    expression: SUM(edit_duration_sec)
+    meaning: 总编辑协作时长秒数
+  total_edit_duration_hours:
+    expression: SUM(edit_duration_sec) / 3600.0
+    meaning: 总编辑协作时长小时数
+  total_comment_count:
+    expression: SUM(comment_count)
+    meaning: 总评论数
+  doc_user_day_collaboration_count:
+    expression: COUNT(DISTINCT doc_id || '|' || user_id || '|' || CAST(dt AS VARCHAR))
+    meaning: 文档-用户-日期组合数，不等于严格记录数
+known_traps:
+  - trap: >
+      把 doc_id + user_id 当作唯一粒度。
+    consequence: >
+      同一用户可以在多天协作同一文档，doc_id + user_id 存在重复。
+    prevention: >
+      如果需要文档-用户级分析，应 GROUP BY doc_id, user_id，并聚合
+      SUM(edit_duration_sec)、SUM(comment_count)。
+  - trap: >
+      把 doc_id + user_id + dt 当作严格唯一粒度。
+    consequence: >
+      人工检查发现 doc_id + user_id + dt 仍有 33 组重复。
+      如果只取一条记录，会低估协作时长和评论数。
+    prevention: >
+      文档-用户-日期级分析必须 GROUP BY doc_id, user_id, dt，
+      并 SUM(edit_duration_sec)、SUM(comment_count)。
+  - trap: >
+      把重复记录当作脏数据删除。
+    consequence: >
+      完全重复行不存在，这些重复更可能是同一用户同一天对同一文档的多次协作明细。
+      删除会丢失协作行为。
+    prevention: >
+      不删除重复记录，按目标粒度聚合。
+  - trap: >
+      直接 COUNT(*) 当作文档数或用户数。
+    consequence: >
+      COUNT(*) 是协作明细记录数，不是文档数，也不是用户数。
+    prevention: >
+      文档数使用 COUNT(DISTINCT doc_id)，用户数使用 COUNT(DISTINCT user_id)。
+  - trap: >
+      把 edit_duration_sec 当作分钟或小时。
+    consequence: >
+      edit_duration_sec 单位是秒，直接解释为分钟/小时会出错。
+    prevention: >
+      需要分钟时除以 60，需要小时数时除以 3600。
+  - trap: >
+      把 comment_count = 0 或 edit_duration_sec = 0 当作异常。
+    consequence: >
+      0 是允许值，表示没有评论或无编辑时长记录。
+    prevention: >
+      保留 0 值，可用于协作强度分析。
+aggregation_notes:
+  - >
+    记录数使用 COUNT(*)。
+  - >
+    用户数使用 COUNT(DISTINCT user_id)。
+  - >
+    文档数使用 COUNT(DISTINCT doc_id)。
+  - >
+    文档-用户-日期级分析需要 GROUP BY doc_id, user_id, dt，并对
+    edit_duration_sec、comment_count 做 SUM 聚合。
+  - >
+    不要假设 doc_id + user_id + dt 唯一。
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_doc_collaboration_validation.md
+  additional_review_source: user_manual_sql_check
+  profile_filled: true
+  grain_validated: partial
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 89676
+    column_count: 5
+    original_primary_key_duplicate_count: 1418
+    doc_id_fk_unmatched_count: 0
+    user_id_fk_unmatched_count: 0
+    dt_min: "2025-04-02"
+    dt_max: "2026-03-30"
+    edit_duration_sec_min: 0
+    edit_duration_sec_max: 3600
+    edit_duration_sec_negative_count: 0
+    edit_duration_sec_zero_count: 29
+    comment_count_min: 0
+    comment_count_max: 20
+    comment_count_negative_count: 0
+    comment_count_zero_count: 4199
+    duplicated_doc_user_dt_groups: 33
+    exact_duplicate_row_count: 0
+  interpretation:
+    - >
+      doc_id 和 user_id 外键覆盖率均为 100%。
+    - >
+      原主键候选 doc_id + user_id 存在重复，因此不能作为严格唯一键。
+    - >
+      doc_id + user_id + dt 也不是严格唯一，仍有 33 组重复。
+    - >
+      完全重复行不存在，重复记录更像同一用户、同一文档、同一天内的多条协作明细。
+    - >
+      该表可用于协作行为分析，但所有高层粒度分析都必须按目标粒度聚合。
+    - >
+      edit_duration_sec 和 comment_count 均未发现负值，0 是允许值。
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - main_foreign_key_coverage_checks
+  - time_date_parse_checks
+  - numeric_range_checks
+  - main_sql_patterns_execution_checks
+sql_patterns:
+  collaboration_by_day: |
+    SELECT
+        dt,
+        COUNT(*) AS collaboration_record_count,
+        COUNT(DISTINCT user_id) AS collaborating_user_count,
+        COUNT(DISTINCT doc_id) AS collaborated_doc_count,
+        SUM(edit_duration_sec) AS total_edit_duration_sec,
+        SUM(comment_count) AS total_comment_count
+    FROM fact_doc_collaboration
+    GROUP BY dt
+    ORDER BY dt;
+  collaboration_by_month: |
+    SELECT
+        STRFTIME(dt, '%Y-%m') AS month,
+        COUNT(*) AS collaboration_record_count,
+        COUNT(DISTINCT user_id) AS collaborating_user_count,
+        COUNT(DISTINCT doc_id) AS collaborated_doc_count,
+        SUM(edit_duration_sec) AS total_edit_duration_sec,
+        SUM(comment_count) AS total_comment_count
+    FROM fact_doc_collaboration
+    GROUP BY 1
+    ORDER BY 1;
+  collaboration_by_doc: |
+    SELECT
+        doc_id,
+        COUNT(*) AS collaboration_record_count,
+        COUNT(DISTINCT user_id) AS collaborating_user_count,
+        SUM(edit_duration_sec) AS total_edit_duration_sec,
+        SUM(comment_count) AS total_comment_count
+    FROM fact_doc_collaboration
+    GROUP BY doc_id
+    ORDER BY total_edit_duration_sec DESC, total_comment_count DESC;
+  collaboration_by_user: |
+    SELECT
+        user_id,
+        COUNT(*) AS collaboration_record_count,
+        COUNT(DISTINCT doc_id) AS collaborated_doc_count,
+        SUM(edit_duration_sec) AS total_edit_duration_sec,
+        SUM(comment_count) AS total_comment_count
+    FROM fact_doc_collaboration
+    GROUP BY user_id
+    ORDER BY total_edit_duration_sec DESC, total_comment_count DESC;
+  collaboration_by_doc_user_day: |
+    SELECT
+        doc_id,
+        user_id,
+        dt,
+        COUNT(*) AS detail_record_count,
+        SUM(edit_duration_sec) AS total_edit_duration_sec,
+        SUM(comment_count) AS total_comment_count
+    FROM fact_doc_collaboration
+    GROUP BY doc_id, user_id, dt
+    ORDER BY dt, doc_id, user_id;
+  collaboration_by_tenant: |
+    SELECT
+        u.tenant_id,
+        COUNT(*) AS collaboration_record_count,
+        COUNT(DISTINCT c.user_id) AS collaborating_user_count,
+        COUNT(DISTINCT c.doc_id) AS collaborated_doc_count,
+        SUM(c.edit_duration_sec) AS total_edit_duration_sec,
+        SUM(c.comment_count) AS total_comment_count
+    FROM fact_doc_collaboration c
+    JOIN dim_user u
+      ON c.user_id = u.user_id
+    GROUP BY u.tenant_id
+    ORDER BY total_edit_duration_sec DESC, total_comment_count DESC;
+  top_collaborated_docs: |
+    SELECT
+        doc_id,
+        COUNT(DISTINCT user_id) AS collaborating_user_count,
+        SUM(edit_duration_sec) AS total_edit_duration_sec,
+        SUM(comment_count) AS total_comment_count
+    FROM fact_doc_collaboration
+    GROUP BY doc_id
+    ORDER BY collaborating_user_count DESC, total_edit_duration_sec DESC
+    LIMIT 100;
+  top_collaborating_users: |
+    SELECT
+        user_id,
+        COUNT(DISTINCT doc_id) AS collaborated_doc_count,
+        SUM(edit_duration_sec) AS total_edit_duration_sec,
+        SUM(comment_count) AS total_comment_count
+    FROM fact_doc_collaboration
+    GROUP BY user_id
+    ORDER BY collaborated_doc_count DESC, total_edit_duration_sec DESC
+    LIMIT 100;
+  doc_collaboration_with_document_profile: |
+    SELECT
+        c.doc_id,
+        d.owner_user_id,
+        COUNT(*) AS collaboration_record_count,
+        COUNT(DISTINCT c.user_id) AS collaborating_user_count,
+        SUM(c.edit_duration_sec) AS total_edit_duration_sec,
+        SUM(c.comment_count) AS total_comment_count
+    FROM fact_doc_collaboration c
+    JOIN fact_document d
+      ON c.doc_id = d.doc_id
+    GROUP BY c.doc_id, d.owner_user_id
+    ORDER BY total_edit_duration_sec DESC, total_comment_count DESC;
+prompt_summary: >
+  fact_doc_collaboration 是文档协作明细事实表。
+  它没有单列物理主键，doc_id + user_id + dt 也不是严格唯一；
+  当前已知仍有 33 组重复，但没有完全重复行。
+  常用 JOIN 为 doc_id -> fact_document.doc_id 和 user_id -> dim_user.user_id。
+  统计记录数用 COUNT(*)，统计文档数用 COUNT(DISTINCT doc_id)，统计用户数用
+  COUNT(DISTINCT user_id)。
+  做文档-用户-日期级分析时，必须 GROUP BY doc_id, user_id, dt，
+  并 SUM(edit_duration_sec)、SUM(comment_count)；不能默认按唯一行处理。
+manual_review:
+  required: true
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_doc_collaboration_validation.md
+  additional_review_source: user_manual_sql_check
+  checklist:
+    - item: 主键候选 doc_id + user_id 存在 1418 条重复
+      confirmed: true
+    - item: doc_id 外键覆盖率 100%
+      confirmed: true
+    - item: user_id 外键覆盖率 100%
+      confirmed: true
+    - item: doc_id + user_id + dt 仍存在 33 组重复
+      confirmed: true
+    - item: 完全重复行不存在
+      confirmed: true
+    - item: 重复记录不应删除
+      confirmed: true
+    - item: 文档-用户-日期级分析必须聚合 SUM(edit_duration_sec)、SUM(comment_count)
+      confirmed: true
+    - item: 统计用户数应使用 COUNT(DISTINCT user_id)
+      confirmed: true
+    - item: 统计文档数应使用 COUNT(DISTINCT doc_id)
+      confirmed: true
+agent_usage_policy:
+  table_has_no_strict_primary_key: true
+  grain_validated_partial: true
+  doc_user_dt_not_unique: true
+  do_not_drop_duplicate_doc_user_dt_records: true
+  aggregate_to_doc_user_dt_before_doc_user_day_analysis: true
+  sum_edit_duration_sec_for_duration: true
+  sum_comment_count_for_comments: true
+  count_docs_with_distinct_doc_id: true
+  count_users_with_distinct_user_id: true
+  edit_duration_sec_unit_is_seconds: true
+  zero_edit_duration_or_comment_count_is_valid: true
+status:
+  authoring_status: validated_with_warnings
+  profile_filled: true
+  grain_validated: partial
+  dq_validated: true
+  ready_for_agent: true

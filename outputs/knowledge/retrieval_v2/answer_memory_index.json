@@ -1,0 +1,1541 @@
+[
+  {
+    "memory_id": "ansmem_20260507_093556_556358",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credits 使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credits 使用量，基于操作类型为 'deduct' 的记录进行计算。",
+    "question_patterns": [
+      "不同国家的 AI credits 使用量是多少？",
+      "各国 AI credits 的消耗情况如何？",
+      "请列出各国 AI credits 的使用量。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.operation_type",
+      "dim_user_id_mapping.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回 'country' 和 'total_credit_consumed' 两列，分别代表国家和该国家的 AI credits 总使用量。",
+    "visualization_hint": "适合表格，不适合柱状图、折线图",
+    "limitations": [
+      "确保过滤 operation_type = 'deduct' 以准确计算 AI credits 的消耗量。",
+      "使用 dim_user_id_mapping 表进行用户 ID 映射，避免直接将 user_id_hash 与 dim_user.user_id JOIN。",
+      "使用表 dim_user 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用表 dim_tenant 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用字段 dim_user.tenant_id 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 dim_tenant.country 不在 Agent2 候选字段中，请确认字段归属与业务语义。"
+    ],
+    "warnings": [
+      "确保过滤 operation_type = 'deduct' 以准确计算 AI credits 的消耗量。",
+      "使用 dim_user_id_mapping 表进行用户 ID 映射，避免直接将 user_id_hash 与 dim_user.user_id JOIN。",
+      "使用表 dim_user 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用表 dim_tenant 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用字段 dim_user.tenant_id 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 dim_tenant.country 不在 Agent2 候选字段中，请确认字段归属与业务语义。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 09:35:56",
+    "keywords": [
+      "ai",
+      "credits",
+      "不同国家",
+      "使用量是多少",
+      "sql",
+      "deduct",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "基于操作类型为",
+      "的记录进行计算",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "credits_amount",
+      "operation_type",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_consumed",
+      "不同国家的",
+      "各国",
+      "的消耗情况如何",
+      "请列出各国",
+      "的使用量"
+    ],
+    "_embedding_text": "不同国家ai credits 使用量是多少？ 这条 sql 可以展示不同国家的 ai credits 使用量，基于操作类型为 'deduct' 的记录进行计算。 不同国家的 ai credits 使用量是多少？ 各国 ai credits 的消耗情况如何？ 请列出各国 ai credits 的使用量。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.credits_amount fact_ai_usage_log.operation_type dim_user_id_mapping.user_id dim_user.tenant_id dim_tenant.country country total_credit_consumed 返回 'country' 和 'total_credit_consumed' 两列，分别代表国家和该国家的 ai credits 总使用量。 适合表格，不适合柱状图、折线图 确保过滤 operation_type = 'deduct' 以准确计算 ai credits 的消耗量。 使用 dim_user_id_mapping 表进行用户 id 映射，避免直接将 user_id_hash 与 dim_user.user_id join。 使用表 dim_user 不在 agent2 候选表中，请确认是否为幻觉表。 使用表 dim_tenant 不在 agent2 候选表中，请确认是否为幻觉表。 使用字段 dim_user.tenant_id 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 dim_tenant.country 不在 agent2 候选字段中，请确认字段归属与业务语义。 确保过滤 operation_type = 'deduct' 以准确计算 ai credits 的消耗量。 使用 dim_user_id_mapping 表进行用户 id 映射，避免直接将 user_id_hash 与 dim_user.user_id join。 使用表 dim_user 不在 agent2 候选表中，请确认是否为幻觉表。 使用表 dim_tenant 不在 agent2 候选表中，请确认是否为幻觉表。 使用字段 dim_user.tenant_id 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 dim_tenant.country 不在 agent2 候选字段中，请确认字段归属与业务语义。"
+  },
+  {
+    "memory_id": "ansmem_20260507_094951_391348",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credits 使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credits 使用量总和，按使用量降序排列，最多显示 30 个国家。",
+    "question_patterns": [
+      "不同国家的 AI credits 使用量是多少？",
+      "哪些国家的 AI credits 使用量最高？",
+      "按国家统计 AI credits 使用量"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.operation_type",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_amount"
+    ],
+    "result_structure": "返回两列：'country' 代表国家代码，'total_credit_amount' 代表该国家的 AI credits 使用量总和。",
+    "visualization_hint": "适合表格，不需要其他图表类型。",
+    "limitations": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未涉及此字段。"
+    ],
+    "warnings": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未涉及此字段。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 09:49:51",
+    "keywords": [
+      "ai",
+      "credits",
+      "不同国家",
+      "使用量是多少",
+      "sql",
+      "30",
+      "这条",
+      "可以展示不同国家的",
+      "使用量总和",
+      "按使用量降序排列",
+      "最多显示",
+      "个国家",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "credits_amount",
+      "operation_type",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_amount",
+      "不同国家的",
+      "哪些国家的",
+      "使用量最高",
+      "按国家统计",
+      "使用量"
+    ],
+    "_embedding_text": "不同国家ai credits 使用量是多少？ 这条 sql 可以展示不同国家的 ai credits 使用量总和，按使用量降序排列，最多显示 30 个国家。 不同国家的 ai credits 使用量是多少？ 哪些国家的 ai credits 使用量最高？ 按国家统计 ai credits 使用量 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.credits_amount fact_ai_usage_log.operation_type dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id dim_tenant.country country total_credit_amount 返回两列：'country' 代表国家代码，'total_credit_amount' 代表该国家的 ai credits 使用量总和。 适合表格，不需要其他图表类型。 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未涉及此字段。 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未涉及此字段。"
+  },
+  {
+    "memory_id": "ansmem_20260507_095237_557097",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credit 使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 使用量，通过汇总操作类型为 'deduct' 的记录来计算每个国家的总消耗量。",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "各国的 AI credit 消耗情况如何？",
+      "请列出各国的 AI credit 使用量。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.operation_type",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回 'country' 和 'total_credit_consumed' 两列，分别代表国家和该国家的 AI credit 总消耗量。",
+    "visualization_hint": "适合表格，不适合柱状图/折线图，因为用户问题不需要图表展示，仅需返回不同国家的 AI credit 使用量数据。",
+    "limitations": [
+      "确保只过滤 operation_type = 'deduct' 以准确计算 AI credits 消耗量。",
+      "使用 TO_TIMESTAMP 转换 created_at 字段时需注意其为 Unix epoch 秒。"
+    ],
+    "warnings": [
+      "确保只过滤 operation_type = 'deduct' 以准确计算 AI credits 消耗量。",
+      "使用 TO_TIMESTAMP 转换 created_at 字段时需注意其为 Unix epoch 秒。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 09:52:37",
+    "keywords": [
+      "ai",
+      "credit",
+      "不同国家",
+      "使用量是多少",
+      "sql",
+      "deduct",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "通过汇总操作类型为",
+      "的记录来计算每个国家的总消耗量",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "credits_amount",
+      "operation_type",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_consumed",
+      "不同国家的",
+      "各国的",
+      "消耗情况如何",
+      "请列出各国的"
+    ],
+    "_embedding_text": "不同国家ai credit 使用量是多少？ 这条 sql 可以展示不同国家的 ai credit 使用量，通过汇总操作类型为 'deduct' 的记录来计算每个国家的总消耗量。 不同国家的 ai credit 使用量是多少？ 各国的 ai credit 消耗情况如何？ 请列出各国的 ai credit 使用量。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.credits_amount fact_ai_usage_log.operation_type dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id dim_tenant.country country total_credit_consumed 返回 'country' 和 'total_credit_consumed' 两列，分别代表国家和该国家的 ai credit 总消耗量。 适合表格，不适合柱状图/折线图，因为用户问题不需要图表展示，仅需返回不同国家的 ai credit 使用量数据。 确保只过滤 operation_type = 'deduct' 以准确计算 ai credits 消耗量。 使用 to_timestamp 转换 created_at 字段时需注意其为 unix epoch 秒。 确保只过滤 operation_type = 'deduct' 以准确计算 ai credits 消耗量。 使用 to_timestamp 转换 created_at 字段时需注意其为 unix epoch 秒。"
+  },
+  {
+    "memory_id": "ansmem_20260507_095535_735726",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credit 的使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 使用量，按使用量降序排列，最多显示 30 个国家。",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "哪些国家的 AI credit 使用量最高？",
+      "列出 AI credit 使用量最多的 30 个国家。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.user_id_hash",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_amount"
+    ],
+    "result_structure": "返回 'country' 和 'total_credit_amount' 两列，分别代表国家和该国家的 AI credit 使用总量。",
+    "visualization_hint": "适合表格，不需要其他图表展示。",
+    "limitations": [
+      "确保 fact_ai_usage_log 中的 operation_type 仅过滤为 'deduct'，以准确计算 AI credits 的消耗量。"
+    ],
+    "warnings": [
+      "确保 fact_ai_usage_log 中的 operation_type 仅过滤为 'deduct'，以准确计算 AI credits 的消耗量。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 09:55:35",
+    "keywords": [
+      "ai",
+      "credit",
+      "不同国家",
+      "的使用量是多少",
+      "sql",
+      "30",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "按使用量降序排列",
+      "最多显示",
+      "个国家",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "credits_amount",
+      "operation_type",
+      "user_id_hash",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_amount",
+      "不同国家的",
+      "使用量是多少",
+      "哪些国家的",
+      "使用量最高",
+      "列出",
+      "使用量最多的"
+    ],
+    "_embedding_text": "不同国家ai credit 的使用量是多少？ 这条 sql 可以展示不同国家的 ai credit 使用量，按使用量降序排列，最多显示 30 个国家。 不同国家的 ai credit 使用量是多少？ 哪些国家的 ai credit 使用量最高？ 列出 ai credit 使用量最多的 30 个国家。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.credits_amount fact_ai_usage_log.operation_type fact_ai_usage_log.user_id_hash dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id dim_tenant.country country total_credit_amount 返回 'country' 和 'total_credit_amount' 两列，分别代表国家和该国家的 ai credit 使用总量。 适合表格，不需要其他图表展示。 确保 fact_ai_usage_log 中的 operation_type 仅过滤为 'deduct'，以准确计算 ai credits 的消耗量。 确保 fact_ai_usage_log 中的 operation_type 仅过滤为 'deduct'，以准确计算 ai credits 的消耗量。"
+  },
+  {
+    "memory_id": "ansmem_20260507_095827_907046",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credit使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 使用量，即每个国家的用户在操作类型为 'deduct' 时消耗的 credit 总量。",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "每个国家的 AI credit 消耗情况如何？",
+      "展示各国 AI credit 的使用情况。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "dim_user_id_mapping.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回 'country' 和 'total_credit_consumed' 两列，'country' 代表国家，'total_credit_consumed' 代表该国家的用户在操作类型为 'deduct' 时消耗的 credit 总量。",
+    "visualization_hint": "适合表格，不适合柱状图/折线图",
+    "limitations": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段后再做日期或月份分析。"
+    ],
+    "warnings": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段后再做日期或月份分析。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 09:58:27",
+    "keywords": [
+      "ai",
+      "credit",
+      "不同国家",
+      "使用量是多少",
+      "sql",
+      "deduct",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "即每个国家的用户在操作类型为",
+      "时消耗的",
+      "总量",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "operation_type",
+      "credits_amount",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_consumed",
+      "不同国家的",
+      "每个国家的",
+      "消耗情况如何",
+      "展示各国",
+      "的使用情况"
+    ],
+    "_embedding_text": "不同国家ai credit使用量是多少？ 这条 sql 可以展示不同国家的 ai credit 使用量，即每个国家的用户在操作类型为 'deduct' 时消耗的 credit 总量。 不同国家的 ai credit 使用量是多少？ 每个国家的 ai credit 消耗情况如何？ 展示各国 ai credit 的使用情况。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.operation_type fact_ai_usage_log.credits_amount dim_user_id_mapping.user_id dim_user.tenant_id dim_tenant.country country total_credit_consumed 返回 'country' 和 'total_credit_consumed' 两列，'country' 代表国家，'total_credit_consumed' 代表该国家的用户在操作类型为 'deduct' 时消耗的 credit 总量。 适合表格，不适合柱状图/折线图 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段后再做日期或月份分析。 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段后再做日期或月份分析。"
+  },
+  {
+    "memory_id": "ansmem_20260507_095929_969253",
+    "memory_type": "answer_memory",
+    "source_question": "你能画一个柱状图吗？",
+    "answerable_description": "这条 SQL 可以展示每个国家的 AI 信用消耗总量，按消耗量降序排列，最多显示 30 个国家。",
+    "question_patterns": [
+      "哪个国家的 AI 信用消耗最多？",
+      "各国的 AI 信用消耗量是多少？",
+      "能否展示各国 AI 信用消耗的排名？"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "dim_user_id_mapping.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 AI 信用消耗总量。",
+    "visualization_hint": "适合柱状图",
+    "limitations": [
+      "确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。"
+    ],
+    "warnings": [
+      "确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 09:59:29",
+    "keywords": [
+      "你能画一个柱状图吗",
+      "sql",
+      "ai",
+      "30",
+      "这条",
+      "可以展示每个国家的",
+      "信用消耗总量",
+      "按消耗量降序排列",
+      "最多显示",
+      "个国家",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "operation_type",
+      "credits_amount",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_consumed",
+      "哪个国家的",
+      "信用消耗最多",
+      "各国的",
+      "信用消耗量是多少",
+      "能否展示各国",
+      "信用消耗的排名"
+    ],
+    "_embedding_text": "你能画一个柱状图吗？ 这条 sql 可以展示每个国家的 ai 信用消耗总量，按消耗量降序排列，最多显示 30 个国家。 哪个国家的 ai 信用消耗最多？ 各国的 ai 信用消耗量是多少？ 能否展示各国 ai 信用消耗的排名？ fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.operation_type fact_ai_usage_log.credits_amount dim_user_id_mapping.user_id dim_user.tenant_id dim_tenant.country country total_credit_consumed 返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 ai 信用消耗总量。 适合柱状图 确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。 确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。"
+  },
+  {
+    "memory_id": "ansmem_20260507_100320_200825",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credits 使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credits 使用量，按使用量从高到低排序，最多显示 30 个国家。",
+    "question_patterns": [
+      "不同国家的 AI credits 使用量是多少？",
+      "哪些国家的 AI credits 使用量最高？",
+      "列出 AI credits 使用量最高的 30 个国家及其使用量。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.operation_type",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 AI credits 总使用量。",
+    "visualization_hint": "适合表格，不适合柱状图、折线图。",
+    "limitations": [
+      "确保 fact_ai_usage_log 中的 operation_type 仅过滤 'deduct'，以准确计算 AI credits 的消耗量。",
+      "使用 dim_user_id_mapping 表进行用户 ID 映射，避免直接将哈希用户 ID 与 dim_user 表中的明文用户 ID 进行 JOIN。"
+    ],
+    "warnings": [
+      "确保 fact_ai_usage_log 中的 operation_type 仅过滤 'deduct'，以准确计算 AI credits 的消耗量。",
+      "使用 dim_user_id_mapping 表进行用户 ID 映射，避免直接将哈希用户 ID 与 dim_user 表中的明文用户 ID 进行 JOIN。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 10:03:20",
+    "keywords": [
+      "ai",
+      "credits",
+      "不同国家",
+      "使用量是多少",
+      "sql",
+      "30",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "按使用量从高到低排序",
+      "最多显示",
+      "个国家",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "credits_amount",
+      "operation_type",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_consumed",
+      "不同国家的",
+      "哪些国家的",
+      "使用量最高",
+      "列出",
+      "使用量最高的",
+      "个国家及其使用量"
+    ],
+    "_embedding_text": "不同国家ai credits 使用量是多少？ 这条 sql 可以展示不同国家的 ai credits 使用量，按使用量从高到低排序，最多显示 30 个国家。 不同国家的 ai credits 使用量是多少？ 哪些国家的 ai credits 使用量最高？ 列出 ai credits 使用量最高的 30 个国家及其使用量。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.credits_amount fact_ai_usage_log.operation_type dim_user_id_mapping.user_id_hash dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id dim_tenant.country country total_credit_consumed 返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 ai credits 总使用量。 适合表格，不适合柱状图、折线图。 确保 fact_ai_usage_log 中的 operation_type 仅过滤 'deduct'，以准确计算 ai credits 的消耗量。 使用 dim_user_id_mapping 表进行用户 id 映射，避免直接将哈希用户 id 与 dim_user 表中的明文用户 id 进行 join。 确保 fact_ai_usage_log 中的 operation_type 仅过滤 'deduct'，以准确计算 ai credits 的消耗量。 使用 dim_user_id_mapping 表进行用户 id 映射，避免直接将哈希用户 id 与 dim_user 表中的明文用户 id 进行 join。"
+  },
+  {
+    "memory_id": "ansmem_20260507_101334_814224",
+    "memory_type": "answer_memory",
+    "source_question": "能画出柱状图吗？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credits 使用总量，按使用量降序排列，最多显示 30 个国家。",
+    "question_patterns": [
+      "哪个国家的 AI credits 使用量最多？",
+      "各国的 AI credits 使用总量是多少？",
+      "能否展示前 30 个 AI credits 使用量最多的国家？"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.operation_type",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：'country' 代表国家代码，'total_credit_consumed' 代表该国家的 AI credits 使用总量。",
+    "visualization_hint": "适合柱状图",
+    "limitations": [
+      "在 JOIN 表后统计企业数量时，应使用 COUNT(DISTINCT tenant_id) 而不是 COUNT(*)。"
+    ],
+    "warnings": [
+      "在 JOIN 表后统计企业数量时，应使用 COUNT(DISTINCT tenant_id) 而不是 COUNT(*)。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 10:13:34",
+    "keywords": [
+      "能画出柱状图吗",
+      "sql",
+      "ai",
+      "credits",
+      "30",
+      "这条",
+      "可以展示不同国家的",
+      "使用总量",
+      "按使用量降序排列",
+      "最多显示",
+      "个国家",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "credits_amount",
+      "operation_type",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_consumed",
+      "哪个国家的",
+      "使用量最多",
+      "各国的",
+      "使用总量是多少",
+      "能否展示前",
+      "使用量最多的国家"
+    ],
+    "_embedding_text": "能画出柱状图吗？ 这条 sql 可以展示不同国家的 ai credits 使用总量，按使用量降序排列，最多显示 30 个国家。 哪个国家的 ai credits 使用量最多？ 各国的 ai credits 使用总量是多少？ 能否展示前 30 个 ai credits 使用量最多的国家？ fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.credits_amount fact_ai_usage_log.operation_type dim_user_id_mapping.user_id_hash dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id dim_tenant.country country total_credit_consumed 返回两列：'country' 代表国家代码，'total_credit_consumed' 代表该国家的 ai credits 使用总量。 适合柱状图 在 join 表后统计企业数量时，应使用 count(distinct tenant_id) 而不是 count(*)。 在 join 表后统计企业数量时，应使用 count(distinct tenant_id) 而不是 count(*)。"
+  },
+  {
+    "memory_id": "ansmem_20260507_101650_010911",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credits 使用量有多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credits 使用量，按使用量降序排列，最多显示 30 个国家。",
+    "question_patterns": [
+      "不同国家的 AI credits 使用量是多少？",
+      "哪些国家的 AI credits 使用量最高？",
+      "按国家统计 AI credits 使用量，显示前 30 名。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.operation_type",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_amount"
+    ],
+    "result_structure": "返回两列：'country' 代表国家代码，'total_credit_amount' 代表该国家的 AI credits 总使用量。",
+    "visualization_hint": "适合表格，不适合柱状图、折线图。",
+    "limitations": [
+      "确保过滤 operation_type = 'deduct' 以准确计算 AI credits 消耗量。",
+      "使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未涉及时间转换。"
+    ],
+    "warnings": [
+      "确保过滤 operation_type = 'deduct' 以准确计算 AI credits 消耗量。",
+      "使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未涉及时间转换。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 10:16:50",
+    "keywords": [
+      "ai",
+      "credits",
+      "不同国家",
+      "使用量有多少",
+      "sql",
+      "30",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "按使用量降序排列",
+      "最多显示",
+      "个国家",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "credits_amount",
+      "operation_type",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_amount",
+      "不同国家的",
+      "使用量是多少",
+      "哪些国家的",
+      "使用量最高",
+      "按国家统计",
+      "显示前"
+    ],
+    "_embedding_text": "不同国家ai credits 使用量有多少？ 这条 sql 可以展示不同国家的 ai credits 使用量，按使用量降序排列，最多显示 30 个国家。 不同国家的 ai credits 使用量是多少？ 哪些国家的 ai credits 使用量最高？ 按国家统计 ai credits 使用量，显示前 30 名。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.credits_amount fact_ai_usage_log.operation_type dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id dim_tenant.country country total_credit_amount 返回两列：'country' 代表国家代码，'total_credit_amount' 代表该国家的 ai credits 总使用量。 适合表格，不适合柱状图、折线图。 确保过滤 operation_type = 'deduct' 以准确计算 ai credits 消耗量。 使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未涉及时间转换。 确保过滤 operation_type = 'deduct' 以准确计算 ai credits 消耗量。 使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未涉及时间转换。"
+  },
+  {
+    "memory_id": "ansmem_20260507_102028_228849",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credit的使用量？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 消耗总量",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "各国 AI credit 的消耗情况如何？",
+      "请列出各国 AI credit 的使用量"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 AI credit 消耗总量",
+    "visualization_hint": "适合表格，不适合柱状图、折线图",
+    "limitations": [
+      "确保过滤 operation_type = 'deduct' 以准确计算 AI credits 消耗量。",
+      "使用 TO_TIMESTAMP 转换 created_at 字段时需注意，但本 SQL 未直接使用 created_at。"
+    ],
+    "warnings": [
+      "确保过滤 operation_type = 'deduct' 以准确计算 AI credits 消耗量。",
+      "使用 TO_TIMESTAMP 转换 created_at 字段时需注意，但本 SQL 未直接使用 created_at。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 10:20:28",
+    "keywords": [
+      "ai",
+      "credit",
+      "不同国家",
+      "的使用量",
+      "sql",
+      "这条",
+      "可以展示不同国家的",
+      "消耗总量",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "operation_type",
+      "credits_amount",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_consumed",
+      "不同国家的",
+      "使用量是多少",
+      "各国",
+      "的消耗情况如何",
+      "请列出各国"
+    ],
+    "_embedding_text": "不同国家ai credit的使用量？ 这条 sql 可以展示不同国家的 ai credit 消耗总量 不同国家的 ai credit 使用量是多少？ 各国 ai credit 的消耗情况如何？ 请列出各国 ai credit 的使用量 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.operation_type fact_ai_usage_log.credits_amount dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id dim_tenant.country country total_credit_consumed 返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 ai credit 消耗总量 适合表格，不适合柱状图、折线图 确保过滤 operation_type = 'deduct' 以准确计算 ai credits 消耗量。 使用 to_timestamp 转换 created_at 字段时需注意，但本 sql 未直接使用 created_at。 确保过滤 operation_type = 'deduct' 以准确计算 ai credits 消耗量。 使用 to_timestamp 转换 created_at 字段时需注意，但本 sql 未直接使用 created_at。"
+  },
+  {
+    "memory_id": "ansmem_20260507_102130_290834",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credit的使用量？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 使用总量，按使用量降序排列，最多显示 30 个国家。",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "哪些国家的 AI credit 使用量最高？",
+      "按国家统计 AI credit 的使用量。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.operation_type",
+      "dim_user_id_mapping.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：'country' 代表国家代码，'total_credit_consumed' 代表该国家的 AI credit 使用总量。",
+    "visualization_hint": "适合表格，不适合柱状图/折线图",
+    "limitations": [
+      "确保 `operation_type` 仅过滤为 'deduct'，以准确计算 AI credits 的消耗量。",
+      "使用 `dim_user_id_mapping` 表进行用户 ID 的映射，避免直接将 `user_id_hash` 与 `dim_user.user_id` 进行 JOIN。"
+    ],
+    "warnings": [
+      "确保 `operation_type` 仅过滤为 'deduct'，以准确计算 AI credits 的消耗量。",
+      "使用 `dim_user_id_mapping` 表进行用户 ID 的映射，避免直接将 `user_id_hash` 与 `dim_user.user_id` 进行 JOIN。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 10:21:30",
+    "keywords": [
+      "ai",
+      "credit",
+      "不同国家",
+      "的使用量",
+      "sql",
+      "30",
+      "这条",
+      "可以展示不同国家的",
+      "使用总量",
+      "按使用量降序排列",
+      "最多显示",
+      "个国家",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "credits_amount",
+      "operation_type",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_consumed",
+      "不同国家的",
+      "使用量是多少",
+      "哪些国家的",
+      "使用量最高",
+      "按国家统计"
+    ],
+    "_embedding_text": "不同国家ai credit的使用量？ 这条 sql 可以展示不同国家的 ai credit 使用总量，按使用量降序排列，最多显示 30 个国家。 不同国家的 ai credit 使用量是多少？ 哪些国家的 ai credit 使用量最高？ 按国家统计 ai credit 的使用量。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.credits_amount fact_ai_usage_log.operation_type dim_user_id_mapping.user_id dim_user.tenant_id dim_tenant.country country total_credit_consumed 返回两列：'country' 代表国家代码，'total_credit_consumed' 代表该国家的 ai credit 使用总量。 适合表格，不适合柱状图/折线图 确保 `operation_type` 仅过滤为 'deduct'，以准确计算 ai credits 的消耗量。 使用 `dim_user_id_mapping` 表进行用户 id 的映射，避免直接将 `user_id_hash` 与 `dim_user.user_id` 进行 join。 确保 `operation_type` 仅过滤为 'deduct'，以准确计算 ai credits 的消耗量。 使用 `dim_user_id_mapping` 表进行用户 id 的映射，避免直接将 `user_id_hash` 与 `dim_user.user_id` 进行 join。"
+  },
+  {
+    "memory_id": "ansmem_20260507_102545_545997",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credit使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 使用量，具体为每个国家的总消耗量。",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "每个国家消耗了多少 AI credit？",
+      "展示各国的 AI credit 使用总量。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.operation_type",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_amount"
+    ],
+    "result_structure": "返回两列：'country' 代表国家代码，'total_credit_amount' 代表该国家的 AI credit 总使用量。",
+    "visualization_hint": "适合表格，不适合柱状图、折线图。",
+    "limitations": [
+      "确保过滤 operation_type = 'deduct' 以准确计算 AI credits 消耗量。",
+      "使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未涉及此字段。"
+    ],
+    "warnings": [
+      "确保过滤 operation_type = 'deduct' 以准确计算 AI credits 消耗量。",
+      "使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未涉及此字段。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 10:25:45",
+    "keywords": [
+      "ai",
+      "credit",
+      "不同国家",
+      "使用量是多少",
+      "sql",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "具体为每个国家的总消耗量",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "credits_amount",
+      "operation_type",
+      "user_id",
+      "tenant_id",
+      "country",
+      "total_credit_amount",
+      "不同国家的",
+      "每个国家消耗了多少",
+      "展示各国的",
+      "使用总量"
+    ],
+    "_embedding_text": "不同国家ai credit使用量是多少？ 这条 sql 可以展示不同国家的 ai credit 使用量，具体为每个国家的总消耗量。 不同国家的 ai credit 使用量是多少？ 每个国家消耗了多少 ai credit？ 展示各国的 ai credit 使用总量。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.credits_amount fact_ai_usage_log.operation_type dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id dim_tenant.country country total_credit_amount 返回两列：'country' 代表国家代码，'total_credit_amount' 代表该国家的 ai credit 总使用量。 适合表格，不适合柱状图、折线图。 确保过滤 operation_type = 'deduct' 以准确计算 ai credits 消耗量。 使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未涉及此字段。 确保过滤 operation_type = 'deduct' 以准确计算 ai credits 消耗量。 使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未涉及此字段。"
+  },
+  {
+    "memory_id": "ansmem_20260507_103630_190789",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credit使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 使用量，具体为每个国家的 total_credit_consumed 总和。",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "各国的 AI credit 消耗情况如何？",
+      "请列出各国的 AI credit 使用总量。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.country"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：country（国家代码）和 total_credit_consumed（AI credit 使用总量）。",
+    "visualization_hint": "不适合可视化，仅需返回不同国家的 AI credit 使用量数据。",
+    "limitations": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未直接使用 created_at。"
+    ],
+    "warnings": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未直接使用 created_at。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 10:36:30",
+    "keywords": [
+      "ai",
+      "credit",
+      "不同国家",
+      "使用量是多少",
+      "sql",
+      "total_credit_consumed",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "具体为每个国家的",
+      "总和",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "user_id_hash",
+      "operation_type",
+      "credits_amount",
+      "user_id",
+      "tenant_id",
+      "country",
+      "不同国家的",
+      "各国的",
+      "消耗情况如何",
+      "请列出各国的",
+      "使用总量"
+    ],
+    "_embedding_text": "不同国家ai credit使用量是多少？ 这条 sql 可以展示不同国家的 ai credit 使用量，具体为每个国家的 total_credit_consumed 总和。 不同国家的 ai credit 使用量是多少？ 各国的 ai credit 消耗情况如何？ 请列出各国的 ai credit 使用总量。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant fact_ai_usage_log.user_id_hash fact_ai_usage_log.operation_type fact_ai_usage_log.credits_amount dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id dim_tenant.country country total_credit_consumed 返回两列：country（国家代码）和 total_credit_consumed（ai credit 使用总量）。 不适合可视化，仅需返回不同国家的 ai credit 使用量数据。 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未直接使用 created_at。 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未直接使用 created_at。"
+  },
+  {
+    "memory_id": "ansmem_20260507_105819_499256",
+    "memory_type": "answer_memory",
+    "source_question": "按月统计活跃用户数趋势，并生成折线图。",
+    "answerable_description": "这条 SQL 可以展示每月的活跃用户数趋势，具体为每个月的活跃用户数。",
+    "question_patterns": [
+      "如何按月统计活跃用户数？",
+      "每月的活跃用户数是多少？",
+      "活跃用户数的月度趋势如何？"
+    ],
+    "used_tables": [
+      "fact_daily_usage"
+    ],
+    "used_columns": [
+      "fact_daily_usage.dt",
+      "fact_daily_usage.user_id"
+    ],
+    "result_columns": [
+      "month",
+      "monthly_active_user_count"
+    ],
+    "result_structure": "返回两列：month（月份）和 monthly_active_user_count（每月活跃用户数）。",
+    "visualization_hint": "适合折线图",
+    "limitations": [
+      "确保 fact_daily_usage 表中的 user_id 和 dt 字段已验证唯一，以避免重复计算。"
+    ],
+    "warnings": [
+      "确保 fact_daily_usage 表中的 user_id 和 dt 字段已验证唯一，以避免重复计算。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 10:58:19",
+    "keywords": [
+      "按月统计活跃用户数趋势",
+      "并生成折线图",
+      "sql",
+      "这条",
+      "可以展示每月的活跃用户数趋势",
+      "具体为每个月的活跃用户数",
+      "fact_daily_usage",
+      "dt",
+      "user_id",
+      "month",
+      "monthly_active_user_count",
+      "如何按月统计活跃用户数",
+      "每月的活跃用户数是多少",
+      "活跃用户数的月度趋势如何"
+    ],
+    "_embedding_text": "按月统计活跃用户数趋势，并生成折线图。 这条 sql 可以展示每月的活跃用户数趋势，具体为每个月的活跃用户数。 如何按月统计活跃用户数？ 每月的活跃用户数是多少？ 活跃用户数的月度趋势如何？ fact_daily_usage fact_daily_usage.dt fact_daily_usage.user_id month monthly_active_user_count 返回两列：month（月份）和 monthly_active_user_count（每月活跃用户数）。 适合折线图 确保 fact_daily_usage 表中的 user_id 和 dt 字段已验证唯一，以避免重复计算。 确保 fact_daily_usage 表中的 user_id 和 dt 字段已验证唯一，以避免重复计算。"
+  },
+  {
+    "memory_id": "ansmem_20260507_120405_445942",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credit使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 使用量，具体为每个国家的 total_credit_consumed 总量。",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "各国 AI credit 消耗情况如何？",
+      "请列出各国的 AI credit 使用量。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "dim_tenant.country",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.user_id_hash",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：country（国家）和 total_credit_consumed（AI credit 使用总量）",
+    "visualization_hint": "适合表格，不适合柱状图/折线图",
+    "limitations": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未直接使用 created_at。"
+    ],
+    "warnings": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未直接使用 created_at。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 12:04:05",
+    "keywords": [
+      "ai",
+      "credit",
+      "不同国家",
+      "使用量是多少",
+      "sql",
+      "total_credit_consumed",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "具体为每个国家的",
+      "总量",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "country",
+      "operation_type",
+      "credits_amount",
+      "user_id_hash",
+      "user_id",
+      "tenant_id",
+      "不同国家的",
+      "各国",
+      "消耗情况如何",
+      "请列出各国的"
+    ],
+    "_embedding_text": "不同国家ai credit使用量是多少？ 这条 sql 可以展示不同国家的 ai credit 使用量，具体为每个国家的 total_credit_consumed 总量。 不同国家的 ai credit 使用量是多少？ 各国 ai credit 消耗情况如何？ 请列出各国的 ai credit 使用量。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant dim_tenant.country fact_ai_usage_log.operation_type fact_ai_usage_log.credits_amount fact_ai_usage_log.user_id_hash dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id country total_credit_consumed 返回两列：country（国家）和 total_credit_consumed（ai credit 使用总量） 适合表格，不适合柱状图/折线图 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未直接使用 created_at。 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未直接使用 created_at。"
+  },
+  {
+    "memory_id": "ansmem_20260507_120543_543848",
+    "memory_type": "answer_memory",
+    "source_question": "画一张柱状图",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI 信用消耗总量",
+    "question_patterns": [
+      "哪个国家的 AI 信用消耗最多？",
+      "各国的 AI 信用消耗量是多少？",
+      "列出前 30 个 AI 信用消耗最多的国家"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "dim_tenant.country",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.user_id_hash",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 AI 信用消耗总量",
+    "visualization_hint": "适合柱状图",
+    "limitations": [
+      "确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。",
+      "使用字段 fact_ai_usage_log.operation_type 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 fact_ai_usage_log.credits_amount 不在 Agent2 候选字段中，请确认字段归属与业务语义。"
+    ],
+    "warnings": [
+      "确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。",
+      "使用字段 fact_ai_usage_log.operation_type 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 fact_ai_usage_log.credits_amount 不在 Agent2 候选字段中，请确认字段归属与业务语义。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 12:05:43",
+    "keywords": [
+      "画一张柱状图",
+      "sql",
+      "ai",
+      "这条",
+      "可以展示不同国家的",
+      "信用消耗总量",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "country",
+      "operation_type",
+      "credits_amount",
+      "user_id_hash",
+      "user_id",
+      "tenant_id",
+      "total_credit_consumed",
+      "30",
+      "哪个国家的",
+      "信用消耗最多",
+      "各国的",
+      "信用消耗量是多少",
+      "列出前",
+      "信用消耗最多的国家"
+    ],
+    "_embedding_text": "画一张柱状图 这条 sql 可以展示不同国家的 ai 信用消耗总量 哪个国家的 ai 信用消耗最多？ 各国的 ai 信用消耗量是多少？ 列出前 30 个 ai 信用消耗最多的国家 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant dim_tenant.country fact_ai_usage_log.operation_type fact_ai_usage_log.credits_amount fact_ai_usage_log.user_id_hash dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id country total_credit_consumed 返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 ai 信用消耗总量 适合柱状图 确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。 使用字段 fact_ai_usage_log.operation_type 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 fact_ai_usage_log.credits_amount 不在 agent2 候选字段中，请确认字段归属与业务语义。 确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。 使用字段 fact_ai_usage_log.operation_type 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 fact_ai_usage_log.credits_amount 不在 agent2 候选字段中，请确认字段归属与业务语义。"
+  },
+  {
+    "memory_id": "ansmem_20260507_120910_750497",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credit使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 使用量，具体为每个国家的 total_credit_consumed（总信用消耗量）",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "每个国家的 AI credit 消耗情况如何？",
+      "列出各国的 AI credit 使用总量。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "dim_tenant.country",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.user_id_hash",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：country（国家）和 total_credit_consumed（总信用消耗量），其中 total_credit_consumed 是在 operation_type 为 'deduct' 时的 credits_amount 之和。",
+    "visualization_hint": "适合表格，不适合柱状图/折线图",
+    "limitations": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未直接使用 created_at。"
+    ],
+    "warnings": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未直接使用 created_at。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 12:09:10",
+    "keywords": [
+      "ai",
+      "credit",
+      "不同国家",
+      "使用量是多少",
+      "sql",
+      "total_credit_consumed",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "具体为每个国家的",
+      "总信用消耗量",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "country",
+      "operation_type",
+      "credits_amount",
+      "user_id_hash",
+      "user_id",
+      "tenant_id",
+      "不同国家的",
+      "每个国家的",
+      "消耗情况如何",
+      "列出各国的",
+      "使用总量"
+    ],
+    "_embedding_text": "不同国家ai credit使用量是多少？ 这条 sql 可以展示不同国家的 ai credit 使用量，具体为每个国家的 total_credit_consumed（总信用消耗量） 不同国家的 ai credit 使用量是多少？ 每个国家的 ai credit 消耗情况如何？ 列出各国的 ai credit 使用总量。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant dim_tenant.country fact_ai_usage_log.operation_type fact_ai_usage_log.credits_amount fact_ai_usage_log.user_id_hash dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id country total_credit_consumed 返回两列：country（国家）和 total_credit_consumed（总信用消耗量），其中 total_credit_consumed 是在 operation_type 为 'deduct' 时的 credits_amount 之和。 适合表格，不适合柱状图/折线图 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未直接使用 created_at。 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未直接使用 created_at。"
+  },
+  {
+    "memory_id": "ansmem_20260507_121154_914750",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credit使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 使用量，具体为每个国家的 total_credit_consumed（总信用消耗量）",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "每个国家的 AI credit 消耗情况如何？",
+      "列出各国的 AI credit 使用总量。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "dim_tenant.country",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.user_id_hash",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：country（国家）和 total_credit_consumed（总信用消耗量），其中 total_credit_consumed 是在 operation_type 为 'deduct' 时的 credits_amount 之和。",
+    "visualization_hint": "适合表格，不适合柱状图/折线图",
+    "limitations": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未直接使用 created_at。"
+    ],
+    "warnings": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未直接使用 created_at。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 12:11:54",
+    "keywords": [
+      "ai",
+      "credit",
+      "不同国家",
+      "使用量是多少",
+      "sql",
+      "total_credit_consumed",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "具体为每个国家的",
+      "总信用消耗量",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "country",
+      "operation_type",
+      "credits_amount",
+      "user_id_hash",
+      "user_id",
+      "tenant_id",
+      "不同国家的",
+      "每个国家的",
+      "消耗情况如何",
+      "列出各国的",
+      "使用总量"
+    ],
+    "_embedding_text": "不同国家ai credit使用量是多少？ 这条 sql 可以展示不同国家的 ai credit 使用量，具体为每个国家的 total_credit_consumed（总信用消耗量） 不同国家的 ai credit 使用量是多少？ 每个国家的 ai credit 消耗情况如何？ 列出各国的 ai credit 使用总量。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant dim_tenant.country fact_ai_usage_log.operation_type fact_ai_usage_log.credits_amount fact_ai_usage_log.user_id_hash dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id country total_credit_consumed 返回两列：country（国家）和 total_credit_consumed（总信用消耗量），其中 total_credit_consumed 是在 operation_type 为 'deduct' 时的 credits_amount 之和。 适合表格，不适合柱状图/折线图 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未直接使用 created_at。 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未直接使用 created_at。"
+  },
+  {
+    "memory_id": "ansmem_20260507_121420_060791",
+    "memory_type": "answer_memory",
+    "source_question": "能不能生成一个柱状图？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 使用总量，按使用量降序排列，最多显示 30 个国家。",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "能否展示各国的 AI credit 使用总量？",
+      "生成一个柱状图，显示各国的 AI credit 使用量。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "dim_tenant.country",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.user_id_hash",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 AI credit 使用总量。",
+    "visualization_hint": "适合柱状图",
+    "limitations": [
+      "确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。",
+      "使用表 fact_ai_usage_log 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用表 dim_user_id_mapping 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用字段 fact_ai_usage_log.operation_type 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 fact_ai_usage_log.credits_amount 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 fact_ai_usage_log.user_id_hash 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 dim_user_id_mapping.user_id_hash 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 dim_user_id_mapping.user_id 不在 Agent2 候选字段中，请确认字段归属与业务语义。"
+    ],
+    "warnings": [
+      "确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。",
+      "使用表 fact_ai_usage_log 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用表 dim_user_id_mapping 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用字段 fact_ai_usage_log.operation_type 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 fact_ai_usage_log.credits_amount 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 fact_ai_usage_log.user_id_hash 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 dim_user_id_mapping.user_id_hash 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 dim_user_id_mapping.user_id 不在 Agent2 候选字段中，请确认字段归属与业务语义。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 12:14:20",
+    "keywords": [
+      "能不能生成一个柱状图",
+      "sql",
+      "ai",
+      "credit",
+      "30",
+      "这条",
+      "可以展示不同国家的",
+      "使用总量",
+      "按使用量降序排列",
+      "最多显示",
+      "个国家",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "country",
+      "operation_type",
+      "credits_amount",
+      "user_id_hash",
+      "user_id",
+      "tenant_id",
+      "total_credit_consumed",
+      "不同国家的",
+      "使用量是多少",
+      "能否展示各国的",
+      "生成一个柱状图",
+      "显示各国的",
+      "使用量"
+    ],
+    "_embedding_text": "能不能生成一个柱状图？ 这条 sql 可以展示不同国家的 ai credit 使用总量，按使用量降序排列，最多显示 30 个国家。 不同国家的 ai credit 使用量是多少？ 能否展示各国的 ai credit 使用总量？ 生成一个柱状图，显示各国的 ai credit 使用量。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant dim_tenant.country fact_ai_usage_log.operation_type fact_ai_usage_log.credits_amount fact_ai_usage_log.user_id_hash dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id country total_credit_consumed 返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 ai credit 使用总量。 适合柱状图 确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。 使用表 fact_ai_usage_log 不在 agent2 候选表中，请确认是否为幻觉表。 使用表 dim_user_id_mapping 不在 agent2 候选表中，请确认是否为幻觉表。 使用字段 fact_ai_usage_log.operation_type 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 fact_ai_usage_log.credits_amount 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 fact_ai_usage_log.user_id_hash 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 dim_user_id_mapping.user_id_hash 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 dim_user_id_mapping.user_id 不在 agent2 候选字段中，请确认字段归属与业务语义。 确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。 使用表 fact_ai_usage_log 不在 agent2 候选表中，请确认是否为幻觉表。 使用表 dim_user_id_mapping 不在 agent2 候选表中，请确认是否为幻觉表。 使用字段 fact_ai_usage_log.operation_type 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 fact_ai_usage_log.credits_amount 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 fact_ai_usage_log.user_id_hash 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 dim_user_id_mapping.user_id_hash 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 dim_user_id_mapping.user_id 不在 agent2 候选字段中，请确认字段归属与业务语义。"
+  },
+  {
+    "memory_id": "ansmem_20260507_121857_337555",
+    "memory_type": "answer_memory",
+    "source_question": "不同国家AI credit使用量是多少？",
+    "answerable_description": "这条 SQL 可以展示不同国家的 AI credit 使用量，按使用量降序排列，最多显示 30 个国家。",
+    "question_patterns": [
+      "不同国家的 AI credit 使用量是多少？",
+      "哪些国家的 AI credit 使用量最高？",
+      "列出 AI credit 使用量最多的 30 个国家。"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "dim_tenant.country",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.user_id_hash",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 AI credit 使用总量。",
+    "visualization_hint": "适合表格，不适合柱状图/折线图",
+    "limitations": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未直接使用 created_at。"
+    ],
+    "warnings": [
+      "确保在分析 AI 使用/消耗时过滤 operation_type = 'deduct'。",
+      "确保使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换 created_at 字段，但本 SQL 未直接使用 created_at。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 12:18:57",
+    "keywords": [
+      "ai",
+      "credit",
+      "不同国家",
+      "使用量是多少",
+      "sql",
+      "30",
+      "这条",
+      "可以展示不同国家的",
+      "使用量",
+      "按使用量降序排列",
+      "最多显示",
+      "个国家",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "country",
+      "operation_type",
+      "credits_amount",
+      "user_id_hash",
+      "user_id",
+      "tenant_id",
+      "total_credit_consumed",
+      "不同国家的",
+      "哪些国家的",
+      "使用量最高",
+      "列出",
+      "使用量最多的"
+    ],
+    "_embedding_text": "不同国家ai credit使用量是多少？ 这条 sql 可以展示不同国家的 ai credit 使用量，按使用量降序排列，最多显示 30 个国家。 不同国家的 ai credit 使用量是多少？ 哪些国家的 ai credit 使用量最高？ 列出 ai credit 使用量最多的 30 个国家。 fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant dim_tenant.country fact_ai_usage_log.operation_type fact_ai_usage_log.credits_amount fact_ai_usage_log.user_id_hash dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id country total_credit_consumed 返回两列：'country' 代表国家，'total_credit_consumed' 代表该国家的 ai credit 使用总量。 适合表格，不适合柱状图/折线图 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未直接使用 created_at。 确保在分析 ai 使用/消耗时过滤 operation_type = 'deduct'。 确保使用 to_timestamp(cast(created_at as bigint)) 转换 created_at 字段，但本 sql 未直接使用 created_at。"
+  },
+  {
+    "memory_id": "ansmem_20260507_122235_555175",
+    "memory_type": "answer_memory",
+    "source_question": "生成一个柱状图好吗？",
+    "answerable_description": "这条 SQL 可以展示每个国家的 AI 信用消耗总量，按消耗量降序排列，最多显示 30 个国家。",
+    "question_patterns": [
+      "哪个国家的 AI 信用消耗最多？",
+      "能否展示各国的 AI 信用消耗情况？",
+      "AI 信用消耗量最高的国家有哪些？"
+    ],
+    "used_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "used_columns": [
+      "dim_tenant.country",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "fact_ai_usage_log.user_id_hash",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id"
+    ],
+    "result_columns": [
+      "country",
+      "total_credit_consumed"
+    ],
+    "result_structure": "返回 'country' 和 'total_credit_consumed' 两列，分别代表国家和该国家的 AI 信用消耗总量。",
+    "visualization_hint": "适合柱状图",
+    "limitations": [
+      "确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。",
+      "使用表 fact_ai_usage_log 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用表 dim_user_id_mapping 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用字段 fact_ai_usage_log.operation_type 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 fact_ai_usage_log.credits_amount 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 fact_ai_usage_log.user_id_hash 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 dim_user_id_mapping.user_id_hash 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 dim_user_id_mapping.user_id 不在 Agent2 候选字段中，请确认字段归属与业务语义。"
+    ],
+    "warnings": [
+      "确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。",
+      "使用表 fact_ai_usage_log 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用表 dim_user_id_mapping 不在 Agent2 候选表中，请确认是否为幻觉表。",
+      "使用字段 fact_ai_usage_log.operation_type 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 fact_ai_usage_log.credits_amount 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 fact_ai_usage_log.user_id_hash 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 dim_user_id_mapping.user_id_hash 不在 Agent2 候选字段中，请确认字段归属与业务语义。",
+      "使用字段 dim_user_id_mapping.user_id 不在 Agent2 候选字段中，请确认字段归属与业务语义。"
+    ],
+    "confidence": "auto_descriptive",
+    "created_at": "2026-05-07 12:22:35",
+    "keywords": [
+      "生成一个柱状图好吗",
+      "sql",
+      "ai",
+      "30",
+      "这条",
+      "可以展示每个国家的",
+      "信用消耗总量",
+      "按消耗量降序排列",
+      "最多显示",
+      "个国家",
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant",
+      "country",
+      "operation_type",
+      "credits_amount",
+      "user_id_hash",
+      "user_id",
+      "tenant_id",
+      "total_credit_consumed",
+      "哪个国家的",
+      "信用消耗最多",
+      "能否展示各国的",
+      "信用消耗情况",
+      "信用消耗量最高的国家有哪些"
+    ],
+    "_embedding_text": "生成一个柱状图好吗？ 这条 sql 可以展示每个国家的 ai 信用消耗总量，按消耗量降序排列，最多显示 30 个国家。 哪个国家的 ai 信用消耗最多？ 能否展示各国的 ai 信用消耗情况？ ai 信用消耗量最高的国家有哪些？ fact_ai_usage_log dim_user_id_mapping dim_user dim_tenant dim_tenant.country fact_ai_usage_log.operation_type fact_ai_usage_log.credits_amount fact_ai_usage_log.user_id_hash dim_user_id_mapping.user_id_hash dim_user_id_mapping.user_id dim_user.user_id dim_user.tenant_id dim_tenant.tenant_id country total_credit_consumed 返回 'country' 和 'total_credit_consumed' 两列，分别代表国家和该国家的 ai 信用消耗总量。 适合柱状图 确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。 使用表 fact_ai_usage_log 不在 agent2 候选表中，请确认是否为幻觉表。 使用表 dim_user_id_mapping 不在 agent2 候选表中，请确认是否为幻觉表。 使用字段 fact_ai_usage_log.operation_type 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 fact_ai_usage_log.credits_amount 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 fact_ai_usage_log.user_id_hash 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 dim_user_id_mapping.user_id_hash 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 dim_user_id_mapping.user_id 不在 agent2 候选字段中，请确认字段归属与业务语义。 确保 fact_ai_usage_log 中的 user_id_hash 与 dim_user_id_mapping 中的 user_id_hash 完全匹配，以避免数据遗漏。 使用表 fact_ai_usage_log 不在 agent2 候选表中，请确认是否为幻觉表。 使用表 dim_user_id_mapping 不在 agent2 候选表中，请确认是否为幻觉表。 使用字段 fact_ai_usage_log.operation_type 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 fact_ai_usage_log.credits_amount 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 fact_ai_usage_log.user_id_hash 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 dim_user_id_mapping.user_id_hash 不在 agent2 候选字段中，请确认字段归属与业务语义。 使用字段 dim_user_id_mapping.user_id 不在 agent2 候选字段中，请确认字段归属与业务语义。"
+  }
+]

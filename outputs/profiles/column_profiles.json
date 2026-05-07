@@ -1,0 +1,4291 @@
+[
+  {
+    "table_name": "dim_channel",
+    "column_name": "channel_id",
+    "data_type": "VARCHAR",
+    "row_count": 5591,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5591,
+    "distinct_rate": 1.0,
+    "min": "CH00001_01",
+    "max": "CH00500_13",
+    "sample_values": [
+      "CH00001_01",
+      "CH00001_02",
+      "CH00001_03",
+      "CH00001_04",
+      "CH00001_05"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_channel",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 5591,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 0.0894,
+    "min": "T00001",
+    "max": "T00500",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_channel",
+    "column_name": "channel_type",
+    "data_type": "VARCHAR",
+    "row_count": 5591,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.0007,
+    "min": "announcement",
+    "max": "topic",
+    "sample_values": [
+      "announcement",
+      "group",
+      "private",
+      "topic"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_channel",
+    "column_name": "member_count",
+    "data_type": "BIGINT",
+    "row_count": 5591,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 199,
+    "distinct_rate": 0.0356,
+    "min": "2",
+    "max": "200",
+    "sample_values": [
+      "2",
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_channel",
+    "column_name": "created_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 5591,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5591,
+    "distinct_rate": 1.0,
+    "min": "2024-10-03 01:46:18",
+    "max": "2026-03-30 22:14:07",
+    "sample_values": [
+      "2024-10-03 01:46:18",
+      "2024-10-03 03:49:05",
+      "2024-10-03 06:05:15",
+      "2024-10-03 11:03:26",
+      "2024-10-03 11:40:49"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_department",
+    "column_name": "dept_id",
+    "data_type": "VARCHAR",
+    "row_count": 2937,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 2937,
+    "distinct_rate": 1.0,
+    "min": "D00001_01",
+    "max": "D00500_08",
+    "sample_values": [
+      "D00001_01",
+      "D00001_02",
+      "D00001_03",
+      "D00001_04",
+      "D00001_05"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_department",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 2937,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 0.1702,
+    "min": "T00001",
+    "max": "T00500",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_department",
+    "column_name": "dept_name",
+    "data_type": "VARCHAR",
+    "row_count": 2937,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 10,
+    "distinct_rate": 0.0034,
+    "min": "Design",
+    "max": "Support",
+    "sample_values": [
+      "Design",
+      "Engineering",
+      "Finance",
+      "HR",
+      "Legal"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_department",
+    "column_name": "parent_dept_id",
+    "data_type": "VARCHAR",
+    "row_count": 2937,
+    "null_count": 2236,
+    "null_rate": 0.7613,
+    "distinct_count": 599,
+    "distinct_rate": 0.2039,
+    "min": "D00002_02",
+    "max": "D00500_05",
+    "sample_values": [
+      "D00002_02",
+      "D00002_03",
+      "D00005_01",
+      "D00006_01",
+      "D00008_03"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_feature",
+    "column_name": "feature_key",
+    "data_type": "VARCHAR",
+    "row_count": 12,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 12,
+    "distinct_rate": 1.0,
+    "min": "approval",
+    "max": "wiki",
+    "sample_values": [
+      "approval",
+      "base",
+      "calendar",
+      "docs",
+      "email"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_feature",
+    "column_name": "feature_name",
+    "data_type": "VARCHAR",
+    "row_count": 12,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 12,
+    "distinct_rate": 1.0,
+    "min": "Approval",
+    "max": "Wiki",
+    "sample_values": [
+      "Approval",
+      "Bitable",
+      "Calendar",
+      "Cloud Documents",
+      "Email"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_feature",
+    "column_name": "module",
+    "data_type": "VARCHAR",
+    "row_count": 12,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.3333,
+    "min": "Communication",
+    "max": "Workflow",
+    "sample_values": [
+      "Communication",
+      "Knowledge",
+      "Productivity",
+      "Workflow"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_feature",
+    "column_name": "category",
+    "data_type": "VARCHAR",
+    "row_count": 12,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3,
+    "distinct_rate": 0.25,
+    "min": "advanced",
+    "max": "premium",
+    "sample_values": [
+      "advanced",
+      "core",
+      "premium"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_feature",
+    "column_name": "launched_at",
+    "data_type": "DATE",
+    "row_count": 12,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 12,
+    "distinct_rate": 1.0,
+    "min": "2023-04-20",
+    "max": "2025-02-27",
+    "sample_values": [
+      "2023-04-20",
+      "2023-08-20",
+      "2024-02-04",
+      "2024-06-01",
+      "2024-06-06"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_org_structure",
+    "column_name": "node_id",
+    "data_type": "VARCHAR",
+    "row_count": 1901,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1901,
+    "distinct_rate": 1.0,
+    "min": "N00001_01",
+    "max": "N00200_13",
+    "sample_values": [
+      "N00001_01",
+      "N00001_02",
+      "N00001_03",
+      "N00001_04",
+      "N00001_05"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_org_structure",
+    "column_name": "parent_node_id",
+    "data_type": "VARCHAR",
+    "row_count": 1901,
+    "null_count": 200,
+    "null_rate": 0.1052,
+    "distinct_count": 953,
+    "distinct_rate": 0.5013,
+    "min": "N00001_01",
+    "max": "N00200_09",
+    "sample_values": [
+      "N00001_01",
+      "N00001_02",
+      "N00001_03",
+      "N00001_04",
+      "N00001_05"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_org_structure",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 1901,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 200,
+    "distinct_rate": 0.1052,
+    "min": "T00001",
+    "max": "T00200",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_org_structure",
+    "column_name": "node_type",
+    "data_type": "VARCHAR",
+    "row_count": 1901,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3,
+    "distinct_rate": 0.0016,
+    "min": "department",
+    "max": "virtual_group",
+    "sample_values": [
+      "department",
+      "team",
+      "virtual_group"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_org_structure",
+    "column_name": "level",
+    "data_type": "BIGINT",
+    "row_count": 1901,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 6,
+    "distinct_rate": 0.0032,
+    "min": "0",
+    "max": "5",
+    "sample_values": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_plan",
+    "column_name": "plan_name",
+    "data_type": "VARCHAR",
+    "row_count": 5,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 1.0,
+    "min": "Business",
+    "max": "Starter",
+    "sample_values": [
+      "Business",
+      "Enterprise",
+      "Free",
+      "Professional",
+      "Starter"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_plan",
+    "column_name": "plan_tier",
+    "data_type": "VARCHAR",
+    "row_count": 5,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 1.0,
+    "min": "business",
+    "max": "starter",
+    "sample_values": [
+      "business",
+      "enterprise",
+      "free",
+      "pro",
+      "starter"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_plan",
+    "column_name": "monthly_price",
+    "data_type": "BIGINT",
+    "row_count": 5,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 1.0,
+    "min": "0",
+    "max": "499",
+    "sample_values": [
+      "0",
+      "29",
+      "79",
+      "199",
+      "499"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_plan",
+    "column_name": "annual_price",
+    "data_type": "BIGINT",
+    "row_count": 5,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 1.0,
+    "min": "0",
+    "max": "4990",
+    "sample_values": [
+      "0",
+      "290",
+      "790",
+      "1990",
+      "4990"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_plan",
+    "column_name": "seat_limit",
+    "data_type": "VARCHAR",
+    "row_count": 5,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 1.0,
+    "min": "100",
+    "max": "unlimited",
+    "sample_values": [
+      "100",
+      "20",
+      "5",
+      "500",
+      "unlimited"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_plan",
+    "column_name": "features",
+    "data_type": "VARCHAR",
+    "row_count": 5,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 1.0,
+    "min": "all",
+    "max": "im,docs,sheets,calendar,video_conf,task,base,wiki,approval",
+    "sample_values": [
+      "all",
+      "im,docs",
+      "im,docs,sheets,calendar",
+      "im,docs,sheets,calendar,video_conf,task",
+      "im,docs,sheets,calendar,video_conf,task,base,wiki,approval"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_tenant",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 500,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 1.0,
+    "min": "T00001",
+    "max": "T00500",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_tenant",
+    "column_name": "name",
+    "data_type": "VARCHAR",
+    "row_count": 500,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 1.0,
+    "min": "Company_1",
+    "max": "Company_99",
+    "sample_values": [
+      "Company_1",
+      "Company_10",
+      "Company_100",
+      "Company_101",
+      "Company_102"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_tenant",
+    "column_name": "industry",
+    "data_type": "VARCHAR",
+    "row_count": 500,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 15,
+    "distinct_rate": 0.03,
+    "min": "Consulting",
+    "max": "Technology",
+    "sample_values": [
+      "Consulting",
+      "Education",
+      "Energy",
+      "Finance",
+      "Government"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_tenant",
+    "column_name": "size_tier",
+    "data_type": "VARCHAR",
+    "row_count": 500,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.01,
+    "min": "enterprise",
+    "max": "startup",
+    "sample_values": [
+      "enterprise",
+      "large",
+      "medium",
+      "small",
+      "startup"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_tenant",
+    "column_name": "country",
+    "data_type": "VARCHAR",
+    "row_count": 500,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 10,
+    "distinct_rate": 0.02,
+    "min": "AU",
+    "max": "US",
+    "sample_values": [
+      "AU",
+      "BR",
+      "CN",
+      "DE",
+      "GB"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_tenant",
+    "column_name": "created_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 500,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 1.0,
+    "min": "2024-04-01 17:04:57",
+    "max": "2025-06-29 17:09:33",
+    "sample_values": [
+      "2024-04-01 17:04:57",
+      "2024-04-02 11:26:19",
+      "2024-04-02 14:43:08",
+      "2024-04-04 16:25:47",
+      "2024-04-05 14:51:00"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 6000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 0.0833,
+    "min": "T00001",
+    "max": "T00500",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "column_name": "feature_key",
+    "data_type": "VARCHAR",
+    "row_count": 6000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 12,
+    "distinct_rate": 0.002,
+    "min": "approval",
+    "max": "wiki",
+    "sample_values": [
+      "approval",
+      "base",
+      "calendar",
+      "docs",
+      "email"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "column_name": "enabled",
+    "data_type": "BIGINT",
+    "row_count": 6000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 2,
+    "distinct_rate": 0.0003,
+    "min": "0",
+    "max": "1",
+    "sample_values": [
+      "0",
+      "1"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_tenant_config",
+    "column_name": "config_json",
+    "data_type": "VARCHAR",
+    "row_count": 6000,
+    "null_count": 5000,
+    "null_rate": 0.8333,
+    "distinct_count": 7,
+    "distinct_rate": 0.0012,
+    "min": "{\"max_participants\": 100}",
+    "max": "{\"max_tables\": 50}",
+    "sample_values": [
+      "{\"max_participants\": 100}",
+      "{\"max_participants\": 300}",
+      "{\"max_participants\": 500}",
+      "{\"max_participants\": 50}",
+      "{\"max_tables\": 100}"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_tenant_plan",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 2320,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 0.2155,
+    "min": "T00001",
+    "max": "T00500",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_tenant_plan",
+    "column_name": "plan_name",
+    "data_type": "VARCHAR",
+    "row_count": 2320,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.0022,
+    "min": "Business",
+    "max": "Starter",
+    "sample_values": [
+      "Business",
+      "Enterprise",
+      "Free",
+      "Professional",
+      "Starter"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_tenant_plan",
+    "column_name": "plan_tier",
+    "data_type": "VARCHAR",
+    "row_count": 2320,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.0022,
+    "min": "business",
+    "max": "starter",
+    "sample_values": [
+      "business",
+      "enterprise",
+      "free",
+      "pro",
+      "starter"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_tenant_plan",
+    "column_name": "effective_from",
+    "data_type": "DATE",
+    "row_count": 2320,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 661,
+    "distinct_rate": 0.2849,
+    "min": "2024-04-01",
+    "max": "2026-03-30",
+    "sample_values": [
+      "2024-04-01",
+      "2024-04-02",
+      "2024-04-04",
+      "2024-04-05",
+      "2024-04-09"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_tenant_plan",
+    "column_name": "effective_to",
+    "data_type": "DATE",
+    "row_count": 2320,
+    "null_count": 495,
+    "null_rate": 0.2134,
+    "distinct_count": 545,
+    "distinct_rate": 0.2349,
+    "min": "2024-06-18",
+    "max": "2026-03-31",
+    "sample_values": [
+      "2024-06-18",
+      "2024-06-21",
+      "2024-06-27",
+      "2024-07-03",
+      "2024-07-04"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_ticket_category",
+    "column_name": "category_id",
+    "data_type": "VARCHAR",
+    "row_count": 12,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 12,
+    "distinct_rate": 1.0,
+    "min": "account",
+    "max": "security",
+    "sample_values": [
+      "account",
+      "account_login",
+      "account_permission",
+      "billing",
+      "billing_invoice"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_ticket_category",
+    "column_name": "category_name",
+    "data_type": "VARCHAR",
+    "row_count": 12,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 12,
+    "distinct_rate": 1.0,
+    "min": "Account Issues",
+    "max": "Security Concerns",
+    "sample_values": [
+      "Account Issues",
+      "App Crashes",
+      "Billing & Payment",
+      "Bug Report",
+      "Data Loss"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_ticket_category",
+    "column_name": "parent_category_id",
+    "data_type": "VARCHAR",
+    "row_count": 12,
+    "null_count": 6,
+    "null_rate": 0.5,
+    "distinct_count": 3,
+    "distinct_rate": 0.25,
+    "min": "account",
+    "max": "bug",
+    "sample_values": [
+      "account",
+      "billing",
+      "bug"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_ticket_category",
+    "column_name": "sla_hours",
+    "data_type": "BIGINT",
+    "row_count": 12,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 6,
+    "distinct_rate": 0.5,
+    "min": "4",
+    "max": "72",
+    "sample_values": [
+      "4",
+      "8",
+      "12",
+      "24",
+      "48"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 50000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 50000,
+    "distinct_rate": 1.0,
+    "min": "U000001",
+    "max": "U050000",
+    "sample_values": [
+      "U000001",
+      "U000002",
+      "U000003",
+      "U000004",
+      "U000005"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_user",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 50000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 0.01,
+    "min": "T00001",
+    "max": "T00500",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user",
+    "column_name": "dept_id",
+    "data_type": "VARCHAR",
+    "row_count": 50000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 2801,
+    "distinct_rate": 0.056,
+    "min": "D00001_01",
+    "max": "D00500_08",
+    "sample_values": [
+      "D00001_01",
+      "D00001_02",
+      "D00001_03",
+      "D00001_04",
+      "D00001_05"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user",
+    "column_name": "role",
+    "data_type": "VARCHAR",
+    "row_count": 50000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.0001,
+    "min": "admin",
+    "max": "viewer",
+    "sample_values": [
+      "admin",
+      "guest",
+      "member",
+      "viewer"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user",
+    "column_name": "status",
+    "data_type": "VARCHAR",
+    "row_count": 50000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3,
+    "distinct_rate": 0.0001,
+    "min": "active",
+    "max": "suspended",
+    "sample_values": [
+      "active",
+      "inactive",
+      "suspended"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user",
+    "column_name": "register_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 50000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 49981,
+    "distinct_rate": 0.9996,
+    "min": "2024-04-02 05:10:07",
+    "max": "2026-02-28 23:57:51",
+    "sample_values": [
+      "2024-04-02 05:10:07",
+      "2024-04-02 23:42:25",
+      "2024-04-03 21:56:59",
+      "2024-04-04 04:51:24",
+      "2024-04-05 09:35:37"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user",
+    "column_name": "last_active_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 50000,
+    "null_count": 7422,
+    "null_rate": 0.1484,
+    "distinct_count": 42537,
+    "distinct_rate": 0.8507,
+    "min": "2024-05-10 13:39:44",
+    "max": "2026-03-30 23:54:49",
+    "sample_values": [
+      "2024-05-10 13:39:44",
+      "2024-05-13 22:47:05",
+      "2024-05-14 07:11:39",
+      "2024-05-23 01:11:32",
+      "2024-05-26 22:52:45"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user_id_mapping",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 40016,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 40016,
+    "distinct_rate": 1.0,
+    "min": "U000001",
+    "max": "U049999",
+    "sample_values": [
+      "U000001",
+      "U000003",
+      "U000004",
+      "U000005",
+      "U000006"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_user_id_mapping",
+    "column_name": "user_id_hash",
+    "data_type": "VARCHAR",
+    "row_count": 40016,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 40016,
+    "distinct_rate": 1.0,
+    "min": "00003063c513424d154448f7f136cafa073a855a",
+    "max": "ffff654565aea03cb0acb0d7744571bd26cd8108",
+    "sample_values": [
+      "00003063c513424d154448f7f136cafa073a855a",
+      "0002a65cf0dbe24324a47da4d5248eeda690ae67",
+      "000480605323e25f10dcab1f209c30152fec62b8",
+      "00049bc60608060ddd0f2955e0a81e863f96114a",
+      "000513719dcf4392f4d5d7e96648b963925afe7d"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "dim_user_profile",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 52500,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 50000,
+    "distinct_rate": 0.9524,
+    "min": "U000001",
+    "max": "U050000",
+    "sample_values": [
+      "U000001",
+      "U000002",
+      "U000003",
+      "U000004",
+      "U000005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user_profile",
+    "column_name": "language",
+    "data_type": "VARCHAR",
+    "row_count": 52500,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.0001,
+    "min": "de-DE",
+    "max": "zh-CN",
+    "sample_values": [
+      "de-DE",
+      "en-US",
+      "ja-JP",
+      "pt-BR",
+      "zh-CN"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user_profile",
+    "column_name": "timezone",
+    "data_type": "VARCHAR",
+    "row_count": 52500,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 10,
+    "distinct_rate": 0.0002,
+    "min": "America/New_York",
+    "max": "Europe/London",
+    "sample_values": [
+      "America/New_York",
+      "America/Sao_Paulo",
+      "Asia/Kolkata",
+      "Asia/Seoul",
+      "Asia/Shanghai"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user_profile",
+    "column_name": "device_os",
+    "data_type": "VARCHAR",
+    "row_count": 52500,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.0001,
+    "min": "Android",
+    "max": "macOS",
+    "sample_values": [
+      "Android",
+      "Linux",
+      "Windows",
+      "iOS",
+      "macOS"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user_profile",
+    "column_name": "app_version",
+    "data_type": "VARCHAR",
+    "row_count": 52500,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 930,
+    "distinct_rate": 0.0177,
+    "min": "6.0.0",
+    "max": "8.9.9",
+    "sample_values": [
+      "6.0.0",
+      "6.0.1",
+      "6.0.2",
+      "6.0.3",
+      "6.0.4"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user_role_history",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 15070,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 7516,
+    "distinct_rate": 0.4987,
+    "min": "U000015",
+    "max": "U049997",
+    "sample_values": [
+      "U000015",
+      "U000024",
+      "U000029",
+      "U000031",
+      "U000032"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user_role_history",
+    "column_name": "old_role",
+    "data_type": "VARCHAR",
+    "row_count": 15070,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.0003,
+    "min": "admin",
+    "max": "viewer",
+    "sample_values": [
+      "admin",
+      "guest",
+      "member",
+      "viewer"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user_role_history",
+    "column_name": "new_role",
+    "data_type": "VARCHAR",
+    "row_count": 15070,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.0003,
+    "min": "admin",
+    "max": "viewer",
+    "sample_values": [
+      "admin",
+      "guest",
+      "member",
+      "viewer"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user_role_history",
+    "column_name": "changed_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 15070,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 15067,
+    "distinct_rate": 0.9998,
+    "min": "2024-05-10 03:05:36",
+    "max": "2026-03-30 23:57:39",
+    "sample_values": [
+      "2024-05-10 03:05:36",
+      "2024-05-30 21:22:50",
+      "2024-06-03 09:32:44",
+      "2024-06-10 17:47:17",
+      "2024-06-13 00:09:40"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "dim_user_role_history",
+    "column_name": "changed_by",
+    "data_type": "VARCHAR",
+    "row_count": 15070,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4066,
+    "distinct_rate": 0.2698,
+    "min": "U000015",
+    "max": "system",
+    "sample_values": [
+      "U000015",
+      "U000024",
+      "U000032",
+      "U000039",
+      "U000040"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "column_name": "revenue_id",
+    "data_type": "VARCHAR",
+    "row_count": 1366,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1366,
+    "distinct_rate": 1.0,
+    "min": "REV0021b9795df5",
+    "max": "REVfff44e7336c2",
+    "sample_values": [
+      "REV0021b9795df5",
+      "REV004622badbd7",
+      "REV0068cda3e62a",
+      "REV006fbfc8d66b",
+      "REV0073e81939f0"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 1366,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 343,
+    "distinct_rate": 0.2511,
+    "min": "T00001",
+    "max": "T00499",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "column_name": "sub_id",
+    "data_type": "VARCHAR",
+    "row_count": 1366,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 343,
+    "distinct_rate": 0.2511,
+    "min": "SUB00262d22b338",
+    "max": "SUBff229adf57ce",
+    "sample_values": [
+      "SUB00262d22b338",
+      "SUB008e0f47c9e2",
+      "SUB0153d415e0e3",
+      "SUB03d7cb71d036",
+      "SUB03e9206433e7"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "column_name": "month",
+    "data_type": "VARCHAR",
+    "row_count": 1366,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 12,
+    "distinct_rate": 0.0088,
+    "min": "2025-04",
+    "max": "2026-03",
+    "sample_values": [
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "column_name": "seats",
+    "data_type": "BIGINT",
+    "row_count": 1366,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 163,
+    "distinct_rate": 0.1193,
+    "min": "5",
+    "max": "200",
+    "sample_values": [
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "column_name": "list_price_per_seat",
+    "data_type": "DOUBLE",
+    "row_count": 1366,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.0029,
+    "min": "29.0",
+    "max": "499.0",
+    "sample_values": [
+      "29.0",
+      "79.0",
+      "199.0",
+      "499.0"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "column_name": "list_revenue",
+    "data_type": "DOUBLE",
+    "row_count": 1366,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 265,
+    "distinct_rate": 0.194,
+    "min": "145.0",
+    "max": "94810.0",
+    "sample_values": [
+      "145.0",
+      "174.0",
+      "203.0",
+      "232.0",
+      "261.0"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "column_name": "discount_rate",
+    "data_type": "DOUBLE",
+    "row_count": 1366,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 899,
+    "distinct_rate": 0.6581,
+    "min": "0.0502",
+    "max": "0.2",
+    "sample_values": [
+      "0.0502",
+      "0.0508",
+      "0.0509",
+      "0.0512",
+      "0.0515"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "column_name": "coupon_amount",
+    "data_type": "DOUBLE",
+    "row_count": 1366,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 208,
+    "distinct_rate": 0.1523,
+    "min": "0.0",
+    "max": "13421.46",
+    "sample_values": [
+      "0.0",
+      "8.21",
+      "13.9",
+      "17.78",
+      "25.18"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "column_name": "actual_revenue",
+    "data_type": "DOUBLE",
+    "row_count": 1366,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1365,
+    "distinct_rate": 0.9993,
+    "min": "102.38",
+    "max": "86271.11",
+    "sample_values": [
+      "102.38",
+      "127.02",
+      "131.84",
+      "141.38",
+      "145.12"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "column_name": "currency",
+    "data_type": "VARCHAR",
+    "row_count": 1366,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1,
+    "distinct_rate": 0.0007,
+    "min": "USD",
+    "max": "USD",
+    "sample_values": [
+      "USD"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "column_name": "log_id",
+    "data_type": "VARCHAR",
+    "row_count": 248249,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 248249,
+    "distinct_rate": 1.0,
+    "min": "AIL00001592044f",
+    "max": "AILffffde2aea7a",
+    "sample_values": [
+      "AIL00001592044f",
+      "AIL0000fa98b1a2",
+      "AIL000165d1f3fe",
+      "AIL000178d86055",
+      "AIL0001a789d968"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "column_name": "user_id_hash",
+    "data_type": "VARCHAR",
+    "row_count": 248249,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 15000,
+    "distinct_rate": 0.0604,
+    "min": "000513719dcf4392f4d5d7e96648b963925afe7d",
+    "max": "ffff654565aea03cb0acb0d7744571bd26cd8108",
+    "sample_values": [
+      "000513719dcf4392f4d5d7e96648b963925afe7d",
+      "0008c86c472b49252158a34136b10cefc730d7ec",
+      "000b0c226555623f1b3bc0f98c953d88a5a676b1",
+      "000f6da633bd3c20c54ba7b20d71ab006f5a7345",
+      "0013b673234943d6f5d755fe3bfc20513620f686"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "column_name": "operation_type",
+    "data_type": "VARCHAR",
+    "row_count": 248249,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3,
+    "distinct_rate": 0.0,
+    "min": "deduct",
+    "max": "refund",
+    "sample_values": [
+      "deduct",
+      "earn",
+      "refund"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "column_name": "credits_amount",
+    "data_type": "BIGINT",
+    "row_count": 248249,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 0.002,
+    "min": "1",
+    "max": "500",
+    "sample_values": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "column_name": "model_name",
+    "data_type": "VARCHAR",
+    "row_count": 248249,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.0,
+    "min": "claude-3.5",
+    "max": "moonshot-v1",
+    "sample_values": [
+      "claude-3.5",
+      "doubao-pro",
+      "glm-4",
+      "gpt-4o",
+      "moonshot-v1"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "column_name": "created_at",
+    "data_type": "BIGINT",
+    "row_count": 248249,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 366,
+    "distinct_rate": 0.0015,
+    "min": "1743436800",
+    "max": "1774972800",
+    "sample_values": [
+      "1743436800",
+      "1743523200",
+      "1743609600",
+      "1743696000",
+      "1743782400"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "column_name": "remark",
+    "data_type": "VARCHAR",
+    "row_count": 248249,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 248249,
+    "distinct_rate": 1.0,
+    "min": "{\"action\": \"ai_query\", \"model\": \"claude-3.5\", \"cause\": \"model: claude-3.5, input: 100, output: 1088, cost: 0.032868 USD (credits)\", \"session_id\": \"S4c3bd5c8071a\"}",
+    "max": "{\"action\": \"ai_query\", \"model\": \"moonshot-v1\", \"cause\": \"model: moonshot-v1, input: 999, output: 2758, cost: 0.087991 USD (credits)\", \"session_id\": \"Sd46663d0d3f2\"}",
+    "sample_values": [
+      "{\"action\": \"ai_query\", \"model\": \"claude-3.5\", \"cause\": \"model: claude-3.5, input: 100, output: 1088, cost: 0.032868 USD (credits)\", \"session_id\": \"S4c3bd5c8071a\"}",
+      "{\"action\": \"ai_query\", \"model\": \"claude-3.5\", \"cause\": \"model: claude-3.5, input: 100, output: 205, cost: 0.00743 USD (credits)\", \"session_id\": \"Sf3713a3481e4\"}",
+      "{\"action\": \"ai_query\", \"model\": \"claude-3.5\", \"cause\": \"model: claude-3.5, input: 100, output: 2187, cost: 0.05659 USD (credits)\", \"session_id\": \"Sd7bb73b98462\"}",
+      "{\"action\": \"ai_query\", \"model\": \"claude-3.5\", \"cause\": \"model: claude-3.5, input: 100, output: 2401, cost: 0.067651 USD (credits)\", \"session_id\": \"S1917d7a940ec\"}",
+      "{\"action\": \"ai_query\", \"model\": \"claude-3.5\", \"cause\": \"model: claude-3.5, input: 100, output: 2855, cost: 0.08348 USD (credits)\", \"session_id\": \"S8caec7e2ec70\"}"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_campaign",
+    "column_name": "campaign_id",
+    "data_type": "VARCHAR",
+    "row_count": 30,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 30,
+    "distinct_rate": 1.0,
+    "min": "CMP001",
+    "max": "CMP030",
+    "sample_values": [
+      "CMP001",
+      "CMP002",
+      "CMP003",
+      "CMP004",
+      "CMP005"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_campaign",
+    "column_name": "name",
+    "data_type": "VARCHAR",
+    "row_count": 30,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 30,
+    "distinct_rate": 1.0,
+    "min": "Campaign_Fall_3",
+    "max": "Campaign_Winter_7",
+    "sample_values": [
+      "Campaign_Fall_3",
+      "Campaign_Launch_11",
+      "Campaign_Launch_12",
+      "Campaign_Launch_23",
+      "Campaign_Launch_4"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_campaign",
+    "column_name": "channel",
+    "data_type": "VARCHAR",
+    "row_count": 30,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 6,
+    "distinct_rate": 0.2,
+    "min": "content_marketing",
+    "max": "webinar",
+    "sample_values": [
+      "content_marketing",
+      "email_drip",
+      "google_ads",
+      "linkedin",
+      "referral"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_campaign",
+    "column_name": "start_date",
+    "data_type": "DATE",
+    "row_count": 30,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 30,
+    "distinct_rate": 1.0,
+    "min": "2025-04-03",
+    "max": "2026-02-22",
+    "sample_values": [
+      "2025-04-03",
+      "2025-04-09",
+      "2025-04-15",
+      "2025-04-16",
+      "2025-04-19"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_campaign",
+    "column_name": "end_date",
+    "data_type": "DATE",
+    "row_count": 30,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 27,
+    "distinct_rate": 0.9,
+    "min": "2025-05-09",
+    "max": "2026-04-21",
+    "sample_values": [
+      "2025-05-09",
+      "2025-05-11",
+      "2025-05-24",
+      "2025-05-25",
+      "2025-05-28"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_campaign",
+    "column_name": "budget",
+    "data_type": "DOUBLE",
+    "row_count": 30,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 30,
+    "distinct_rate": 1.0,
+    "min": "1726.96",
+    "max": "48313.16",
+    "sample_values": [
+      "1726.96",
+      "3012.37",
+      "4685.48",
+      "5715.66",
+      "7367.66"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_campaign",
+    "column_name": "target_segment",
+    "data_type": "VARCHAR",
+    "row_count": 30,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.1667,
+    "min": "all",
+    "max": "trial",
+    "sample_values": [
+      "all",
+      "dormant",
+      "enterprise",
+      "new_users",
+      "trial"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 78414,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 34447,
+    "distinct_rate": 0.4393,
+    "min": "U000001",
+    "max": "U049999",
+    "sample_values": [
+      "U000001",
+      "U000003",
+      "U000005",
+      "U000006",
+      "U000007"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "column_name": "campaign_id",
+    "data_type": "VARCHAR",
+    "row_count": 78414,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 30,
+    "distinct_rate": 0.0004,
+    "min": "CMP001",
+    "max": "CMP030",
+    "sample_values": [
+      "CMP001",
+      "CMP002",
+      "CMP003",
+      "CMP004",
+      "CMP005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "column_name": "touch_type",
+    "data_type": "VARCHAR",
+    "row_count": 78414,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.0001,
+    "min": "click",
+    "max": "signup",
+    "sample_values": [
+      "click",
+      "demo_request",
+      "impression",
+      "signup"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "column_name": "touch_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 78414,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 78257,
+    "distinct_rate": 0.998,
+    "min": "2025-04-03 00:09:00",
+    "max": "2026-04-20 17:40:22",
+    "sample_values": [
+      "2025-04-03 00:09:00",
+      "2025-04-03 00:58:25",
+      "2025-04-03 01:27:01",
+      "2025-04-03 01:36:36",
+      "2025-04-03 01:44:26"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_campaign_attribution",
+    "column_name": "is_converted",
+    "data_type": "BIGINT",
+    "row_count": 78414,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 2,
+    "distinct_rate": 0.0,
+    "min": "0",
+    "max": "1",
+    "sample_values": [
+      "0",
+      "1"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "column_name": "usage_id",
+    "data_type": "VARCHAR",
+    "row_count": 64456,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 64456,
+    "distinct_rate": 1.0,
+    "min": "CU00000fbab5a7",
+    "max": "CUfffe97ccfec1",
+    "sample_values": [
+      "CU00000fbab5a7",
+      "CU0000857f43bd",
+      "CU0000ed89be4e",
+      "CU00012f06438f",
+      "CU000149b64f56"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 64456,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 249,
+    "distinct_rate": 0.0039,
+    "min": "T00001",
+    "max": "T00500",
+    "sample_values": [
+      "T00001",
+      "T00003",
+      "T00005",
+      "T00008",
+      "T00010"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "column_name": "resource_type",
+    "data_type": "VARCHAR",
+    "row_count": 64456,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.0001,
+    "min": "ai_token",
+    "max": "video_minutes",
+    "sample_values": [
+      "ai_token",
+      "api_calls",
+      "storage_gb",
+      "video_minutes"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "column_name": "quantity",
+    "data_type": "DOUBLE",
+    "row_count": 64456,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 47494,
+    "distinct_rate": 0.7368,
+    "min": "0.1",
+    "max": "999.99",
+    "sample_values": [
+      "0.1",
+      "0.11",
+      "0.14",
+      "0.17",
+      "0.18"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "column_name": "unit_cost",
+    "data_type": "DOUBLE",
+    "row_count": 64456,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4991,
+    "distinct_rate": 0.0774,
+    "min": "0.001",
+    "max": "0.5",
+    "sample_values": [
+      "0.001",
+      "0.0011",
+      "0.0012",
+      "0.0013",
+      "0.0014"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_credit_usage",
+    "column_name": "dt",
+    "data_type": "DATE",
+    "row_count": 64456,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 365,
+    "distinct_rate": 0.0057,
+    "min": "2025-04-01",
+    "max": "2026-03-31",
+    "sample_values": [
+      "2025-04-01",
+      "2025-04-02",
+      "2025-04-03",
+      "2025-04-04",
+      "2025-04-05"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 1915210,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 20000,
+    "distinct_rate": 0.0104,
+    "min": "U000001",
+    "max": "U049999",
+    "sample_values": [
+      "U000001",
+      "U000005",
+      "U000011",
+      "U000014",
+      "U000020"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "column_name": "dt",
+    "data_type": "DATE",
+    "row_count": 1915210,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 365,
+    "distinct_rate": 0.0002,
+    "min": "2025-04-01",
+    "max": "2026-03-31",
+    "sample_values": [
+      "2025-04-01",
+      "2025-04-02",
+      "2025-04-03",
+      "2025-04-04",
+      "2025-04-05"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "column_name": "session_count",
+    "data_type": "BIGINT",
+    "row_count": 1915210,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 15,
+    "distinct_rate": 0.0,
+    "min": "1",
+    "max": "15",
+    "sample_values": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "column_name": "active_duration_sec",
+    "data_type": "BIGINT",
+    "row_count": 1915210,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 7141,
+    "distinct_rate": 0.0037,
+    "min": "60",
+    "max": "7200",
+    "sample_values": [
+      "60",
+      "61",
+      "62",
+      "63",
+      "64"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_daily_usage",
+    "column_name": "feature_usage_json",
+    "data_type": "VARCHAR",
+    "row_count": 1915210,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1380148,
+    "distinct_rate": 0.7206,
+    "min": "{\"approval\": 0, \"base\": 0, \"calendar\": 41}",
+    "max": "{\"wiki\": 9}",
+    "sample_values": [
+      "{\"approval\": 0, \"base\": 0, \"calendar\": 41}",
+      "{\"approval\": 0, \"base\": 0, \"docs\": 18, \"calendar\": 7}",
+      "{\"approval\": 0, \"base\": 0, \"minutes\": 35}",
+      "{\"approval\": 0, \"base\": 0, \"task\": 19, \"video_conf\": 25}",
+      "{\"approval\": 0, \"base\": 0}"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "column_name": "doc_id",
+    "data_type": "VARCHAR",
+    "row_count": 89676,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 30000,
+    "distinct_rate": 0.3345,
+    "min": "DOC0001e50fc43d",
+    "max": "DOCffff5ba43954",
+    "sample_values": [
+      "DOC0001e50fc43d",
+      "DOC0002bb299e07",
+      "DOC0005cbc980db",
+      "DOC0005d8f06015",
+      "DOC0008b8837801"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 89676,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 35558,
+    "distinct_rate": 0.3965,
+    "min": "U000001",
+    "max": "U049999",
+    "sample_values": [
+      "U000001",
+      "U000003",
+      "U000004",
+      "U000005",
+      "U000006"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "column_name": "dt",
+    "data_type": "DATE",
+    "row_count": 89676,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 363,
+    "distinct_rate": 0.004,
+    "min": "2025-04-02",
+    "max": "2026-03-30",
+    "sample_values": [
+      "2025-04-02",
+      "2025-04-03",
+      "2025-04-04",
+      "2025-04-05",
+      "2025-04-06"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "column_name": "edit_duration_sec",
+    "data_type": "BIGINT",
+    "row_count": 89676,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3601,
+    "distinct_rate": 0.0402,
+    "min": "0",
+    "max": "3600",
+    "sample_values": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_doc_collaboration",
+    "column_name": "comment_count",
+    "data_type": "BIGINT",
+    "row_count": 89676,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 21,
+    "distinct_rate": 0.0002,
+    "min": "0",
+    "max": "20",
+    "sample_values": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_document",
+    "column_name": "doc_id",
+    "data_type": "VARCHAR",
+    "row_count": 80000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 80000,
+    "distinct_rate": 1.0,
+    "min": "DOC000086380d1b",
+    "max": "DOCffff5ba43954",
+    "sample_values": [
+      "DOC000086380d1b",
+      "DOC0001e50fc43d",
+      "DOC00024a6374c8",
+      "DOC0002bb299e07",
+      "DOC0003859e6374"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_document",
+    "column_name": "creator_id",
+    "data_type": "VARCHAR",
+    "row_count": 80000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 34575,
+    "distinct_rate": 0.4322,
+    "min": "U000001",
+    "max": "U049999",
+    "sample_values": [
+      "U000001",
+      "U000003",
+      "U000004",
+      "U000005",
+      "U000007"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_document",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 80000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 0.0063,
+    "min": "T00001",
+    "max": "T00500",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_document",
+    "column_name": "doc_type",
+    "data_type": "VARCHAR",
+    "row_count": 80000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.0001,
+    "min": "bitable",
+    "max": "slides",
+    "sample_values": [
+      "bitable",
+      "docx",
+      "mindnote",
+      "sheet",
+      "slides"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_document",
+    "column_name": "created_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 80000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 79890,
+    "distinct_rate": 0.9986,
+    "min": "2025-04-01 00:12:31",
+    "max": "2026-03-30 23:58:56",
+    "sample_values": [
+      "2025-04-01 00:12:31",
+      "2025-04-01 00:26:19",
+      "2025-04-01 00:35:53",
+      "2025-04-01 00:35:54",
+      "2025-04-01 00:39:58"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_document",
+    "column_name": "last_edit_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 80000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 79856,
+    "distinct_rate": 0.9982,
+    "min": "2025-04-01 00:44:50",
+    "max": "2026-03-30 23:58:56",
+    "sample_values": [
+      "2025-04-01 00:44:50",
+      "2025-04-01 01:02:01",
+      "2025-04-01 01:11:06",
+      "2025-04-01 03:29:31",
+      "2025-04-01 03:40:14"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_document",
+    "column_name": "edit_count",
+    "data_type": "BIGINT",
+    "row_count": 80000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 200,
+    "distinct_rate": 0.0025,
+    "min": "1",
+    "max": "200",
+    "sample_values": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_event_log",
+    "column_name": "event_id",
+    "data_type": "VARCHAR",
+    "row_count": 2000000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 2000000,
+    "distinct_rate": 1.0,
+    "min": "E000008945d11",
+    "max": "Effffffe8e062",
+    "sample_values": [
+      "E000008945d11",
+      "E000012b3edbd",
+      "E000013ff48fc",
+      "E000015b9e0f5",
+      "E000015d49d22"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_event_log",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 2000000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 40016,
+    "distinct_rate": 0.02,
+    "min": "U000001",
+    "max": "U049999",
+    "sample_values": [
+      "U000001",
+      "U000003",
+      "U000004",
+      "U000005",
+      "U000006"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_event_log",
+    "column_name": "event_name",
+    "data_type": "VARCHAR",
+    "row_count": 2000000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 20,
+    "distinct_rate": 0.0,
+    "min": "approval_approve",
+    "max": "video_leave",
+    "sample_values": [
+      "approval_approve",
+      "approval_submit",
+      "button_click",
+      "calendar_create",
+      "calendar_rsvp"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_event_log",
+    "column_name": "event_time",
+    "data_type": "TIMESTAMP",
+    "row_count": 2000000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1937818,
+    "distinct_rate": 0.9689,
+    "min": "2025-04-01 00:00:53",
+    "max": "2026-03-31 07:59:35",
+    "sample_values": [
+      "2025-04-01 00:00:53",
+      "2025-04-01 00:01:22",
+      "2025-04-01 00:01:42",
+      "2025-04-01 00:02:22",
+      "2025-04-01 00:03:09"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_event_log",
+    "column_name": "page",
+    "data_type": "VARCHAR",
+    "row_count": 2000000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 16,
+    "distinct_rate": 0.0,
+    "min": "/approval/list",
+    "max": "/wiki/page",
+    "sample_values": [
+      "/approval/list",
+      "/base/table",
+      "/calendar",
+      "/docs/editor",
+      "/drive/folder"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_event_log",
+    "column_name": "properties_json",
+    "data_type": "VARCHAR",
+    "row_count": 2000000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 459,
+    "distinct_rate": 0.0002,
+    "min": "{\"doc_type\": \"bitable\", \"experiment_id\": \"EXP001\"}",
+    "max": "{}",
+    "sample_values": [
+      "{\"doc_type\": \"bitable\", \"experiment_id\": \"EXP001\"}",
+      "{\"doc_type\": \"bitable\", \"experiment_id\": \"EXP002\"}",
+      "{\"doc_type\": \"bitable\", \"experiment_id\": \"EXP003\"}",
+      "{\"doc_type\": \"bitable\", \"experiment_id\": \"EXP004\"}",
+      "{\"doc_type\": \"bitable\", \"experiment_id\": \"EXP005\"}"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment",
+    "column_name": "exp_id",
+    "data_type": "VARCHAR",
+    "row_count": 50,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 50,
+    "distinct_rate": 1.0,
+    "min": "EXP001",
+    "max": "EXP050",
+    "sample_values": [
+      "EXP001",
+      "EXP002",
+      "EXP003",
+      "EXP004",
+      "EXP005"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_experiment",
+    "column_name": "exp_name",
+    "data_type": "VARCHAR",
+    "row_count": 50,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 25,
+    "distinct_rate": 0.5,
+    "min": "Experiment_approval_v1",
+    "max": "Experiment_wiki_v3",
+    "sample_values": [
+      "Experiment_approval_v1",
+      "Experiment_approval_v3",
+      "Experiment_base_v1",
+      "Experiment_base_v3",
+      "Experiment_calendar_v1"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment",
+    "column_name": "feature_key",
+    "data_type": "VARCHAR",
+    "row_count": 50,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 11,
+    "distinct_rate": 0.22,
+    "min": "approval",
+    "max": "wiki",
+    "sample_values": [
+      "approval",
+      "base",
+      "calendar",
+      "docs",
+      "im"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment",
+    "column_name": "start_date",
+    "data_type": "DATE",
+    "row_count": 50,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 46,
+    "distinct_rate": 0.92,
+    "min": "2025-04-07",
+    "max": "2026-02-21",
+    "sample_values": [
+      "2025-04-07",
+      "2025-04-17",
+      "2025-04-21",
+      "2025-04-28",
+      "2025-05-14"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment",
+    "column_name": "end_date",
+    "data_type": "DATE",
+    "row_count": 50,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 45,
+    "distinct_rate": 0.9,
+    "min": "2025-04-18",
+    "max": "2026-03-20",
+    "sample_values": [
+      "2025-04-18",
+      "2025-05-14",
+      "2025-05-16",
+      "2025-05-17",
+      "2025-05-26"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment",
+    "column_name": "status",
+    "data_type": "VARCHAR",
+    "row_count": 50,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3,
+    "distinct_rate": 0.06,
+    "min": "completed",
+    "max": "stopped",
+    "sample_values": [
+      "completed",
+      "running",
+      "stopped"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_assignment",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 133748,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 38824,
+    "distinct_rate": 0.2903,
+    "min": "U000001",
+    "max": "U049999",
+    "sample_values": [
+      "U000001",
+      "U000003",
+      "U000004",
+      "U000005",
+      "U000006"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_assignment",
+    "column_name": "exp_id",
+    "data_type": "VARCHAR",
+    "row_count": 133748,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 50,
+    "distinct_rate": 0.0004,
+    "min": "EXP001",
+    "max": "EXP050",
+    "sample_values": [
+      "EXP001",
+      "EXP002",
+      "EXP003",
+      "EXP004",
+      "EXP005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_assignment",
+    "column_name": "variant",
+    "data_type": "VARCHAR",
+    "row_count": 133748,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3,
+    "distinct_rate": 0.0,
+    "min": "control",
+    "max": "treatment_b",
+    "sample_values": [
+      "control",
+      "treatment_a",
+      "treatment_b"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_assignment",
+    "column_name": "assigned_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 133748,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 133300,
+    "distinct_rate": 0.9967,
+    "min": "2025-04-07 00:07:54",
+    "max": "2026-03-19 23:50:27",
+    "sample_values": [
+      "2025-04-07 00:07:54",
+      "2025-04-07 00:36:59",
+      "2025-04-07 00:42:55",
+      "2025-04-07 00:47:19",
+      "2025-04-07 01:03:25"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "column_name": "exp_id",
+    "data_type": "VARCHAR",
+    "row_count": 8071,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 50,
+    "distinct_rate": 0.0062,
+    "min": "EXP001",
+    "max": "EXP050",
+    "sample_values": [
+      "EXP001",
+      "EXP002",
+      "EXP003",
+      "EXP004",
+      "EXP005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "column_name": "variant",
+    "data_type": "VARCHAR",
+    "row_count": 8071,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3,
+    "distinct_rate": 0.0004,
+    "min": "control",
+    "max": "treatment_b",
+    "sample_values": [
+      "control",
+      "treatment_a",
+      "treatment_b"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "column_name": "metric_name",
+    "data_type": "VARCHAR",
+    "row_count": 8071,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.0006,
+    "min": "conversion_rate",
+    "max": "session_duration",
+    "sample_values": [
+      "conversion_rate",
+      "feature_adoption",
+      "nps_score",
+      "retention_d7",
+      "session_duration"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "column_name": "dt",
+    "data_type": "DATE",
+    "row_count": 8071,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 340,
+    "distinct_rate": 0.0421,
+    "min": "2025-04-07",
+    "max": "2026-03-20",
+    "sample_values": [
+      "2025-04-07",
+      "2025-04-08",
+      "2025-04-09",
+      "2025-04-10",
+      "2025-04-11"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "column_name": "sample_size",
+    "data_type": "BIGINT",
+    "row_count": 8071,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3966,
+    "distinct_rate": 0.4914,
+    "min": "100",
+    "max": "5000",
+    "sample_values": [
+      "100",
+      "101",
+      "103",
+      "105",
+      "106"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "column_name": "metric_value",
+    "data_type": "DOUBLE",
+    "row_count": 8071,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 8041,
+    "distinct_rate": 0.9963,
+    "min": "0.1116",
+    "max": "99.9847",
+    "sample_values": [
+      "0.1116",
+      "0.1162",
+      "0.1176",
+      "0.1274",
+      "0.1411"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "column_name": "ci_lower",
+    "data_type": "DOUBLE",
+    "row_count": 8071,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 8033,
+    "distinct_rate": 0.9953,
+    "min": "0.0975",
+    "max": "94.6679",
+    "sample_values": [
+      "0.0975",
+      "0.102",
+      "0.1076",
+      "0.109",
+      "0.1256"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_experiment_metric",
+    "column_name": "ci_upper",
+    "data_type": "DOUBLE",
+    "row_count": 8071,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 8043,
+    "distinct_rate": 0.9965,
+    "min": "0.1234",
+    "max": "119.6663",
+    "sample_values": [
+      "0.1234",
+      "0.1257",
+      "0.1332",
+      "0.1472",
+      "0.1514"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 2700092,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 15000,
+    "distinct_rate": 0.0056,
+    "min": "U000005",
+    "max": "U049999",
+    "sample_values": [
+      "U000005",
+      "U000011",
+      "U000014",
+      "U000020",
+      "U000021"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "column_name": "feature_key",
+    "data_type": "VARCHAR",
+    "row_count": 2700092,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 12,
+    "distinct_rate": 0.0,
+    "min": "approval",
+    "max": "wiki",
+    "sample_values": [
+      "approval",
+      "base",
+      "calendar",
+      "docs",
+      "email"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "column_name": "dt",
+    "data_type": "DATE",
+    "row_count": 2700092,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 365,
+    "distinct_rate": 0.0001,
+    "min": "2025-04-01",
+    "max": "2026-03-31",
+    "sample_values": [
+      "2025-04-01",
+      "2025-04-02",
+      "2025-04-03",
+      "2025-04-04",
+      "2025-04-05"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "column_name": "action_count",
+    "data_type": "BIGINT",
+    "row_count": 2700092,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 65,
+    "distinct_rate": 0.0,
+    "min": "1",
+    "max": "65",
+    "sample_values": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_feature_usage",
+    "column_name": "duration_sec",
+    "data_type": "BIGINT",
+    "row_count": 2700092,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3591,
+    "distinct_rate": 0.0013,
+    "min": "10",
+    "max": "3600",
+    "sample_values": [
+      "10",
+      "11",
+      "12",
+      "13",
+      "14"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_invoice",
+    "column_name": "invoice_id",
+    "data_type": "VARCHAR",
+    "row_count": 1248,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1248,
+    "distinct_rate": 1.0,
+    "min": "INV0015263020ea",
+    "max": "INVff8576941c17",
+    "sample_values": [
+      "INV0015263020ea",
+      "INV00b27daab4d7",
+      "INV00bf93de68fc",
+      "INV00d9a8ad70c3",
+      "INV00dbaccfcd52"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_invoice",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 1248,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 343,
+    "distinct_rate": 0.2748,
+    "min": "T00001",
+    "max": "T00499",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_invoice",
+    "column_name": "sub_id",
+    "data_type": "VARCHAR",
+    "row_count": 1248,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 343,
+    "distinct_rate": 0.2748,
+    "min": "SUB00262d22b338",
+    "max": "SUBff229adf57ce",
+    "sample_values": [
+      "SUB00262d22b338",
+      "SUB008e0f47c9e2",
+      "SUB0153d415e0e3",
+      "SUB03d7cb71d036",
+      "SUB03e9206433e7"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_invoice",
+    "column_name": "amount",
+    "data_type": "DOUBLE",
+    "row_count": 1248,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1248,
+    "distinct_rate": 1.0,
+    "min": "193.39",
+    "max": "115599.75",
+    "sample_values": [
+      "193.39",
+      "203.9",
+      "212.83",
+      "213.26",
+      "215.4"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_invoice",
+    "column_name": "currency",
+    "data_type": "VARCHAR",
+    "row_count": 1248,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.0032,
+    "min": "CNY",
+    "max": "USD",
+    "sample_values": [
+      "CNY",
+      "EUR",
+      "JPY",
+      "USD"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_invoice",
+    "column_name": "issued_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 1248,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1248,
+    "distinct_rate": 1.0,
+    "min": "2025-04-02 04:39:06",
+    "max": "2026-03-30 23:24:10",
+    "sample_values": [
+      "2025-04-02 04:39:06",
+      "2025-04-03 16:04:28",
+      "2025-04-06 01:33:11",
+      "2025-04-06 22:28:46",
+      "2025-04-07 02:12:23"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_invoice",
+    "column_name": "paid_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 1248,
+    "null_count": 250,
+    "null_rate": 0.2003,
+    "distinct_count": 997,
+    "distinct_rate": 0.7989,
+    "min": "2025-04-17 02:12:23",
+    "max": "2026-04-29 03:29:17",
+    "sample_values": [
+      "2025-04-17 02:12:23",
+      "2025-04-21 01:33:11",
+      "2025-04-24 12:22:08",
+      "2025-04-25 15:07:27",
+      "2025-04-26 21:51:35"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_invoice",
+    "column_name": "status",
+    "data_type": "VARCHAR",
+    "row_count": 1248,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.0032,
+    "min": "overdue",
+    "max": "void",
+    "sample_values": [
+      "overdue",
+      "paid",
+      "pending",
+      "void"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_message",
+    "column_name": "msg_id",
+    "data_type": "VARCHAR",
+    "row_count": 314827,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 314827,
+    "distinct_rate": 1.0,
+    "min": "M000005545acf",
+    "max": "Mfffffb777293",
+    "sample_values": [
+      "M000005545acf",
+      "M000012c8a654",
+      "M000076778c7e",
+      "M00009543f549",
+      "M0000feca13de"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_message",
+    "column_name": "sender_id",
+    "data_type": "VARCHAR",
+    "row_count": 314827,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 26815,
+    "distinct_rate": 0.0852,
+    "min": "U000001",
+    "max": "U049999",
+    "sample_values": [
+      "U000001",
+      "U000003",
+      "U000004",
+      "U000005",
+      "U000006"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_message",
+    "column_name": "channel_id",
+    "data_type": "VARCHAR",
+    "row_count": 314827,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3000,
+    "distinct_rate": 0.0095,
+    "min": "CH00001_01",
+    "max": "CH00500_13",
+    "sample_values": [
+      "CH00001_01",
+      "CH00001_02",
+      "CH00001_03",
+      "CH00001_07",
+      "CH00002_02"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_message",
+    "column_name": "msg_type",
+    "data_type": "VARCHAR",
+    "row_count": 314827,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.0,
+    "min": "file",
+    "max": "text",
+    "sample_values": [
+      "file",
+      "image",
+      "rich_text",
+      "sticker",
+      "text"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_message",
+    "column_name": "sent_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 314827,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 313197,
+    "distinct_rate": 0.9948,
+    "min": "2025-04-01 00:00:08",
+    "max": "2026-03-30 23:57:40",
+    "sample_values": [
+      "2025-04-01 00:00:08",
+      "2025-04-01 00:00:09",
+      "2025-04-01 00:00:57",
+      "2025-04-01 00:03:12",
+      "2025-04-01 00:04:12"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_message",
+    "column_name": "word_count",
+    "data_type": "BIGINT",
+    "row_count": 314827,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 0.0016,
+    "min": "1",
+    "max": "500",
+    "sample_values": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "column_name": "survey_id",
+    "data_type": "VARCHAR",
+    "row_count": 8000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 8000,
+    "distinct_rate": 1.0,
+    "min": "NPS00004d93201b",
+    "max": "NPSfffcd136f879",
+    "sample_values": [
+      "NPS00004d93201b",
+      "NPS000820422981",
+      "NPS001221144d5f",
+      "NPS00143023801f",
+      "NPS00175bde5fcd"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 8000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 8000,
+    "distinct_rate": 1.0,
+    "min": "U000001",
+    "max": "U049998",
+    "sample_values": [
+      "U000001",
+      "U000002",
+      "U000010",
+      "U000012",
+      "U000022"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 8000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 489,
+    "distinct_rate": 0.0611,
+    "min": "T00001",
+    "max": "T00500",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "column_name": "survey_date",
+    "data_type": "DATE",
+    "row_count": 8000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 366,
+    "distinct_rate": 0.0457,
+    "min": "2025-04-01",
+    "max": "2026-04-01",
+    "sample_values": [
+      "2025-04-01",
+      "2025-04-02",
+      "2025-04-03",
+      "2025-04-04",
+      "2025-04-05"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "column_name": "role",
+    "data_type": "BIGINT",
+    "row_count": 8000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3,
+    "distinct_rate": 0.0004,
+    "min": "1",
+    "max": "3",
+    "sample_values": [
+      "1",
+      "2",
+      "3"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "column_name": "score",
+    "data_type": "VARCHAR",
+    "row_count": 8000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 12,
+    "distinct_rate": 0.0015,
+    "min": "0",
+    "max": "N/A",
+    "sample_values": [
+      "0",
+      "1",
+      "10",
+      "2",
+      "3"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "column_name": "plan_tier",
+    "data_type": "VARCHAR",
+    "row_count": 8000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.0006,
+    "min": "Business",
+    "max": "Starter",
+    "sample_values": [
+      "Business",
+      "Enterprise",
+      "Free",
+      "Pro",
+      "Starter"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "column_name": "feedback_text",
+    "data_type": "VARCHAR",
+    "row_count": 8000,
+    "null_count": 887,
+    "null_rate": 0.1109,
+    "distinct_count": 8,
+    "distinct_rate": 0.001,
+    "min": "Best tool ever",
+    "max": "Too slow",
+    "sample_values": [
+      "Best tool ever",
+      "Crashes often",
+      "Great product!",
+      "Integration issues",
+      "Love the collaboration"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_nps_survey",
+    "column_name": "is_completed",
+    "data_type": "BIGINT",
+    "row_count": 8000,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 2,
+    "distinct_rate": 0.0003,
+    "min": "0",
+    "max": "1",
+    "sample_values": [
+      "0",
+      "1"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_page_view",
+    "column_name": "pv_id",
+    "data_type": "VARCHAR",
+    "row_count": 1801438,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1801438,
+    "distinct_rate": 1.0,
+    "min": "PV00000b9a757e",
+    "max": "PVffffeed45f8a",
+    "sample_values": [
+      "PV00000b9a757e",
+      "PV00000c0f3c3a",
+      "PV000018f68a81",
+      "PV000032e42151",
+      "PV00003ef50e69"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_page_view",
+    "column_name": "session_id",
+    "data_type": "VARCHAR",
+    "row_count": 1801438,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 400000,
+    "distinct_rate": 0.222,
+    "min": "S00000ba4ffe9",
+    "max": "Sfffff6103e0a",
+    "sample_values": [
+      "S00000ba4ffe9",
+      "S00009eea73c7",
+      "S0000c612be7a",
+      "S0000d1ed1a0d",
+      "S0000e79d6c20"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_page_view",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 1801438,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 29809,
+    "distinct_rate": 0.0165,
+    "min": "U000001",
+    "max": "U049999",
+    "sample_values": [
+      "U000001",
+      "U000007",
+      "U000008",
+      "U000011",
+      "U000013"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_page_view",
+    "column_name": "page_path",
+    "data_type": "VARCHAR",
+    "row_count": 1801438,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 16,
+    "distinct_rate": 0.0,
+    "min": "/approval/list",
+    "max": "/wiki/page",
+    "sample_values": [
+      "/approval/list",
+      "/base/table",
+      "/calendar",
+      "/docs/editor",
+      "/drive/folder"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_page_view",
+    "column_name": "referrer",
+    "data_type": "VARCHAR",
+    "row_count": 1801438,
+    "null_count": 106187,
+    "null_rate": 0.0589,
+    "distinct_count": 16,
+    "distinct_rate": 0.0,
+    "min": "/approval/list",
+    "max": "/wiki/page",
+    "sample_values": [
+      "/approval/list",
+      "/base/table",
+      "/calendar",
+      "/docs/editor",
+      "/drive/folder"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_page_view",
+    "column_name": "view_duration_ms",
+    "data_type": "BIGINT",
+    "row_count": 1801438,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 59501,
+    "distinct_rate": 0.033,
+    "min": "500",
+    "max": "60000",
+    "sample_values": [
+      "500",
+      "501",
+      "502",
+      "503",
+      "504"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_payment",
+    "column_name": "payment_id",
+    "data_type": "VARCHAR",
+    "row_count": 1624,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1624,
+    "distinct_rate": 1.0,
+    "min": "PAY004ec0740f72",
+    "max": "PAYffb9f317d407",
+    "sample_values": [
+      "PAY004ec0740f72",
+      "PAY00527be5a1ae",
+      "PAY006d9a1bcdda",
+      "PAY00729a8c5c78",
+      "PAY0077e6f124f1"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_payment",
+    "column_name": "invoice_id",
+    "data_type": "VARCHAR",
+    "row_count": 1624,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1248,
+    "distinct_rate": 0.7685,
+    "min": "INV0015263020ea",
+    "max": "INVff8576941c17",
+    "sample_values": [
+      "INV0015263020ea",
+      "INV00b27daab4d7",
+      "INV00bf93de68fc",
+      "INV00d9a8ad70c3",
+      "INV00dbaccfcd52"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_payment",
+    "column_name": "method",
+    "data_type": "VARCHAR",
+    "row_count": 1624,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.0025,
+    "min": "alipay",
+    "max": "wechat_pay",
+    "sample_values": [
+      "alipay",
+      "bank_transfer",
+      "credit_card",
+      "wechat_pay"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_payment",
+    "column_name": "amount",
+    "data_type": "DOUBLE",
+    "row_count": 1624,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1624,
+    "distinct_rate": 1.0,
+    "min": "146.71",
+    "max": "115599.75",
+    "sample_values": [
+      "146.71",
+      "157.13",
+      "182.11",
+      "193.39",
+      "195.41"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_payment",
+    "column_name": "status",
+    "data_type": "VARCHAR",
+    "row_count": 1624,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3,
+    "distinct_rate": 0.0018,
+    "min": "failed",
+    "max": "success",
+    "sample_values": [
+      "failed",
+      "pending",
+      "success"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_payment",
+    "column_name": "paid_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 1624,
+    "null_count": 419,
+    "null_rate": 0.258,
+    "distinct_count": 1205,
+    "distinct_rate": 0.742,
+    "min": "2025-04-03 04:39:06",
+    "max": "2026-04-01 03:32:12",
+    "sample_values": [
+      "2025-04-03 04:39:06",
+      "2025-04-06 18:33:11",
+      "2025-04-08 07:12:23",
+      "2025-04-08 13:28:46",
+      "2025-04-10 20:11:43"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_session",
+    "column_name": "session_id",
+    "data_type": "VARCHAR",
+    "row_count": 1269417,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1269417,
+    "distinct_rate": 1.0,
+    "min": "S00000ba4ffe9",
+    "max": "Sfffffa00c799",
+    "sample_values": [
+      "S00000ba4ffe9",
+      "S000050c81fa0",
+      "S0000578e5e3e",
+      "S000059ad6f30",
+      "S00005e9b5512"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_session",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 1269417,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 30000,
+    "distinct_rate": 0.0236,
+    "min": "U000001",
+    "max": "U049999",
+    "sample_values": [
+      "U000001",
+      "U000007",
+      "U000008",
+      "U000011",
+      "U000013"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_session",
+    "column_name": "start_time",
+    "data_type": "TIMESTAMP",
+    "row_count": 1269417,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1234424,
+    "distinct_rate": 0.9724,
+    "min": "2025-04-01 00:00:12",
+    "max": "2026-03-30 23:59:58",
+    "sample_values": [
+      "2025-04-01 00:00:12",
+      "2025-04-01 00:01:34",
+      "2025-04-01 00:02:59",
+      "2025-04-01 00:03:43",
+      "2025-04-01 00:04:07"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_session",
+    "column_name": "end_time",
+    "data_type": "TIMESTAMP",
+    "row_count": 1269417,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1234450,
+    "distinct_rate": 0.9725,
+    "min": "2025-04-01 00:17:26",
+    "max": "2026-03-31 01:52:15",
+    "sample_values": [
+      "2025-04-01 00:17:26",
+      "2025-04-01 00:23:02",
+      "2025-04-01 00:27:35",
+      "2025-04-01 00:30:43",
+      "2025-04-01 00:32:46"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_session",
+    "column_name": "device",
+    "data_type": "VARCHAR",
+    "row_count": 1269417,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 5,
+    "distinct_rate": 0.0,
+    "min": "Android",
+    "max": "macOS",
+    "sample_values": [
+      "Android",
+      "Linux",
+      "Windows",
+      "iOS",
+      "macOS"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_session",
+    "column_name": "ip_country",
+    "data_type": "VARCHAR",
+    "row_count": 1269417,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 10,
+    "distinct_rate": 0.0,
+    "min": "AU",
+    "max": "US",
+    "sample_values": [
+      "AU",
+      "BR",
+      "CN",
+      "DE",
+      "GB"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_subscription",
+    "column_name": "sub_id",
+    "data_type": "VARCHAR",
+    "row_count": 343,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 343,
+    "distinct_rate": 1.0,
+    "min": "SUB00262d22b338",
+    "max": "SUBff229adf57ce",
+    "sample_values": [
+      "SUB00262d22b338",
+      "SUB008e0f47c9e2",
+      "SUB0153d415e0e3",
+      "SUB03d7cb71d036",
+      "SUB03e9206433e7"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_subscription",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 343,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 343,
+    "distinct_rate": 1.0,
+    "min": "T00001",
+    "max": "T00499",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_subscription",
+    "column_name": "plan_tier",
+    "data_type": "VARCHAR",
+    "row_count": 343,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.0117,
+    "min": "business",
+    "max": "starter",
+    "sample_values": [
+      "business",
+      "enterprise",
+      "pro",
+      "starter"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_subscription",
+    "column_name": "start_date",
+    "data_type": "DATE",
+    "row_count": 343,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 207,
+    "distinct_rate": 0.6035,
+    "min": "2025-04-01",
+    "max": "2026-01-28",
+    "sample_values": [
+      "2025-04-01",
+      "2025-04-02",
+      "2025-04-05",
+      "2025-04-06",
+      "2025-04-07"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_subscription",
+    "column_name": "end_date",
+    "data_type": "DATE",
+    "row_count": 343,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 254,
+    "distinct_rate": 0.7405,
+    "min": "2025-05-01",
+    "max": "2027-01-28",
+    "sample_values": [
+      "2025-05-01",
+      "2025-05-02",
+      "2025-05-06",
+      "2025-05-16",
+      "2025-05-17"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_subscription",
+    "column_name": "mrr",
+    "data_type": "BIGINT",
+    "row_count": 343,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 262,
+    "distinct_rate": 0.7638,
+    "min": "203",
+    "max": "99800",
+    "sample_values": [
+      "203",
+      "232",
+      "290",
+      "319",
+      "348"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_subscription",
+    "column_name": "status",
+    "data_type": "VARCHAR",
+    "row_count": 343,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3,
+    "distinct_rate": 0.0087,
+    "min": "active",
+    "max": "trial",
+    "sample_values": [
+      "active",
+      "churned",
+      "trial"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 141684,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 0.0035,
+    "min": "T00001",
+    "max": "T00500",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "column_name": "snapshot_date",
+    "data_type": "DATE",
+    "row_count": 141684,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 366,
+    "distinct_rate": 0.0026,
+    "min": "2025-04-01",
+    "max": "2026-04-01",
+    "sample_values": [
+      "2025-04-01",
+      "2025-04-02",
+      "2025-04-03",
+      "2025-04-04",
+      "2025-04-05"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "column_name": "total_users",
+    "data_type": "BIGINT",
+    "row_count": 141684,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1140,
+    "distinct_rate": 0.008,
+    "min": "5",
+    "max": "1146",
+    "sample_values": [
+      "5",
+      "6",
+      "7",
+      "9",
+      "10"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "column_name": "total_docs",
+    "data_type": "BIGINT",
+    "row_count": 141684,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4262,
+    "distinct_rate": 0.0301,
+    "min": "19",
+    "max": "4527",
+    "sample_values": [
+      "19",
+      "21",
+      "22",
+      "23",
+      "24"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "column_name": "total_storage_mb",
+    "data_type": "BIGINT",
+    "row_count": 141684,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 82947,
+    "distinct_rate": 0.5854,
+    "min": "298",
+    "max": "143531",
+    "sample_values": [
+      "298",
+      "374",
+      "375",
+      "463",
+      "494"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "column_name": "total_revenue",
+    "data_type": "DOUBLE",
+    "row_count": 141684,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 140798,
+    "distinct_rate": 0.9937,
+    "min": "255.59",
+    "max": "144732.27",
+    "sample_values": [
+      "255.59",
+      "572.03",
+      "718.71",
+      "754.26",
+      "789.04"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "column_name": "total_messages",
+    "data_type": "BIGINT",
+    "row_count": 141684,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 106224,
+    "distinct_rate": 0.7497,
+    "min": "201",
+    "max": "295687",
+    "sample_values": [
+      "201",
+      "708",
+      "992",
+      "1112",
+      "1176"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_tenant_metrics_snapshot",
+    "column_name": "active_users_today",
+    "data_type": "BIGINT",
+    "row_count": 141684,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 101,
+    "distinct_rate": 0.0007,
+    "min": "0",
+    "max": "100",
+    "sample_values": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ticket",
+    "column_name": "ticket_id",
+    "data_type": "VARCHAR",
+    "row_count": 3922,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3922,
+    "distinct_rate": 1.0,
+    "min": "TK00011dfd5d95",
+    "max": "TKfff4d6c95a3b",
+    "sample_values": [
+      "TK00011dfd5d95",
+      "TK0001ef8bfd87",
+      "TK0003961c1632",
+      "TK00071d1f9d91",
+      "TK001259a2f61f"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_ticket",
+    "column_name": "tenant_id",
+    "data_type": "VARCHAR",
+    "row_count": 3922,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 500,
+    "distinct_rate": 0.1275,
+    "min": "T00001",
+    "max": "T00500",
+    "sample_values": [
+      "T00001",
+      "T00002",
+      "T00003",
+      "T00004",
+      "T00005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ticket",
+    "column_name": "reporter_id",
+    "data_type": "VARCHAR",
+    "row_count": 3922,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3328,
+    "distinct_rate": 0.8485,
+    "min": "U000010",
+    "max": "U049999",
+    "sample_values": [
+      "U000010",
+      "U000011",
+      "U000012",
+      "U000023",
+      "U000024"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ticket",
+    "column_name": "category",
+    "data_type": "VARCHAR",
+    "row_count": 3922,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 12,
+    "distinct_rate": 0.0031,
+    "min": "account",
+    "max": "security",
+    "sample_values": [
+      "account",
+      "account_login",
+      "account_permission",
+      "billing",
+      "billing_invoice"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ticket",
+    "column_name": "priority",
+    "data_type": "VARCHAR",
+    "row_count": 3922,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.001,
+    "min": "critical",
+    "max": "medium",
+    "sample_values": [
+      "critical",
+      "high",
+      "low",
+      "medium"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ticket",
+    "column_name": "status",
+    "data_type": "VARCHAR",
+    "row_count": 3922,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 4,
+    "distinct_rate": 0.001,
+    "min": "closed",
+    "max": "resolved",
+    "sample_values": [
+      "closed",
+      "in_progress",
+      "open",
+      "resolved"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ticket",
+    "column_name": "created_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 3922,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3922,
+    "distinct_rate": 1.0,
+    "min": "2025-04-01 02:10:05",
+    "max": "2026-03-30 21:44:06",
+    "sample_values": [
+      "2025-04-01 02:10:05",
+      "2025-04-01 02:24:25",
+      "2025-04-01 05:58:43",
+      "2025-04-01 06:14:46",
+      "2025-04-01 07:32:05"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_ticket",
+    "column_name": "resolved_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 3922,
+    "null_count": 1253,
+    "null_rate": 0.3195,
+    "distinct_count": 2669,
+    "distinct_rate": 0.6805,
+    "min": "2025-04-04 09:46:21",
+    "max": "2026-04-12 00:45:30",
+    "sample_values": [
+      "2025-04-04 09:46:21",
+      "2025-04-04 14:04:18",
+      "2025-04-05 14:31:31",
+      "2025-04-05 23:07:12",
+      "2025-04-07 03:36:10"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "column_name": "reply_id",
+    "data_type": "VARCHAR",
+    "row_count": 21715,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 21715,
+    "distinct_rate": 1.0,
+    "min": "TR000049e796af",
+    "max": "TRfff985360056",
+    "sample_values": [
+      "TR000049e796af",
+      "TR00040ae3b28c",
+      "TR0012c875fe86",
+      "TR00166184ebe7",
+      "TR001665d11c6d"
+    ],
+    "is_possible_primary_key": true
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "column_name": "ticket_id",
+    "data_type": "VARCHAR",
+    "row_count": 21715,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3922,
+    "distinct_rate": 0.1806,
+    "min": "TK00011dfd5d95",
+    "max": "TKfff4d6c95a3b",
+    "sample_values": [
+      "TK00011dfd5d95",
+      "TK0001ef8bfd87",
+      "TK0003961c1632",
+      "TK00071d1f9d91",
+      "TK001259a2f61f"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "column_name": "author_type",
+    "data_type": "VARCHAR",
+    "row_count": 21715,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 3,
+    "distinct_rate": 0.0001,
+    "min": "agent",
+    "max": "customer",
+    "sample_values": [
+      "agent",
+      "bot",
+      "customer"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "column_name": "content_length",
+    "data_type": "BIGINT",
+    "row_count": 21715,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 1991,
+    "distinct_rate": 0.0917,
+    "min": "10",
+    "max": "2000",
+    "sample_values": [
+      "10",
+      "11",
+      "12",
+      "13",
+      "14"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_ticket_reply",
+    "column_name": "replied_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 21715,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 21217,
+    "distinct_rate": 0.9771,
+    "min": "2025-04-01 02:10:05",
+    "max": "2026-04-06 01:42:38",
+    "sample_values": [
+      "2025-04-01 02:10:05",
+      "2025-04-01 02:24:25",
+      "2025-04-01 05:58:43",
+      "2025-04-01 06:10:05",
+      "2025-04-01 06:14:46"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_user_activation",
+    "column_name": "user_id",
+    "data_type": "VARCHAR",
+    "row_count": 180072,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 49773,
+    "distinct_rate": 0.2764,
+    "min": "U000001",
+    "max": "U050000",
+    "sample_values": [
+      "U000001",
+      "U000002",
+      "U000003",
+      "U000004",
+      "U000005"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_user_activation",
+    "column_name": "milestone_type",
+    "data_type": "VARCHAR",
+    "row_count": 180072,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 6,
+    "distinct_rate": 0.0,
+    "min": "created_first_task",
+    "max": "invited_first_user",
+    "sample_values": [
+      "created_first_task",
+      "first_doc_create",
+      "first_login",
+      "first_meeting_join",
+      "first_msg_send"
+    ],
+    "is_possible_primary_key": false
+  },
+  {
+    "table_name": "fact_user_activation",
+    "column_name": "reached_at",
+    "data_type": "TIMESTAMP",
+    "row_count": 180072,
+    "null_count": 0,
+    "null_rate": 0.0,
+    "distinct_count": 179745,
+    "distinct_rate": 0.9982,
+    "min": "2024-04-06 00:15:13",
+    "max": "2026-03-30 09:59:32",
+    "sample_values": [
+      "2024-04-06 00:15:13",
+      "2024-04-06 11:59:26",
+      "2024-04-06 18:32:02",
+      "2024-04-07 07:59:52",
+      "2024-04-07 21:11:29"
+    ],
+    "is_possible_primary_key": false
+  }
+]

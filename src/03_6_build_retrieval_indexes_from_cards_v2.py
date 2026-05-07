@@ -691,6 +691,7 @@ def build_recipe_index(cards: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             safe_str(x)
             for x in as_list(item.get("required_tables") or item.get("main_tables"))
         ]
+        optional_tables = [safe_str(x) for x in as_list(item.get("optional_tables"))]
         sql_skeleton = safe_str(
             item.get("sql_skeleton") or item.get("sql") or item.get("query_sql")
         )
@@ -699,7 +700,13 @@ def build_recipe_index(cards: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         metrics = [safe_str(x) for x in as_list(item.get("metrics"))]
         dimensions = [safe_str(x) for x in as_list(item.get("dimensions"))]
         required_fields = [safe_str(x) for x in as_list(item.get("required_fields"))]
+        optional_fields = [safe_str(x) for x in as_list(item.get("optional_fields"))]
         join_paths = as_list(item.get("join_paths"))
+        intent = safe_str(item.get("intent"))
+        canonical_question = safe_str(item.get("canonical_question"))
+        typical_questions = [safe_str(x) for x in as_list(item.get("typical_questions"))]
+        grain = safe_str(item.get("grain"))
+        risks = [safe_str(x) for x in as_list(item.get("risks"))]
         grain_rules = [safe_str(x) for x in as_list(item.get("grain_rules"))]
         dq_rules = [safe_str(x) for x in as_list(item.get("dq_rules"))]
 
@@ -710,12 +717,19 @@ def build_recipe_index(cards: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         normalized = {
             "recipe_id": rid,
             "name": name,
+            "intent": intent,
+            "canonical_question": canonical_question,
+            "typical_questions": typical_questions[:6],
             "description": compact_text(description, 500),
             "required_tables": required_tables,
+            "optional_tables": optional_tables[:8],
             "required_fields": required_fields[:12],
+            "optional_fields": optional_fields[:12],
             "metrics": metrics[:8],
             "dimensions": dimensions[:8],
             "join_paths": join_paths[:8],
+            "grain": grain,
+            "risks": risks[:8],
             "grain_rules": grain_rules[:6],
             "dq_rules": dq_rules[:6],
             "source": source,
@@ -724,12 +738,19 @@ def build_recipe_index(cards: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         normalized["keywords"] = make_keywords(
             normalized["recipe_id"],
             normalized["name"],
+            normalized["intent"],
+            normalized["canonical_question"],
+            normalized["typical_questions"],
             normalized["description"],
             normalized["required_tables"],
+            normalized["optional_tables"],
             normalized["required_fields"],
+            normalized["optional_fields"],
             normalized["metrics"],
             normalized["dimensions"],
             normalized["join_paths"],
+            normalized["grain"],
+            normalized["risks"],
             normalized["grain_rules"],
             normalized["dq_rules"],
             analysis_type,

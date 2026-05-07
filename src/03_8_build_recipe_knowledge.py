@@ -24,9 +24,12 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Sequence, Tuple
 
+try:
+    from config_paths import DB_PATH, PROJECT_ROOT
+except ModuleNotFoundError:
+    from src.config_paths import DB_PATH, PROJECT_ROOT
 
-ROOT = Path(__file__).resolve().parents[1]
-DB_PATH = ROOT / "cloudwork.duckdb"
+ROOT = PROJECT_ROOT
 KNOWLEDGE_DIR = ROOT / "outputs" / "knowledge"
 RETRIEVAL_DIR = KNOWLEDGE_DIR / "retrieval_v2"
 
@@ -768,6 +771,86 @@ def build_candidate_recipes() -> List[Dict[str, Any]]:
             },
             "confidence": "medium",
             "keywords": ["AI credits", "outlier", "tenant", "user mapping", "异常客户", "credits_amount"],
+        },
+        {
+            "recipe_id": "monthly_active_users_by_industry",
+            "name": "按行业的月度活跃用户趋势",
+            "intent": "按月、按行业统计活跃用户数趋势",
+            "canonical_question": "按月统计不同行业的活跃用户数趋势，并生成折线图。",
+            "typical_questions": [
+                "按月统计不同行业的活跃用户数趋势，并生成折线图。",
+                "不同行业的月度活跃用户趋势如何？",
+                "请按行业分组展示每月活跃用户数变化。",
+            ],
+            "description": "基于 fact_daily_usage、dim_user 和 dim_tenant，按月统计各行业的活跃用户数趋势。",
+            "required_tables": ["fact_daily_usage", "dim_user", "dim_tenant"],
+            "optional_tables": [],
+            "required_fields": [
+                "fact_daily_usage.user_id",
+                "fact_daily_usage.dt",
+                "dim_user.user_id",
+                "dim_user.tenant_id",
+                "dim_tenant.tenant_id",
+                "dim_tenant.industry"
+            ],
+            "optional_fields": [
+                "dim_tenant.country",
+                "dim_tenant.size_tier",
+                "dim_tenant.name"
+            ],
+            "metrics": [
+                {
+                    "name": "monthly_active_users",
+                    "expression": "COUNT(DISTINCT fact_daily_usage.user_id)",
+                    "meaning": "月度活跃用户数"
+                }
+            ],
+            "dimensions": ["month", "industry"],
+            "join_paths": [
+                "fact_daily_usage.user_id = dim_user.user_id",
+                "dim_user.tenant_id = dim_tenant.tenant_id"
+            ],
+            "grain": "先按 fact_daily_usage 的 user_id + dt 用户日级粒度识别活跃记录，再按月份和租户行业聚合，活跃用户数使用 COUNT(DISTINCT user_id)。",
+            "sql_skeleton": (
+                "SELECT\n"
+                "    DATE_TRUNC('month', d.dt) AS month,\n"
+                "    t.industry,\n"
+                "    COUNT(DISTINCT d.user_id) AS monthly_active_users\n"
+                "FROM fact_daily_usage d\n"
+                "JOIN dim_user u\n"
+                "    ON d.user_id = u.user_id\n"
+                "JOIN dim_tenant t\n"
+                "    ON u.tenant_id = t.tenant_id\n"
+                "GROUP BY month, t.industry\n"
+                "ORDER BY month, t.industry;"
+            ),
+            "risks": [
+                "fact_daily_usage 没有 tenant_id，不能直接 JOIN dim_tenant。",
+                "必须通过 dim_user 将 user_id 映射到 tenant_id。",
+                "活跃用户数应使用 COUNT(DISTINCT user_id)，不要使用 COUNT(*)。",
+                "按行业分组时，industry 来自 dim_tenant，不是 fact_daily_usage 字段。"
+            ],
+            "visualization": {
+                "chart_type": "line",
+                "x": "month",
+                "y": "monthly_active_users",
+                "color": "industry",
+                "reason": "适合展示按月的多行业趋势变化。"
+            },
+            "confidence": "high",
+            "keywords": [
+                "月度",
+                "活跃用户",
+                "行业",
+                "趋势",
+                "折线图",
+                "DAU",
+                "MAU",
+                "fact_daily_usage",
+                "dim_user",
+                "dim_tenant",
+                "industry"
+            ]
         },
     ]
 

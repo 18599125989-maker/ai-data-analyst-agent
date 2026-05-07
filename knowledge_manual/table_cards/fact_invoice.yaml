@@ -1,0 +1,329 @@
+table_name: fact_invoice
+card_version: v0.1
+card_type: table_card
+domain:
+  id: E
+  name: 计费与订阅
+business_meaning: '发票。
+
+  数据字典将该表归入“计费与订阅”域。
+
+  数据字典行数说明为：~1.2k。'
+grain: '数据字典说明粒度：一行 = 一张发票。
+
+  数据字典说明主键：`invoice_id`。'
+primary_key:
+- invoice_id
+natural_key_candidate: []
+profile:
+  row_count: 1248
+  column_count: 8
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: validated
+  validation_file: outputs/knowledge/validation/fact_invoice_validation.md
+columns:
+  invoice_id:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: 发票 ID（`INV` 前缀）
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 1248
+      distinct_rate: 1.0
+      min: INV0015263020ea
+      max: INVff8576941c17
+      sample_values:
+      - INV0015263020ea
+      - INV00b27daab4d7
+      - INV00bf93de68fc
+      - INV00d9a8ad70c3
+      - INV00dbaccfcd52
+      is_possible_primary_key: true
+    notes: []
+  tenant_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: 企业
+    references: dim_tenant.tenant_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 343
+      distinct_rate: 0.2748
+      min: T00001
+      max: T00499
+      sample_values:
+      - T00001
+      - T00002
+      - T00003
+      - T00004
+      - T00005
+      is_possible_primary_key: false
+    notes: []
+  sub_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: 关联订阅
+    references: fact_subscription.sub_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 343
+      distinct_rate: 0.2748
+      min: SUB00262d22b338
+      max: SUBff229adf57ce
+      sample_values:
+      - SUB00262d22b338
+      - SUB008e0f47c9e2
+      - SUB0153d415e0e3
+      - SUB03d7cb71d036
+      - SUB03e9206433e7
+      is_possible_primary_key: false
+    notes: []
+  amount:
+    type: double
+    semantic_type: metric
+    business_meaning: 发票金额
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 1248
+      distinct_rate: 1.0
+      min: '193.39'
+      max: '115599.75'
+      sample_values:
+      - '193.39'
+      - '203.9'
+      - '212.83'
+      - '213.26'
+      - '215.4'
+      is_possible_primary_key: true
+    notes: []
+  currency:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: 币种。枚举：USD / CNY / EUR / JPY
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 4
+      distinct_rate: 0.0032
+      min: CNY
+      max: USD
+      sample_values:
+      - CNY
+      - EUR
+      - JPY
+      - USD
+      is_possible_primary_key: false
+    notes: []
+  issued_at:
+    type: timestamp
+    semantic_type: event_time
+    business_meaning: 开票时间
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 1248
+      distinct_rate: 1.0
+      min: '2025-04-02 04:39:06'
+      max: '2026-03-30 23:24:10'
+      sample_values:
+      - '2025-04-02 04:39:06'
+      - '2025-04-03 16:04:28'
+      - '2025-04-06 01:33:11'
+      - '2025-04-06 22:28:46'
+      - '2025-04-07 02:12:23'
+      is_possible_primary_key: true
+    notes: []
+  paid_at:
+    type: timestamp
+    semantic_type: event_time
+    business_meaning: 付款时间（仅 `status=paid` 有值）
+    references: null
+    profile:
+      null_rate: 0.2003
+      distinct_count: 997
+      distinct_rate: 0.7989
+      min: '2025-04-17 02:12:23'
+      max: '2026-04-29 03:29:17'
+      sample_values:
+      - '2025-04-17 02:12:23'
+      - '2025-04-21 01:33:11'
+      - '2025-04-24 12:22:08'
+      - '2025-04-25 15:07:27'
+      - '2025-04-26 21:51:35'
+      is_possible_primary_key: false
+    notes: []
+  status:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: 枚举：paid / pending / overdue / void
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 4
+      distinct_rate: 0.0032
+      min: overdue
+      max: void
+      sample_values:
+      - overdue
+      - paid
+      - pending
+      - void
+      is_possible_primary_key: false
+    notes: []
+join_keys:
+- column: sub_id
+  references: fact_subscription.sub_id
+  relationship: many_to_one
+  join_condition: fact_invoice.sub_id = fact_subscription.sub_id
+  purpose: '数据字典说明中的主关联路径。
+
+    当前正式卡可作为推荐 JOIN 路径使用。'
+  risk_level: low
+  validation_status: passed
+  note: '字段说明写明 sub_id 关联订阅。
+
+    当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。'
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - invoice_id
+  - tenant_id
+  - sub_id
+  time_columns:
+  - issued_at
+  - paid_at
+  metric_columns:
+  - amount
+  dimension_columns:
+  - invoice_id
+  - tenant_id
+  - sub_id
+  - currency
+  - issued_at
+  - paid_at
+  - status
+  enum_columns:
+  - currency
+  - status
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 fact_invoice 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 按数据字典声明的枚举字段做结构分布分析
+- 基于数据字典说明的时间字段做趋势或窗口分析
+- 按数据字典口径区分金额、收入、付款、发票或预算类指标
+preferred_metrics:
+  entity_count:
+    expression: COUNT(DISTINCT invoice_id)
+    meaning: 实体或记录数量
+    applicable_grain: table_grain
+    note: '按当前正式卡 grain 与 validation 结果解释统计口径。
+
+      对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。'
+  amount_sum:
+    expression: SUM(amount)
+    meaning: amount 的SUM指标
+    applicable_grain: table_grain
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+known_traps:
+- trap: 把数据字典声明的主键直接当作已验证事实。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`invoice_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: 把发票金额直接当作实收收入。
+  consequence: 发票、付款和实收是不同业务口径。
+  prevention: 先确认问题是在问发票、付款还是实际收入，再选择事实表。
+- trap: 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 数据字典说明该表粒度为：一行 = 一张发票。聚合前必须先验证这一粒度在当前数据中是否成立。
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_invoice_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 1248
+    column_count: 8
+    validation_checks_total: 19
+    validation_checks_failed: 0
+    validation_checks_warning: 0
+    key_findings:
+    - fact_invoice 行数为 1248，字段数为 8。
+    - 主键候选当前唯一。
+    - tenant_id 当前全部可关联到 dim_tenant.tenant_id。
+    - sub_id 当前全部可关联到 fact_subscription.sub_id。
+    - 主要 SQL patterns 已执行。
+    warnings: []
+  interpretation:
+  - validation 脚本已通过，当前卡已升级为正式 table card。
+  - 主键、粒度、外键覆盖率与主要 SQL pattern 以当前 validation report 为准。
+  - fact_invoice 行数为 1248，字段数为 8。
+  - 主键候选当前唯一。
+  - tenant_id 当前全部可关联到 dim_tenant.tenant_id。
+  - sub_id 当前全部可关联到 fact_subscription.sub_id。
+  - 主要 SQL patterns 已执行。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: "SELECT\n issued_at AS time_key,\n COUNT(*) AS row_count\nFROM fact_invoice\nGROUP BY issued_at\nORDER BY issued_at;"
+  enum_distribution: "SELECT\n currency,\n COUNT(DISTINCT invoice_id) AS entity_count\nFROM fact_invoice\nGROUP BY currency\nORDER BY entity_count DESC, currency;"
+  metric_trend: "SELECT\n issued_at AS time_key,\n ROUND(SUM(amount), 2) AS total_amount\nFROM fact_invoice\nGROUP BY issued_at\nORDER BY issued_at;"
+  join_coverage_sample: "SELECT\n COUNT(*) AS row_count\nFROM fact_invoice base\nLEFT JOIN dim_tenant ref\n ON base.tenant_id = ref.tenant_id;"
+prompt_summary: 'fact_invoice 是 发票。
+
+  数据字典声明 grain 为：一行 = 一张发票。
+
+  数据字典主键说明为：`invoice_id`。
+
+  常用 JOIN 假设包括：sub_id -> fact_subscription.sub_id。'
+manual_review:
+  reviewer: null
+  review_status: validated
+  review_notes:
+  - 当前卡已结合 validation report 完成正式化整理。
+  - 主键、自然键、JOIN 覆盖率与字段口径以当前 validation report 和正式卡内容为准。
+  - 当前卡已结合 validation report 升级为正式版本。
+  checklist:
+  - confirmed: true
+    item: 数据字典声明主键为：`invoice_id`，已结合当前数据完成唯一性核对。
+  - confirmed: true
+    item: 数据字典声明粒度为：一行 = 一张发票，已结合当前数据完成 grain 核对。
+  - confirmed: true
+    item: 数据字典说明行数约为：~1.2k，已与当前 profile 和 DuckDB 数据核对。
+  - confirmed: true
+    item: 数据字典给出的 JOIN 假设：fact_invoice.sub_id -> fact_subscription.sub_id，已结合当前数据完成覆盖率与口径核对。
+  - confirmed: true
+    item: fact_invoice 行数为 1248，字段数为 8。
+  - confirmed: true
+    item: 主键候选当前唯一。
+  - confirmed: true
+    item: tenant_id 当前全部可关联到 dim_tenant.tenant_id。
+  - confirmed: true
+    item: sub_id 当前全部可关联到 fact_subscription.sub_id。
+  - confirmed: true
+    item: 主要 SQL patterns 已执行。
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_invoice_validation.md
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

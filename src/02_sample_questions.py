@@ -21,16 +21,19 @@ outputs/sample/question_3/
 from pathlib import Path
 
 import duckdb
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
+
+try:
+    from config_paths import DB_PATH, PROJECT_ROOT
+except ModuleNotFoundError:
+    from src.config_paths import DB_PATH, PROJECT_ROOT
 
 
 # =========================
 # 路径配置
 # =========================
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DB_PATH = PROJECT_ROOT / "cloudwork.duckdb"
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "sample"
 
 

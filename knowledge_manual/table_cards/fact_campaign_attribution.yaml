@@ -1,0 +1,534 @@
+table_name: fact_campaign_attribution
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: G
+  name: 增长与实验
+
+business_meaning: >
+  营销归因触点事实表，记录用户与营销活动之间的一次触点或归因记录。
+  该表适合分析营销触点、转化触点、转化率、campaign 归因路径和用户转化行为。
+  当前验证显示该表可作为正式营销归因分析事实表使用。
+
+grain: >
+  一行代表一次 campaign attribution / marketing touch 记录。
+  当前验证显示主键候选 user_id + campaign_id + touch_type + touch_at 唯一：
+  row_count = 78414，distinct_primary_key_count = 78414，duplicate_primary_key_count = 0。
+  同一个 user_id 可以有多条 campaign touch。
+  同一个 campaign_id 可以对应多个 user_id 和多种 touch_type。
+  该表适合分析营销触点、转化触点、转化率、campaign 归因路径和用户转化行为。
+
+primary_key:
+  - user_id
+  - campaign_id
+  - touch_type
+  - touch_at
+
+natural_key_candidate:
+  - user_id
+  - campaign_id
+  - touch_type
+  - touch_at
+
+natural_key_status:
+  is_unique: true
+  tested_key:
+    - user_id
+    - campaign_id
+    - touch_type
+    - touch_at
+  duplicated_group_count: 0
+  note: >
+    当前验证显示 user_id + campaign_id + touch_type + touch_at 唯一，
+    可作为本表的复合唯一键与记录级 grain key。
+
+profile:
+  row_count: 78414
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/fact_campaign_attribution_validation.md
+  profile_status: validated
+
+columns:
+  user_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      被营销触达的用户 ID。
+      用于将归因触点记录关联到正式用户维度，并进一步映射租户、部门等属性。
+    references: dim_user.user_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 34447
+      distinct_rate: 0.4393
+      min: U000001
+      max: U049999
+      sample_values:
+        - U000001
+        - U000003
+        - U000005
+        - U000006
+        - U000007
+      is_possible_primary_key: false
+    notes:
+      - >
+        user_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        统计用户数时应使用 COUNT(DISTINCT user_id)。
+
+  campaign_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      营销活动 ID。
+      用于将触点记录关联到 campaign 元数据或营销活动事实。
+    references: fact_campaign.campaign_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 30
+      distinct_rate: 0.0004
+      min: CMP001
+      max: CMP030
+      sample_values:
+        - CMP001
+        - CMP002
+        - CMP003
+        - CMP004
+        - CMP005
+      is_possible_primary_key: false
+    notes:
+      - >
+        campaign_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        统计 campaign 数时应使用 COUNT(DISTINCT campaign_id)。
+
+  touch_type:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      营销触点类型。
+      用于区分 impression、click、signup、demo_request 等不同触达形式。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 4
+      distinct_rate: 0.0001
+      min: click
+      max: signup
+      sample_values:
+        - click
+        - impression
+        - signup
+        - demo_request
+      is_possible_primary_key: false
+    notes:
+      - >
+        touch_type 无空值。
+      - >
+        touch_type 是营销触点类型，不是数值指标。
+
+  touch_at:
+    type: timestamp
+    semantic_type: timestamp
+    business_meaning: >
+      触点发生时间。
+      适合做触点趋势、转化趋势和营销时序分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 78257
+      distinct_rate: 0.998
+      min: "2025-04-03T00:09:00"
+      max: "2026-04-20T17:40:22"
+      sample_values:
+        - "2025-04-03 00:09:00"
+        - "2025-04-03 00:58:25"
+        - "2025-04-03 01:27:01"
+        - "2025-04-03 01:36:36"
+        - "2025-04-03 01:44:26"
+      is_possible_primary_key: false
+    notes:
+      - >
+        touch_at 是触点发生时间，适合做触点趋势和转化趋势分析。
+      - >
+        当前验证时间范围为 2025-04-03T00:09:00 到 2026-04-20T17:40:22。
+      - >
+        如做完整月份趋势，应注意 2026-04 可能是不完整月份。
+
+  is_converted:
+    type: bigint
+    semantic_type: binary_metric
+    business_meaning: >
+      触点是否最终转化的 0/1 标记。
+      可用于计算转化触点数和触点级转化率。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 2
+      distinct_rate: 0.0
+      min: 0
+      max: 1
+      sample_values:
+        - 0
+        - 1
+      is_possible_primary_key: false
+    notes:
+      - >
+        is_converted 是 0/1 转化标记。
+      - >
+        SUM(is_converted) 可表示转化触点数。
+      - >
+        AVG(is_converted) 或 SUM(is_converted) / COUNT(*) 可表示转化率。
+      - >
+        is_converted = 0 是正常值，不是异常。
+
+join_keys:
+  - column: user_id
+    references: dim_user.user_id
+    relationship: many_to_one
+    join_condition: fact_campaign_attribution.user_id = dim_user.user_id
+    purpose: 将营销归因触点关联到用户维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      user_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+  - column: campaign_id
+    references: fact_campaign.campaign_id
+    relationship: many_to_one
+    join_condition: fact_campaign_attribution.campaign_id = fact_campaign.campaign_id
+    purpose: 将触点记录关联到 campaign 维度或 campaign 元数据。
+    risk_level: low
+    validation_status: passed
+    note: >
+      campaign_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+derived_join_paths:
+  campaign_attribution_to_tenant:
+    path:
+      - fact_campaign_attribution.user_id = dim_user.user_id
+      - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: 将营销归因触点关联到企业租户维度
+    risk_level: medium
+    validation_status: passed
+    note: >
+      同一个用户可能有多条营销触点；按租户统计用户数时应 COUNT(DISTINCT user_id)，统计触点数时才 COUNT(*) 或 COUNT(DISTINCT 主键)。
+  campaign_attribution_to_campaign:
+    path:
+      - fact_campaign_attribution.campaign_id = fact_campaign.campaign_id
+    purpose: 将触点记录关联到 campaign 维度或 campaign 元数据
+    risk_level: low
+    validation_status: passed
+
+field_groups:
+  id_columns:
+    - user_id
+    - campaign_id
+    - touch_type
+    - touch_at
+  time_columns:
+    - touch_at
+  metric_columns:
+    - is_converted
+  dimension_columns:
+    - user_id
+    - campaign_id
+    - touch_type
+  enum_columns:
+    - touch_type
+  json_columns: []
+  text_columns: []
+
+recommended_use_cases:
+  - 统计营销触点数量和被触达用户规模。
+  - 分析不同 touch_type 的触点结构与转化率。
+  - 评估不同 campaign 的触达量、转化量和转化率。
+  - 按日或按月分析归因触点和转化趋势。
+  - 结合 dim_user 与 dim_tenant 分析不同企业或用户群体的转化行为。
+
+preferred_metrics:
+  attribution_record_count:
+    expression: COUNT(*)
+    meaning: 归因触点记录数
+    applicable_grain: fact_campaign_attribution 原子粒度
+    note: >
+      当前主键候选已验证唯一，因此触点记录数可直接使用 COUNT(*)。
+  touched_user_count:
+    expression: COUNT(DISTINCT user_id)
+    meaning: 被 campaign 触达的用户数
+    applicable_grain: 任意分析层级
+    note: >
+      用户数与触点记录数不能混用。
+  campaign_count:
+    expression: COUNT(DISTINCT campaign_id)
+    meaning: campaign 数量
+    applicable_grain: 任意分析层级
+    note: >
+      campaign 数应按 campaign_id 去重统计。
+  converted_touch_count:
+    expression: SUM(is_converted)
+    meaning: 转化触点数
+    applicable_grain: 任意分析层级
+    note: >
+      is_converted 为 0/1，可直接求和得到转化触点数。
+  conversion_rate:
+    expression: AVG(is_converted)
+    meaning: 触点级转化率
+    applicable_grain: 任意分析层级
+    note: >
+      也可使用 SUM(is_converted) / COUNT(*) 计算。
+  touch_type_count:
+    expression: COUNT(DISTINCT touch_type)
+    meaning: 触点类型数量
+    applicable_grain: 任意分析层级
+    note: >
+      touch_type 是分组维度，不是数值指标。
+
+known_traps:
+  - trap: >
+      直接 COUNT(*) 当作用户数或 campaign 数。
+    consequence: >
+      COUNT(*) 是营销触点记录数，不是用户数，也不是 campaign 数。
+    prevention: >
+      统计用户数使用 COUNT(DISTINCT user_id)，统计 campaign 数使用 COUNT(DISTINCT campaign_id)，统计触点数才使用 COUNT(*) 或 COUNT(DISTINCT 主键)。
+  - trap: >
+      把 touch_type 当作数值指标。
+    consequence: >
+      touch_type 是 click / impression / signup / demo_request 等枚举，不能 SUM 或 AVG。
+    prevention: >
+      touch_type 只能作为分组或筛选维度。
+  - trap: >
+      把 is_converted = 0 当作异常。
+    consequence: >
+      is_converted = 0 是未转化触点，属于正常记录。
+    prevention: >
+      保留 0 值；转化数使用 SUM(is_converted)，转化率使用 AVG(is_converted) 或 SUM(is_converted) / COUNT(*)。
+  - trap: >
+      JOIN dim_user 或 dim_tenant 后直接 COUNT(*) 当作用户数或企业数。
+    consequence: >
+      同一个用户或企业可能有多条 attribution 记录，COUNT(*) 会放大。
+    prevention: >
+      用户数使用 COUNT(DISTINCT user_id)，企业数通过 JOIN dim_user 后使用 COUNT(DISTINCT tenant_id)。
+  - trap: >
+      把 2026-04 当作完整月份参与月度趋势比较。
+    consequence: >
+      当前最大 touch_at 为 2026-04-20，可能不是完整月份，月度趋势可能低估。
+    prevention: >
+      完整月度趋势优先使用 2025-04 到 2026-03；如展示 2026-04，需注明可能不完整。
+
+aggregation_notes:
+  - >
+    统计触点数用 COUNT(*) 或 COUNT(DISTINCT 复合主键)。
+  - >
+    统计用户数用 COUNT(DISTINCT user_id)。
+  - >
+    统计 campaign 数用 COUNT(DISTINCT campaign_id)。
+  - >
+    转化数用 SUM(is_converted)，转化率用 AVG(is_converted) 或 SUM(is_converted) / COUNT(*)。
+  - >
+    时间趋势分析必须基于 touch_at。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_campaign_attribution_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 78414
+    column_count: 5
+    primary_key_unique: true
+    duplicate_primary_key_count: 0
+    user_id_fk_unmatched_count: 0
+    campaign_id_fk_unmatched_count: 0
+    touch_type_blank_or_null_count: 0
+    touch_type_values:
+      - click
+      - impression
+      - signup
+      - demo_request
+    touch_at_min: "2025-04-03T00:09:00"
+    touch_at_max: "2026-04-20T17:40:22"
+    is_converted_min: 0
+    is_converted_max: 1
+    is_converted_zero_count: 72184
+  interpretation:
+    - >
+      主键候选唯一，营销归因触点记录粒度成立。
+    - >
+      user_id 全部可以关联到 dim_user.user_id。
+    - >
+      campaign_id 全部可以关联到 fact_campaign.campaign_id。
+    - >
+      touch_type 无空值，可作为触点类型分组维度。
+    - >
+      is_converted 是 0/1 转化标记，0 是正常未转化值。
+    - >
+      touch_at 无空值，可用于营销触点和转化时间趋势分析。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - user_id_fk_coverage
+  - user_id_fk_unmatched_examples
+  - campaign_id_fk_coverage
+  - campaign_id_fk_unmatched_examples
+  - touch_type_distribution
+  - touch_type_null_check
+  - touch_at_time_range_check
+  - is_converted_numeric_range_check
+  - sql_pattern_time_distribution
+  - sql_pattern_enum_distribution
+  - sql_pattern_metric_trend
+  - sql_pattern_join_coverage_sample
+
+sql_patterns:
+  attribution_count_by_touch_type: |
+    SELECT
+        touch_type,
+        COUNT(*) AS attribution_record_count
+    FROM fact_campaign_attribution
+    GROUP BY touch_type
+    ORDER BY attribution_record_count DESC, touch_type;
+  conversion_rate_by_touch_type: |
+    SELECT
+        touch_type,
+        COUNT(*) AS attribution_record_count,
+        SUM(is_converted) AS converted_touch_count,
+        AVG(is_converted) AS conversion_rate
+    FROM fact_campaign_attribution
+    GROUP BY touch_type
+    ORDER BY conversion_rate DESC, touch_type;
+  conversion_rate_by_campaign: |
+    SELECT
+        campaign_id,
+        COUNT(*) AS attribution_record_count,
+        SUM(is_converted) AS converted_touch_count,
+        AVG(is_converted) AS conversion_rate
+    FROM fact_campaign_attribution
+    GROUP BY campaign_id
+    ORDER BY conversion_rate DESC, campaign_id;
+  touched_user_count_by_campaign: |
+    SELECT
+        campaign_id,
+        COUNT(DISTINCT user_id) AS touched_user_count
+    FROM fact_campaign_attribution
+    GROUP BY campaign_id
+    ORDER BY touched_user_count DESC, campaign_id;
+  attribution_trend_by_day: |
+    SELECT
+        CAST(touch_at AS DATE) AS dt,
+        COUNT(*) AS attribution_record_count,
+        COUNT(DISTINCT user_id) AS touched_user_count
+    FROM fact_campaign_attribution
+    GROUP BY CAST(touch_at AS DATE)
+    ORDER BY dt;
+  attribution_trend_by_month: |
+    SELECT
+        STRFTIME(touch_at, '%Y-%m') AS month_key,
+        COUNT(*) AS attribution_record_count,
+        COUNT(DISTINCT user_id) AS touched_user_count
+    FROM fact_campaign_attribution
+    GROUP BY STRFTIME(touch_at, '%Y-%m')
+    ORDER BY month_key;
+  conversion_trend_by_month: |
+    SELECT
+        STRFTIME(touch_at, '%Y-%m') AS month_key,
+        COUNT(*) AS attribution_record_count,
+        SUM(is_converted) AS converted_touch_count,
+        AVG(is_converted) AS conversion_rate
+    FROM fact_campaign_attribution
+    GROUP BY STRFTIME(touch_at, '%Y-%m')
+    ORDER BY month_key;
+  attribution_by_tenant: |
+    SELECT
+        u.tenant_id,
+        COUNT(*) AS attribution_record_count,
+        COUNT(DISTINCT a.user_id) AS touched_user_count,
+        SUM(a.is_converted) AS converted_touch_count,
+        AVG(a.is_converted) AS conversion_rate
+    FROM fact_campaign_attribution a
+    JOIN dim_user u
+      ON a.user_id = u.user_id
+    GROUP BY u.tenant_id
+    ORDER BY attribution_record_count DESC, u.tenant_id;
+  conversion_rate_by_tenant_profile: |
+    SELECT
+        t.country,
+        t.industry,
+        t.size_tier,
+        COUNT(*) AS attribution_record_count,
+        COUNT(DISTINCT a.user_id) AS touched_user_count,
+        SUM(a.is_converted) AS converted_touch_count,
+        AVG(a.is_converted) AS conversion_rate
+    FROM fact_campaign_attribution a
+    JOIN dim_user u
+      ON a.user_id = u.user_id
+    JOIN dim_tenant t
+      ON u.tenant_id = t.tenant_id
+    GROUP BY t.country, t.industry, t.size_tier
+    ORDER BY conversion_rate DESC, t.country, t.industry, t.size_tier;
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_campaign_attribution_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        主键候选唯一已验证。
+    - confirmed: true
+      item: >
+        user_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        campaign_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        touch_type 枚举正常且无空值。
+    - confirmed: true
+      item: >
+        touch_at 时间范围已验证。
+    - confirmed: true
+      item: >
+        is_converted 是 0/1 标记，0 是正常值。
+    - confirmed: true
+      item: >
+        统计用户数时应使用 COUNT(DISTINCT user_id)。
+    - confirmed: true
+      item: >
+        统计 campaign 数时应使用 COUNT(DISTINCT campaign_id)。
+
+agent_usage_policy:
+  count_attributions_with_primary_key: true
+  count_users_with_distinct_user_id: true
+  count_campaigns_with_distinct_campaign_id: true
+  touch_type_is_enum_not_metric: true
+  is_converted_is_binary_metric: true
+  is_converted_zero_is_valid: true
+  use_sum_is_converted_for_conversion_count: true
+  use_avg_is_converted_for_conversion_rate: true
+  use_touch_at_for_attribution_trends: true
+  join_to_user_or_tenant_can_duplicate_entities: true
+  treat_2026_04_as_partial_month: true
+
+prompt_summary: >
+  fact_campaign_attribution 是营销归因触点事实表，一行代表一次用户与 campaign 的触点记录，
+  当前验证显示 user_id + campaign_id + touch_type + touch_at 唯一。
+  常用路径包括 user_id -> dim_user -> dim_tenant，以及 campaign_id -> fact_campaign。
+  统计触点数使用 COUNT(*)，统计用户数使用 COUNT(DISTINCT user_id)，统计 campaign 数使用 COUNT(DISTINCT campaign_id)。
+  转化数使用 SUM(is_converted)，转化率使用 AVG(is_converted)。
+  关键陷阱是不要把 COUNT(*) 当作用户数或 campaign 数，不要把 touch_type 当成 metric，并且 2026-04 可能是不完整月份。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

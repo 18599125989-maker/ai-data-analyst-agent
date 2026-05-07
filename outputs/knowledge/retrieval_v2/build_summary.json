@@ -8,9 +8,9 @@
   "field_index_count": 217,
   "metric_index_count": 137,
   "join_index_count": 81,
-  "trap_index_count": 132,
+  "trap_index_count": 133,
   "policy_index_count": 127,
-  "recipe_index_count": 3,
+  "recipe_index_count": 14,
   "skipped_cards": [],
   "errors": [],
   "output_files": {

@@ -1,0 +1,295 @@
+table_name: fact_message
+card_version: v0.1
+card_type: table_card
+domain:
+  id: D
+  name: 协作与内容
+business_meaning: '消息。
+
+  数据字典将该表归入“协作与内容”域。
+
+  数据字典行数说明为：~31.5 万。'
+grain: '数据字典说明粒度：一行 = 一条消息。
+
+  数据字典说明主键：`msg_id`。'
+primary_key:
+- msg_id
+natural_key_candidate: []
+profile:
+  row_count: 314827
+  column_count: 6
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: validated
+  validation_file: outputs/knowledge/validation/fact_message_validation.md
+columns:
+  msg_id:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: 消息 ID（`M` 前缀）
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 314827
+      distinct_rate: 1.0
+      min: M000005545acf
+      max: Mfffffb777293
+      sample_values:
+      - M000005545acf
+      - M000012c8a654
+      - M000076778c7e
+      - M00009543f549
+      - M0000feca13de
+      is_possible_primary_key: true
+    notes: []
+  sender_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: 发送者 user_id
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 26815
+      distinct_rate: 0.0852
+      min: U000001
+      max: U049999
+      sample_values:
+      - U000001
+      - U000003
+      - U000004
+      - U000005
+      - U000006
+      is_possible_primary_key: false
+    notes: []
+  channel_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: 所在频道
+    references: dim_channel.channel_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 3000
+      distinct_rate: 0.0095
+      min: CH00001_01
+      max: CH00500_13
+      sample_values:
+      - CH00001_01
+      - CH00001_02
+      - CH00001_03
+      - CH00001_07
+      - CH00002_02
+      is_possible_primary_key: false
+    notes: []
+  msg_type:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: 枚举：text / image / file / rich_text / sticker
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 0.0
+      min: file
+      max: text
+      sample_values:
+      - file
+      - image
+      - rich_text
+      - sticker
+      - text
+      is_possible_primary_key: false
+    notes: []
+  sent_at:
+    type: timestamp
+    semantic_type: event_time
+    business_meaning: 发送时间
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 313197
+      distinct_rate: 0.9948
+      min: '2025-04-01 00:00:08'
+      max: '2026-03-30 23:57:40'
+      sample_values:
+      - '2025-04-01 00:00:08'
+      - '2025-04-01 00:00:09'
+      - '2025-04-01 00:00:57'
+      - '2025-04-01 00:03:12'
+      - '2025-04-01 00:04:12'
+      is_possible_primary_key: false
+    notes: []
+  word_count:
+    type: bigint
+    semantic_type: metric
+    business_meaning: 字数（仅文本类有意义）
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 500
+      distinct_rate: 0.0016
+      min: '1'
+      max: '500'
+      sample_values:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      is_possible_primary_key: false
+    notes: []
+join_keys:
+- column: sender_id
+  references: dim_user.user_id
+  relationship: many_to_one
+  join_condition: fact_message.sender_id = dim_user.user_id
+  purpose: '数据字典说明中的主关联路径。
+
+    当前正式卡可作为推荐 JOIN 路径使用。'
+  risk_level: low
+  validation_status: passed
+  note: '字段说明写明 sender_id 为发送者 user_id。
+
+    当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。'
+- column: channel_id
+  references: dim_channel.channel_id
+  relationship: many_to_one
+  join_condition: fact_message.channel_id = dim_channel.channel_id
+  purpose: '数据字典说明中的主关联路径。
+
+    当前正式卡可作为推荐 JOIN 路径使用。'
+  risk_level: low
+  validation_status: passed
+  note: '字段说明写明 channel_id 为所在频道。
+
+    当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。'
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - msg_id
+  - sender_id
+  - channel_id
+  time_columns:
+  - sent_at
+  metric_columns:
+  - word_count
+  dimension_columns:
+  - msg_id
+  - sender_id
+  - channel_id
+  - msg_type
+  - sent_at
+  enum_columns:
+  - msg_type
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 fact_message 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 按数据字典声明的枚举字段做结构分布分析
+- 基于数据字典说明的时间字段做趋势或窗口分析
+preferred_metrics:
+  entity_count:
+    expression: COUNT(DISTINCT msg_id)
+    meaning: 实体或记录数量
+    applicable_grain: table_grain
+    note: '按当前正式卡 grain 与 validation 结果解释统计口径。
+
+      对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。'
+  word_count_sum:
+    expression: SUM(word_count)
+    meaning: word_count 的SUM指标
+    applicable_grain: table_grain
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+known_traps:
+- trap: 把数据字典声明的主键直接当作已验证事实。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`msg_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 数据字典说明该表粒度为：一行 = 一条消息。聚合前必须先验证这一粒度在当前数据中是否成立。
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_message_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 314827
+    column_count: 6
+    validation_checks_total: 14
+    validation_checks_failed: 0
+    validation_checks_warning: 0
+    key_findings:
+    - fact_message 行数为 314827，字段数为 6。
+    - 主键候选当前唯一。
+    - channel_id 当前全部可关联到 dim_channel.channel_id。
+    - 主要 SQL patterns 已执行。
+    warnings: []
+  interpretation:
+  - validation 脚本已通过，当前卡已升级为正式 table card。
+  - 主键、粒度、外键覆盖率与主要 SQL pattern 以当前 validation report 为准。
+  - fact_message 行数为 314827，字段数为 6。
+  - 主键候选当前唯一。
+  - channel_id 当前全部可关联到 dim_channel.channel_id。
+  - 主要 SQL patterns 已执行。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: "SELECT\n sent_at AS time_key,\n COUNT(*) AS row_count\nFROM fact_message\nGROUP BY sent_at\nORDER BY sent_at;"
+  enum_distribution: "SELECT\n msg_type,\n COUNT(DISTINCT msg_id) AS entity_count\nFROM fact_message\nGROUP BY msg_type\nORDER BY entity_count DESC, msg_type;"
+  metric_trend: "SELECT\n sent_at AS time_key,\n ROUND(SUM(word_count), 2) AS total_word_count\nFROM fact_message\nGROUP BY sent_at\nORDER BY sent_at;"
+  join_coverage_sample: "SELECT\n COUNT(*) AS row_count\nFROM fact_message base\nLEFT JOIN dim_channel ref\n ON base.channel_id = ref.channel_id;"
+prompt_summary: 'fact_message 是 消息。
+
+  数据字典声明 grain 为：一行 = 一条消息。
+
+  数据字典主键说明为：`msg_id`。
+
+  常用 JOIN 假设包括：sender_id -> dim_user.user_id；channel_id -> dim_channel.channel_id。'
+manual_review:
+  reviewer: null
+  review_status: validated
+  review_notes:
+  - 当前卡已结合 validation report 完成正式化整理。
+  - 主键、自然键、JOIN 覆盖率与字段口径以当前 validation report 和正式卡内容为准。
+  - 当前卡已结合 validation report 升级为正式版本。
+  checklist:
+  - confirmed: true
+    item: 数据字典声明主键为：`msg_id`，已结合当前数据完成唯一性核对。
+  - confirmed: true
+    item: 数据字典声明粒度为：一行 = 一条消息，已结合当前数据完成 grain 核对。
+  - confirmed: true
+    item: 数据字典说明行数约为：~31.5 万，已与当前 profile 和 DuckDB 数据核对。
+  - confirmed: true
+    item: 数据字典给出的 JOIN 假设：fact_message.sender_id -> dim_user.user_id，已结合当前数据完成覆盖率与口径核对。
+  - confirmed: true
+    item: 数据字典给出的 JOIN 假设：fact_message.channel_id -> dim_channel.channel_id，已结合当前数据完成覆盖率与口径核对。
+  - confirmed: true
+    item: fact_message 行数为 314827，字段数为 6。
+  - confirmed: true
+    item: 主键候选当前唯一。
+  - confirmed: true
+    item: channel_id 当前全部可关联到 dim_channel.channel_id。
+  - confirmed: true
+    item: 主要 SQL patterns 已执行。
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_message_validation.md
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

@@ -1,0 +1,30 @@
+{
+  "description": "CloudWork Agent 知识库索引。",
+  "files": [
+    {
+      "file": "agent_schema_context.md",
+      "purpose": "核心 schema 上下文，包含表语义、字段 profile、表粒度和 JOIN 摘要。",
+      "use_when": "所有自然语言问题生成 SQL 前都应读取。"
+    },
+    {
+      "file": "join_rules.json",
+      "purpose": "结构化 JOIN 规则。",
+      "use_when": "问题涉及多表关联时读取。"
+    },
+    {
+      "file": "business_metrics.md",
+      "purpose": "业务指标口径。",
+      "use_when": "问题涉及收入、用户、活跃、功能、实验、NPS、客服等指标时读取。"
+    },
+    {
+      "file": "query_recipes.md",
+      "purpose": "常见分析场景的查询经验。",
+      "use_when": "用户问题和已有 recipe 相似时读取。"
+    },
+    {
+      "file": "data_quality_notes.md",
+      "purpose": "数据质量与易错点。",
+      "use_when": "SQL 生成、SQL 修复、结果异常诊断时读取。"
+    }
+  ]
+}

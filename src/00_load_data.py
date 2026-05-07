@@ -9,20 +9,16 @@
 4. 生成 outputs/profiles/data_inventory.csv，记录每张表的行数、字段数和加载状态
 """
 
-from pathlib import Path
-from typing import List, Dict, Any
 import csv
+from pathlib import Path
+from typing import Any, Dict, List
+
 import duckdb
 
-
-# 项目根目录：当前文件 src/00_load_data.py 的上一级目录
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
-# CSV 数据目录
-CSV_DIR = PROJECT_ROOT / "for_contestants" / "csv"
-
-# DuckDB 数据库路径
-DB_PATH = PROJECT_ROOT / "cloudwork.duckdb"
+try:
+    from config_paths import CSV_DIR, DB_PATH, PROJECT_ROOT
+except ModuleNotFoundError:
+    from src.config_paths import CSV_DIR, DB_PATH, PROJECT_ROOT
 
 # 输出目录
 PROFILE_DIR = PROJECT_ROOT / "outputs" / "profiles"

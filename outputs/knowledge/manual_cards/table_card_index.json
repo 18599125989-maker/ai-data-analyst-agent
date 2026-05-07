@@ -1,0 +1,364 @@
+[
+  {
+    "table_name": "dim_department",
+    "source_file": "knowledge_manual/table_cards/dim_department.yaml",
+    "card_version": "v1.0",
+    "card_type": "table_card",
+    "domain_id": "A",
+    "domain_name": "租户与组织",
+    "ready_for_agent": true,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "business_meaning": "部门维度表，描述每个企业 tenant 下的部门信息，以及部门之间的上下级关系。 该表用于组织结构分析、部门分布分析，也可以作为用户分析中的部门维度表。\n",
+    "grain": "一行 = 一个部门。 每个部门属于一个 tenant。 一个 tenant 可以有多个部门。 parent_dept_id 表示上级部门，空值表示顶级部门。\n",
+    "primary_key": [
+      "dept_id"
+    ],
+    "natural_key_candidate": [],
+    "columns": [
+      "dept_id",
+      "tenant_id",
+      "dept_name",
+      "parent_dept_id"
+    ],
+    "field_groups": {
+      "id_columns": [
+        "dept_id",
+        "tenant_id",
+        "parent_dept_id"
+      ],
+      "time_columns": [],
+      "metric_columns": [],
+      "dimension_columns": [
+        "tenant_id",
+        "dept_name",
+        "parent_dept_id"
+      ],
+      "enum_columns": [
+        "dept_name"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "join_targets": [
+      "dim_tenant.tenant_id",
+      "dim_user.dept_id",
+      "dim_department.dept_id"
+    ],
+    "recommended_use_cases": [
+      "按企业统计部门数量",
+      "按部门名称统计部门类型分布",
+      "分析不同国家、行业、规模企业的部门结构差异",
+      "将用户关联到部门，分析不同部门的用户数量、活跃度、功能使用情况",
+      "区分顶级部门和子部门",
+      "构建部门层级关系"
+    ],
+    "preferred_metrics": [
+      {
+        "name": "department_count",
+        "expression": "COUNT(DISTINCT dept_id)",
+        "meaning": "部门数量",
+        "note": "统计部门实体数量时使用。\n"
+      },
+      {
+        "name": "tenant_count",
+        "expression": "COUNT(DISTINCT tenant_id)",
+        "meaning": "企业数量",
+        "note": "统计拥有相关部门的企业数量时使用。\n"
+      },
+      {
+        "name": "top_level_department_count",
+        "expression": "SUM(\n  CASE\n    WHEN parent_dept_id IS NULL OR CAST(parent_dept_id AS VARCHAR) = ''\n    THEN 1 ELSE 0\n  END\n)\n",
+        "meaning": "顶级部门数量",
+        "note": "parent_dept_id 为空代表顶级部门。\n"
+      }
+    ],
+    "known_traps": [
+      "Trap: dept_name 不是唯一部门 ID。\n Consequence: 如果用 dept_name 统计唯一部门，会把不同企业下同名部门合并。\n Prevention: 统计部门实体时使用 dept_id。",
+      "Trap: parent_dept_id 空值率较高。\n Consequence: 容易被误判为数据质量问题。\n Prevention: 将 parent_dept_id 为空解释为顶级部门。 本次验证中空值率为 0.7613，且非空 parent_dept_id 均可自关联到有效 dept_id。",
+      "Trap: dim_department JOIN dim_user 后直接 COUNT(*)。\n Consequence: COUNT(*) 通常统计的是用户记录数，不是部门数。\n Prevention: 统计部门数使用 COUNT(DISTINCT dim_department.dept_id)。",
+      "Trap: 使用 INNER JOIN 分析用户部门时可能降低未来数据版本的鲁棒性。\n Consequence: 当前验证中 dim_user.dept_id 无空值且全部可关联 dim_department。 但未来数据版本若出现空值或无法匹配，INNER JOIN 会丢失用户。\n Prevention: 默认从 dim_user LEFT JOIN dim_department， 并在报告中说明当前数据版本 join coverage 为 100%。"
+    ],
+    "sql_pattern_names": [
+      "department_count_by_tenant",
+      "department_name_distribution",
+      "top_level_vs_child_departments",
+      "user_count_by_department_name",
+      "department_count_by_tenant_profile",
+      "department_hierarchy_self_join"
+    ],
+    "prompt_summary": "dim_department 是部门维度表，一行代表一个部门。dept_id 是主键； tenant_id 可关联 dim_tenant.tenant_id；dept_id 可关联 dim_user.dept_id； parent_dept_id 是自关联上级部门，空值表示顶级部门。 dept_name 是部门类型枚举，不是唯一键。 JOIN dim_user 后统计部门数应使用 COUNT(DISTINCT dim_department.dept_id)。 当前验证显示 dept_id 唯一，tenant_id 外键覆盖率 100%，dim_user.dept_id 覆盖率 100%。\n",
+    "search_text": "dim_department\n租户与组织\n部门维度表，描述每个企业 tenant 下的部门信息，以及部门之间的上下级关系。 该表用于组织结构分析、部门分布分析，也可以作为用户分析中的部门维度表。\n\n一行 = 一个部门。 每个部门属于一个 tenant。 一个 tenant 可以有多个部门。 parent_dept_id 表示上级部门，空值表示顶级部门。\n\ndim_department 是部门维度表，一行代表一个部门。dept_id 是主键； tenant_id 可关联 dim_tenant.tenant_id；dept_id 可关联 dim_user.dept_id； parent_dept_id 是自关联上级部门，空值表示顶级部门。 dept_name 是部门类型枚举，不是唯一键。 JOIN dim_user 后统计部门数应使用 COUNT(DISTINCT dim_department.dept_id)。 当前验证显示 dept_id 唯一，tenant_id 外键覆盖率 100%，dim_user.dept_id 覆盖率 100%。\n\ndept_id tenant_id dept_name parent_dept_id\n按企业统计部门数量 按部门名称统计部门类型分布 分析不同国家、行业、规模企业的部门结构差异 将用户关联到部门，分析不同部门的用户数量、活跃度、功能使用情况 区分顶级部门和子部门 构建部门层级关系\ndim_tenant.tenant_id dim_user.dept_id dim_department.dept_id\nTrap: dept_name 不是唯一部门 ID。\n Consequence: 如果用 dept_name 统计唯一部门，会把不同企业下同名部门合并。\n Prevention: 统计部门实体时使用 dept_id。 Trap: parent_dept_id 空值率较高。\n Consequence: 容易被误判为数据质量问题。\n Prevention: 将 parent_dept_id 为空解释为顶级部门。 本次验证中空值率为 0.7613，且非空 parent_dept_id 均可自关联到有效 dept_id。 Trap: dim_department JOIN dim_user 后直接 COUNT(*)。\n Consequence: COUNT(*) 通常统计的是用户记录数，不是部门数。\n Prevention: 统计部门数使用 COUNT(DISTINCT dim_department.dept_id)。 Trap: 使用 INNER JOIN 分析用户部门时可能降低未来数据版本的鲁棒性。\n Consequence: 当前验证中 dim_user.dept_id 无空值且全部可关联 dim_department。 但未来数据版本若出现空值或无法匹配，INNER JOIN 会丢失用户。\n Prevention: 默认从 dim_user LEFT JOIN dim_department， 并在报告中说明当前数据版本 join coverage 为 100%。\ndepartment_count 部门数量 COUNT(DISTINCT dept_id) tenant_count 企业数量 COUNT(DISTINCT tenant_id) top_level_department_count 顶级部门数量 SUM(\n  CASE\n    WHEN parent_dept_id IS NULL OR CAST(parent_dept_id AS VARCHAR) = ''\n    THEN 1 ELSE 0\n  END\n)\n"
+  },
+  {
+    "table_name": "fact_actual_revenue",
+    "source_file": "knowledge_manual/table_cards/fact_actual_revenue.yaml",
+    "card_version": "v1.1",
+    "card_type": "table_card",
+    "domain_id": "E",
+    "domain_name": "计费与订阅",
+    "ready_for_agent": true,
+    "authoring_status": "validated_with_warnings",
+    "profile_filled": true,
+    "grain_validated": "partial",
+    "dq_validated": "partial",
+    "business_meaning": "月度实收收入事实表，记录订阅在月份维度上的席位数、标价收入、 折扣率、优惠券扣减金额以及实际入账收入。 该表是分析“实收收入”“实际收入”“折扣后收入”“收入缺口”的核心事实表。 当前验证显示该表可用于 Agent 收入分析，但需要遵守两个规则： 第一，sub_id + month 不是严格唯一键；第二，actual_revenue 公式只适合作为近似解释， 不应重新计算 actual_revenue 替代表字段。\n",
+    "grain": "物理粒度：一行 = 一条 revenue_id 标识的收入记录。 业务分析时可以按 month、tenant_id + month、plan_tier + month、 tenant_id + sub_id + month 等维度聚合。 当前验证和人工复查显示，tenant_id + sub_id + month 存在 15 组重复。 这些重复组不是完全重复行，而是同一租户、同一订阅、同一月份下， discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同的多条收入明细。 因此订阅月份级收入必须先 GROUP BY tenant_id, sub_id, month 后 SUM(actual_revenue)， 不能只取单条记录。\n",
+    "primary_key": [
+      "revenue_id"
+    ],
+    "natural_key_candidate": [
+      "tenant_id",
+      "sub_id",
+      "month"
+    ],
+    "columns": [
+      "revenue_id",
+      "tenant_id",
+      "sub_id",
+      "month",
+      "seats",
+      "list_price_per_seat",
+      "list_revenue",
+      "discount_rate",
+      "coupon_amount",
+      "actual_revenue",
+      "currency"
+    ],
+    "field_groups": {
+      "id_columns": [
+        "revenue_id",
+        "tenant_id",
+        "sub_id"
+      ],
+      "time_columns": [
+        "month"
+      ],
+      "metric_columns": [
+        "seats",
+        "list_price_per_seat",
+        "list_revenue",
+        "discount_rate",
+        "coupon_amount",
+        "actual_revenue"
+      ],
+      "dimension_columns": [
+        "tenant_id",
+        "sub_id",
+        "month",
+        "currency"
+      ],
+      "enum_columns": [
+        "currency"
+      ],
+      "json_columns": [],
+      "text_columns": []
+    },
+    "join_targets": [
+      "dim_tenant.tenant_id",
+      "fact_subscription.sub_id",
+      "fact_invoice.sub_id"
+    ],
+    "recommended_use_cases": [
+      "按月份统计实收收入趋势",
+      "按套餐统计实收收入、标价收入和收入缺口",
+      "分析折扣率和优惠券对收入的影响",
+      "按企业、行业、国家、规模分析收入贡献",
+      "对比 list_revenue 与 actual_revenue 的差异",
+      "计算每席位实际收入",
+      "构建收入分析中的核心事实表"
+    ],
+    "preferred_metrics": [
+      {
+        "name": "actual_revenue",
+        "expression": "SUM(actual_revenue)",
+        "meaning": "实际入账收入",
+        "note": "用户问实收、实际收入、入账收入时优先使用。\n"
+      },
+      {
+        "name": "list_revenue",
+        "expression": "SUM(list_revenue)",
+        "meaning": "标价收入",
+        "note": "用于和 actual_revenue 对比，衡量折扣和优惠券影响。\n"
+      },
+      {
+        "name": "revenue_gap",
+        "expression": "SUM(list_revenue - actual_revenue)",
+        "meaning": "标价收入与实际收入差额",
+        "note": "可解释为折扣和优惠券导致的收入让利金额。 应直接使用 list_revenue - actual_revenue 的字段差额， 不要重新计算 actual_revenue 后再求差。\n"
+      },
+      {
+        "name": "coupon_amount",
+        "expression": "SUM(coupon_amount)",
+        "meaning": "优惠券扣减金额",
+        "note": "用于分析固定优惠券金额对收入的影响。\n"
+      },
+      {
+        "name": "avg_discount_rate",
+        "expression": "AVG(discount_rate)",
+        "meaning": "平均折扣率",
+        "note": "简单平均折扣率不一定等于收入加权折扣率。 如需严谨分析，可使用 list_revenue 加权折扣率。\n"
+      },
+      {
+        "name": "weighted_discount_rate",
+        "expression": "SUM(list_revenue * discount_rate) / NULLIF(SUM(list_revenue), 0)",
+        "meaning": "收入加权折扣率",
+        "note": "比 AVG(discount_rate) 更适合表达收入加权折扣水平。\n"
+      },
+      {
+        "name": "total_seats",
+        "expression": "SUM(seats)",
+        "meaning": "总席位数",
+        "note": "用于分析席位规模与收入之间的关系。 如果重复 sub_id + month 表示拆分收入记录，SUM(seats) 可能需要结合业务语义谨慎解释。\n"
+      }
+    ],
+    "known_traps": [
+      "Trap: 将 actual_revenue 与 MRR 混用。\n Consequence: MRR 是 fact_subscription.mrr 的确认收入口径， actual_revenue 是扣除折扣和优惠券后的实际入账收入。 二者不能直接互相替代。\n Prevention: 问 MRR 时使用 fact_subscription.mrr； 问实收、实际入账、折扣后收入时使用 fact_actual_revenue.actual_revenue。",
+      "Trap: 将 actual_revenue 与 invoice amount 混用。\n Consequence: fact_invoice.amount 是发票金额，可能存在未支付、作废、逾期等状态。 actual_revenue 是月度实收收入口径。\n Prevention: 问开票金额时使用 fact_invoice.amount； 问实际收入时使用 fact_actual_revenue.actual_revenue。",
+      "Trap: 将 tenant_id + sub_id + month 当作严格唯一键。\n Consequence: 当前验证发现 tenant_id + sub_id + month 存在 15 组重复。 如果 Agent 只取其中一条记录，会低估该订阅月份的收入。\n Prevention: 使用 revenue_id 作为物理主键。 如果需要订阅月份级收入，应 GROUP BY tenant_id, sub_id, month， 并 SUM(actual_revenue)、SUM(list_revenue)、SUM(list_revenue - actual_revenue)。",
+      "Trap: 把重复的 tenant_id + sub_id + month 当作脏数据删除。\n Consequence: 人工复查显示这些记录不是完全重复行。 它们通常 discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同。 删除会丢失真实收入明细。\n Prevention: 不删除这些记录。 收入分析时聚合 revenue_id 级收入记录。",
+      "Trap: 强假设 actual_revenue = list_revenue * (1 - discount_rate) - coupon_amount 完全精确。\n Consequence: 当前验证发现 954 条记录公式偏差超过 0.05。 但人工复查显示平均相对偏差约为 0.00003，属于极小偏差。 若 Agent 重新计算 actual_revenue，可能和表中实际字段不一致。\n Prevention: 分析实际收入时直接使用 actual_revenue 字段。 公式只作为近似解释，不作为强校验或替代字段。",
+      "Trap: 直接 JOIN fact_invoice 或 fact_payment 后聚合收入。\n Consequence: invoice 和 payment 粒度与 actual_revenue 不同， 可能造成重复计算或账期错位。\n Prevention: 除非问题明确要求发票或付款对比，否则收入分析优先只使用 fact_actual_revenue， 或先对 invoice/payment 预聚合后再 JOIN。",
+      "Trap: 忽略 month 是字符串。\n Consequence: 如果使用日期函数时未正确转换，可能导致 SQL 报错。\n Prevention: 月度趋势可直接 GROUP BY month； 若需要日期运算，再考虑将 month || '-01' 转换为 DATE。",
+      "Trap: 按套餐分析时忘记 JOIN fact_subscription。\n Consequence: fact_actual_revenue 本身没有 plan_tier 字段，无法直接按套餐聚合。\n Prevention: 通过 fact_actual_revenue.sub_id = fact_subscription.sub_id 获取 plan_tier。"
+    ],
+    "sql_pattern_names": [
+      "monthly_actual_revenue_trend",
+      "actual_revenue_by_plan_month",
+      "discount_impact_by_plan_month",
+      "actual_revenue_by_tenant_profile",
+      "subscription_month_level_revenue"
+    ],
+    "prompt_summary": "fact_actual_revenue 是月度实收收入事实表。revenue_id 是唯一物理主键。 actual_revenue 是实际入账收入；list_revenue 是标价收入； revenue_gap 可用 list_revenue - actual_revenue 计算。 如果用户问实收、实际收入、入账收入，应优先使用 actual_revenue。 如果按套餐分析，需要通过 sub_id JOIN fact_subscription 获取 plan_tier。 不要将 actual_revenue 与 MRR、发票金额或付款金额混用。 当前验证发现 tenant_id + sub_id + month 有 15 组重复，但这些不是脏重复； 它们是同一订阅同月下不同 discount_rate / actual_revenue 的收入明细。 因此 Agent 不能删除这些记录，也不能只取一条； 订阅月份级和月度收入分析必须 SUM(actual_revenue)。 当前验证还发现 actual_revenue 公式有极小相对偏差， 因此不要重新计算 actual_revenue 替代表字段。\n",
+    "search_text": "fact_actual_revenue\n计费与订阅\n月度实收收入事实表，记录订阅在月份维度上的席位数、标价收入、 折扣率、优惠券扣减金额以及实际入账收入。 该表是分析“实收收入”“实际收入”“折扣后收入”“收入缺口”的核心事实表。 当前验证显示该表可用于 Agent 收入分析，但需要遵守两个规则： 第一，sub_id + month 不是严格唯一键；第二，actual_revenue 公式只适合作为近似解释， 不应重新计算 actual_revenue 替代表字段。\n\n物理粒度：一行 = 一条 revenue_id 标识的收入记录。 业务分析时可以按 month、tenant_id + month、plan_tier + month、 tenant_id + sub_id + month 等维度聚合。 当前验证和人工复查显示，tenant_id + sub_id + month 存在 15 组重复。 这些重复组不是完全重复行，而是同一租户、同一订阅、同一月份下， discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同的多条收入明细。 因此订阅月份级收入必须先 GROUP BY tenant_id, sub_id, month 后 SUM(actual_revenue)， 不能只取单条记录。\n\nfact_actual_revenue 是月度实收收入事实表。revenue_id 是唯一物理主键。 actual_revenue 是实际入账收入；list_revenue 是标价收入； revenue_gap 可用 list_revenue - actual_revenue 计算。 如果用户问实收、实际收入、入账收入，应优先使用 actual_revenue。 如果按套餐分析，需要通过 sub_id JOIN fact_subscription 获取 plan_tier。 不要将 actual_revenue 与 MRR、发票金额或付款金额混用。 当前验证发现 tenant_id + sub_id + month 有 15 组重复，但这些不是脏重复； 它们是同一订阅同月下不同 discount_rate / actual_revenue 的收入明细。 因此 Agent 不能删除这些记录，也不能只取一条； 订阅月份级和月度收入分析必须 SUM(actual_revenue)。 当前验证还发现 actual_revenue 公式有极小相对偏差， 因此不要重新计算 actual_revenue 替代表字段。\n\nrevenue_id tenant_id sub_id month seats list_price_per_seat list_revenue discount_rate coupon_amount actual_revenue currency\n按月份统计实收收入趋势 按套餐统计实收收入、标价收入和收入缺口 分析折扣率和优惠券对收入的影响 按企业、行业、国家、规模分析收入贡献 对比 list_revenue 与 actual_revenue 的差异 计算每席位实际收入 构建收入分析中的核心事实表\ndim_tenant.tenant_id fact_subscription.sub_id fact_invoice.sub_id\nTrap: 将 actual_revenue 与 MRR 混用。\n Consequence: MRR 是 fact_subscription.mrr 的确认收入口径， actual_revenue 是扣除折扣和优惠券后的实际入账收入。 二者不能直接互相替代。\n Prevention: 问 MRR 时使用 fact_subscription.mrr； 问实收、实际入账、折扣后收入时使用 fact_actual_revenue.actual_revenue。 Trap: 将 actual_revenue 与 invoice amount 混用。\n Consequence: fact_invoice.amount 是发票金额，可能存在未支付、作废、逾期等状态。 actual_revenue 是月度实收收入口径。\n Prevention: 问开票金额时使用 fact_invoice.amount； 问实际收入时使用 fact_actual_revenue.actual_revenue。 Trap: 将 tenant_id + sub_id + month 当作严格唯一键。\n Consequence: 当前验证发现 tenant_id + sub_id + month 存在 15 组重复。 如果 Agent 只取其中一条记录，会低估该订阅月份的收入。\n Prevention: 使用 revenue_id 作为物理主键。 如果需要订阅月份级收入，应 GROUP BY tenant_id, sub_id, month， 并 SUM(actual_revenue)、SUM(list_revenue)、SUM(list_revenue - actual_revenue)。 Trap: 把重复的 tenant_id + sub_id + month 当作脏数据删除。\n Consequence: 人工复查显示这些记录不是完全重复行。 它们通常 discount_rate 和 actual_revenue 不同，少数组 coupon_amount 也不同。 删除会丢失真实收入明细。\n Prevention: 不删除这些记录。 收入分析时聚合 revenue_id 级收入记录。 Trap: 强假设 actual_revenue = list_revenue * (1 - discount_rate) - coupon_amount 完全精确。\n Consequence: 当前验证发现 954 条记录公式偏差超过 0.05。 但人工复查显示平均相对偏差约为 0.00003，属于极小偏差。 若 Agent 重新计算 actual_revenue，可能和表中实际字段不一致。\n Prevention: 分析实际收入时直接使用 actual_revenue 字段。 公式只作为近似解释，不作为强校验或替代字段。 Trap: 直接 JOIN fact_invoice 或 fact_payment 后聚合收入。\n Consequence: invoice 和 payment 粒度与 actual_revenue 不同， 可能造成重复计算或账期错位。\n Prevention: 除非问题明确要求发票或付款对比，否则收入分析优先只使用 fact_actual_revenue， 或先对 invoice/payment 预聚合后再 JOIN。 Trap: 忽略 month 是字符串。\n Consequence: 如果使用日期函数时未正确转换，可能导致 SQL 报错。\n Prevention: 月度趋势可直接 GROUP BY month； 若需要日期运算，再考虑将 month || '-01' 转换为 DATE。 Trap: 按套餐分析时忘记 JOIN fact_subscription。\n Consequence: fact_actual_revenue 本身没有 plan_tier 字段，无法直接按套餐聚合。\n Prevention: 通过 fact_actual_revenue.sub_id = fact_subscription.sub_id 获取 plan_tier。\nactual_revenue 实际入账收入 SUM(actual_revenue) list_revenue 标价收入 SUM(list_revenue) revenue_gap 标价收入与实际收入差额 SUM(list_revenue - actual_revenue) coupon_amount 优惠券扣减金额 SUM(coupon_amount) avg_discount_rate 平均折扣率 AVG(discount_rate) weighted_discount_rate 收入加权折扣率 SUM(list_revenue * discount_rate) / NULLIF(SUM(list_revenue), 0) total_seats 总席位数 SUM(seats)"
+  },
+  {
+    "table_name": "fact_ai_usage_log",
+    "source_file": "knowledge_manual/table_cards/fact_ai_usage_log.yaml",
+    "card_version": "v1.1",
+    "card_type": "table_card",
+    "domain_id": "C",
+    "domain_name": "产品使用",
+    "ready_for_agent": true,
+    "authoring_status": "validated",
+    "profile_filled": true,
+    "grain_validated": true,
+    "dq_validated": true,
+    "business_meaning": "AI 调用日志事实表，记录用户发生的一次 AI credits 操作，例如扣减、赠送或退款。 该表是分析 AI 使用量、AI credits 消耗、不同模型使用情况、AI 使用用户画像 和租户级 AI 使用强度的核心事实表。 由于该表出于隐私考虑只存储 user_id_hash，不直接存储明文 user_id， 因此如需关联用户、租户、部门、角色等维度，必须通过 dim_user_id_mapping 做 ID 映射。\n",
+    "grain": "一行 = 一次 AI credits 操作或 AI 使用日志。 log_id 唯一标识一条 AI 使用日志。 operation_type 表示本次 credits 是扣减、赠送还是退款。 当前验证显示 log_id 唯一，因此“一行 = 一次 AI 操作”的粒度成立。\n",
+    "primary_key": [
+      "log_id"
+    ],
+    "natural_key_candidate": [],
+    "columns": [
+      "log_id",
+      "user_id_hash",
+      "operation_type",
+      "credits_amount",
+      "model_name",
+      "created_at",
+      "remark"
+    ],
+    "field_groups": {
+      "id_columns": [
+        "log_id",
+        "user_id_hash"
+      ],
+      "time_columns": [
+        "created_at"
+      ],
+      "metric_columns": [
+        "credits_amount"
+      ],
+      "dimension_columns": [
+        "user_id_hash",
+        "operation_type",
+        "model_name"
+      ],
+      "enum_columns": [
+        "operation_type",
+        "model_name"
+      ],
+      "json_columns": [
+        "remark"
+      ],
+      "text_columns": [
+        "remark"
+      ]
+    },
+    "join_targets": [
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user.user_id"
+    ],
+    "recommended_use_cases": [
+      "按模型统计 AI 调用次数和 credits 消耗",
+      "按日或按月统计 AI credits 消耗趋势",
+      "分析不同租户的 AI credits 消耗排行",
+      "分析不同用户角色、部门、国家、行业下的 AI 使用差异",
+      "对比 AI 使用用户与非 AI 使用用户的活跃度",
+      "分析 deduct、earn、refund 三类操作的 credits 流水",
+      "在用户明确要求时，从 remark 中解析 session_id、token 或 cost 信息"
+    ],
+    "preferred_metrics": [
+      {
+        "name": "ai_operation_count",
+        "expression": "COUNT(DISTINCT log_id)",
+        "meaning": "AI 操作次数",
+        "note": "所有 operation_type 都可计入操作次数。 如果只分析真实 AI 使用调用，建议过滤 operation_type = 'deduct'。\n"
+      },
+      {
+        "name": "ai_deduct_count",
+        "expression": "COUNT(DISTINCT CASE WHEN operation_type = 'deduct' THEN log_id END)",
+        "meaning": "AI 扣减操作次数",
+        "note": "更接近真实 AI 使用调用次数。\n"
+      },
+      {
+        "name": "credits_consumed",
+        "expression": "SUM(CASE WHEN operation_type = 'deduct' THEN credits_amount ELSE 0 END)",
+        "meaning": "AI credits 消耗量",
+        "note": "分析 AI 使用/消耗时优先使用该口径。\n"
+      },
+      {
+        "name": "credits_earned",
+        "expression": "SUM(CASE WHEN operation_type = 'earn' THEN credits_amount ELSE 0 END)",
+        "meaning": "AI credits 获得量",
+        "note": "用于分析赠送或获得的 credits。\n"
+      },
+      {
+        "name": "credits_refunded",
+        "expression": "SUM(CASE WHEN operation_type = 'refund' THEN credits_amount ELSE 0 END)",
+        "meaning": "AI credits 退还量",
+        "note": "用于分析退还 credits。\n"
+      },
+      {
+        "name": "net_credits_change",
+        "expression": "SUM(\n  CASE\n    WHEN operation_type IN ('earn', 'refund') THEN credits_amount\n    WHEN operation_type = 'deduct' THEN -credits_amount\n    ELSE 0\n  END\n)\n",
+        "meaning": "credits 净变化",
+        "note": "该指标用于 credits 流水变化，不等同于 AI 消耗量。 人工确认口径：deduct 记为负，earn/refund 记为正。\n"
+      }
+    ],
+    "known_traps": [
+      "Trap: 直接将 user_id_hash 与 dim_user.user_id JOIN。\n Consequence: user_id_hash 是哈希后的用户 ID，不等于明文 user_id。 直接 JOIN 会导致匹配失败或错误结果。\n Prevention: 必须先 JOIN dim_user_id_mapping，再关联 dim_user。",
+      "Trap: 忘记过滤 operation_type。\n Consequence: deduct、earn、refund 混在一起会导致 credits_amount 含义不清。\n Prevention: 分析 AI 使用/消耗时过滤 operation_type = 'deduct'。 分析 credits 流水时用 CASE 表达不同操作的正负方向。",
+      "Trap: 把 deduct、earn、refund 都当作消耗。\n Consequence: 会高估 AI 使用消耗。\n Prevention: 只有 deduct 代表 AI credits 消耗。 earn/refund 是 credits 增加或返还，不应计入消耗。",
+      "Trap: 把 created_at 当作普通时间戳。\n Consequence: created_at 是 Unix epoch 秒字符串，直接 DATE_TRUNC 可能报错或结果错误。\n Prevention: 使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换后再做日期或月份分析。",
+      "Trap: 将 2026-04 当作完整月份参与趋势比较。\n Consequence: 当前数据中 2026-04 只有少量边界数据，直接与完整月份比较会低估该月 AI 使用。\n Prevention: 完整月度趋势优先使用 2025-04 到 2026-03。 如果展示 2026-04，必须注明它是截断月份。",
+      "Trap: 和 fact_daily_usage 直接按 user_id JOIN，不加日期条件。\n Consequence: 会产生用户级多对多膨胀，导致 AI 使用与日活指标重复计算。\n Prevention: 先将 AI 日志 created_at 转为日期，再与 fact_daily_usage.dt 对齐。",
+      "Trap: 默认解析 remark 中的 cost 或 token。\n Consequence: remark 虽然是 JSON，但 cost/token 信息嵌在 cause 文本中。 默认解析可能增加复杂度并引入不稳定规则。\n Prevention: 第一版默认使用 credits_amount。 只有用户明确询问 token、cost、session_id 时，再解析 remark。"
+    ],
+    "sql_pattern_names": [
+      "ai_credits_by_model",
+      "daily_ai_credits_trend",
+      "monthly_ai_credits_trend_complete_months",
+      "monthly_ai_credits_trend_all_months",
+      "credits_flow_by_operation_type",
+      "ai_credits_by_tenant",
+      "ai_credits_by_tenant_profile",
+      "ai_user_activity_comparison_daily"
+    ],
+    "prompt_summary": "fact_ai_usage_log 是 AI 调用日志表，一行代表一次 AI credits 操作。 log_id 是主键。user_id_hash 是哈希用户 ID，不能直接 JOIN dim_user.user_id； 必须先通过 dim_user_id_mapping.user_id_hash 映射到明文 user_id。 created_at 是 Unix epoch 秒字符串，需要用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换。 分析 AI 使用/消耗时只统计 operation_type = 'deduct'，并 SUM(credits_amount)。 分析 credits 流水时，deduct 记为负，earn/refund 记为正。 model_name 可用于模型使用分布分析。 2026-04 是截断月份，完整月度趋势优先使用 2025-04 到 2026-03。 remark 可解析，但默认不作为主分析字段；只有用户明确询问 token、cost、session_id 时再解析。\n",
+    "search_text": "fact_ai_usage_log\n产品使用\nAI 调用日志事实表，记录用户发生的一次 AI credits 操作，例如扣减、赠送或退款。 该表是分析 AI 使用量、AI credits 消耗、不同模型使用情况、AI 使用用户画像 和租户级 AI 使用强度的核心事实表。 由于该表出于隐私考虑只存储 user_id_hash，不直接存储明文 user_id， 因此如需关联用户、租户、部门、角色等维度，必须通过 dim_user_id_mapping 做 ID 映射。\n\n一行 = 一次 AI credits 操作或 AI 使用日志。 log_id 唯一标识一条 AI 使用日志。 operation_type 表示本次 credits 是扣减、赠送还是退款。 当前验证显示 log_id 唯一，因此“一行 = 一次 AI 操作”的粒度成立。\n\nfact_ai_usage_log 是 AI 调用日志表，一行代表一次 AI credits 操作。 log_id 是主键。user_id_hash 是哈希用户 ID，不能直接 JOIN dim_user.user_id； 必须先通过 dim_user_id_mapping.user_id_hash 映射到明文 user_id。 created_at 是 Unix epoch 秒字符串，需要用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换。 分析 AI 使用/消耗时只统计 operation_type = 'deduct'，并 SUM(credits_amount)。 分析 credits 流水时，deduct 记为负，earn/refund 记为正。 model_name 可用于模型使用分布分析。 2026-04 是截断月份，完整月度趋势优先使用 2025-04 到 2026-03。 remark 可解析，但默认不作为主分析字段；只有用户明确询问 token、cost、session_id 时再解析。\n\nlog_id user_id_hash operation_type credits_amount model_name created_at remark\n按模型统计 AI 调用次数和 credits 消耗 按日或按月统计 AI credits 消耗趋势 分析不同租户的 AI credits 消耗排行 分析不同用户角色、部门、国家、行业下的 AI 使用差异 对比 AI 使用用户与非 AI 使用用户的活跃度 分析 deduct、earn、refund 三类操作的 credits 流水 在用户明确要求时，从 remark 中解析 session_id、token 或 cost 信息\ndim_user_id_mapping.user_id_hash dim_user.user_id\nTrap: 直接将 user_id_hash 与 dim_user.user_id JOIN。\n Consequence: user_id_hash 是哈希后的用户 ID，不等于明文 user_id。 直接 JOIN 会导致匹配失败或错误结果。\n Prevention: 必须先 JOIN dim_user_id_mapping，再关联 dim_user。 Trap: 忘记过滤 operation_type。\n Consequence: deduct、earn、refund 混在一起会导致 credits_amount 含义不清。\n Prevention: 分析 AI 使用/消耗时过滤 operation_type = 'deduct'。 分析 credits 流水时用 CASE 表达不同操作的正负方向。 Trap: 把 deduct、earn、refund 都当作消耗。\n Consequence: 会高估 AI 使用消耗。\n Prevention: 只有 deduct 代表 AI credits 消耗。 earn/refund 是 credits 增加或返还，不应计入消耗。 Trap: 把 created_at 当作普通时间戳。\n Consequence: created_at 是 Unix epoch 秒字符串，直接 DATE_TRUNC 可能报错或结果错误。\n Prevention: 使用 TO_TIMESTAMP(CAST(created_at AS BIGINT)) 转换后再做日期或月份分析。 Trap: 将 2026-04 当作完整月份参与趋势比较。\n Consequence: 当前数据中 2026-04 只有少量边界数据，直接与完整月份比较会低估该月 AI 使用。\n Prevention: 完整月度趋势优先使用 2025-04 到 2026-03。 如果展示 2026-04，必须注明它是截断月份。 Trap: 和 fact_daily_usage 直接按 user_id JOIN，不加日期条件。\n Consequence: 会产生用户级多对多膨胀，导致 AI 使用与日活指标重复计算。\n Prevention: 先将 AI 日志 created_at 转为日期，再与 fact_daily_usage.dt 对齐。 Trap: 默认解析 remark 中的 cost 或 token。\n Consequence: remark 虽然是 JSON，但 cost/token 信息嵌在 cause 文本中。 默认解析可能增加复杂度并引入不稳定规则。\n Prevention: 第一版默认使用 credits_amount。 只有用户明确询问 token、cost、session_id 时，再解析 remark。\nai_operation_count AI 操作次数 COUNT(DISTINCT log_id) ai_deduct_count AI 扣减操作次数 COUNT(DISTINCT CASE WHEN operation_type = 'deduct' THEN log_id END) credits_consumed AI credits 消耗量 SUM(CASE WHEN operation_type = 'deduct' THEN credits_amount ELSE 0 END) credits_earned AI credits 获得量 SUM(CASE WHEN operation_type = 'earn' THEN credits_amount ELSE 0 END) credits_refunded AI credits 退还量 SUM(CASE WHEN operation_type = 'refund' THEN credits_amount ELSE 0 END) net_credits_change credits 净变化 SUM(\n  CASE\n    WHEN operation_type IN ('earn', 'refund') THEN credits_amount\n    WHEN operation_type = 'deduct' THEN -credits_amount\n    ELSE 0\n  END\n)\n"
+  }
+]

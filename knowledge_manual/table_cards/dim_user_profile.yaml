@@ -1,0 +1,393 @@
+table_name: dim_user_profile
+card_version: v1
+card_type: table_card
+domain:
+  id: B
+  name: 用户
+business_meaning: >
+  用户 profile / device preference 记录表。
+  用于描述用户的语言偏好、时区、设备系统和客户端版本分布，
+  更适合做用户画像分层和设备偏好分析，而不是作为唯一用户维表。
+grain: >
+  一行代表一个用户的一条 profile/device preference 记录。
+  user_id 不唯一，不能把该表当作一人一行的用户维表。
+  重复 user_id 多数是 device_os 不同，可能表示一人多设备。
+  也存在部分完全重复 profile 行。
+  当前缺少 updated_at / version / is_primary_device 字段，无法判断最新画像或主设备。
+primary_key: []
+natural_key_candidate:
+  - user_id
+natural_key_status:
+  validation_status: failed
+  is_unique: false
+  duplicate_user_id_count: 2500
+  note: >
+    user_id 不唯一，因此不能作为严格主键。
+    该表是 profile/device preference 记录表，不是一人一行的用户维表。
+profile:
+  row_count: 52500
+  column_count: 5
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/dim_user_profile_validation.md
+  profile_status: validated_with_warnings
+columns:
+  user_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      用户 ID。
+    references: dim_user.user_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 50000
+      distinct_rate: 0.9524
+      min: U000001
+      max: U050000
+      sample_values:
+        - U000001
+        - U000002
+        - U000003
+        - U000004
+        - U000005
+      is_possible_primary_key: false
+    notes:
+      - >
+        user_id 外键覆盖率 100%，全部可关联 dim_user.user_id。
+      - >
+        user_id 不唯一，不能把该表当作一人一行的用户维表。
+  language:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      用户语言偏好。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 0.0001
+      min: de-DE
+      max: zh-CN
+      sample_values:
+        - ja-JP
+        - pt-BR
+        - de-DE
+        - zh-CN
+        - en-US
+      is_possible_primary_key: false
+    notes:
+      - >
+        language 无空值。
+      - >
+        可用于语言偏好分析。
+  timezone:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      用户时区偏好。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 10
+      distinct_rate: 0.0002
+      min: America/New_York
+      max: Europe/London
+      sample_values:
+        - America/New_York
+        - America/Sao_Paulo
+        - Asia/Kolkata
+        - Asia/Seoul
+        - Asia/Shanghai
+      is_possible_primary_key: false
+    notes:
+      - >
+        timezone 无空值。
+      - >
+        可用于时区分析。
+  device_os:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      用户设备系统。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 0.0001
+      min: Android
+      max: macOS
+      sample_values:
+        - macOS
+        - iOS
+        - Windows
+        - Android
+        - Linux
+      is_possible_primary_key: false
+    notes:
+      - >
+        device_os 无空值。
+      - >
+        重复 user_id 中 device_os 经常不同，可能表示一人多设备。
+  app_version:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: >
+      客户端版本号。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 930
+      distinct_rate: 0.0177
+      min: 6.0.0
+      max: 8.9.9
+      sample_values:
+        - 6.0.0
+        - 6.0.1
+        - 6.0.2
+        - 6.0.3
+        - 6.0.4
+      is_possible_primary_key: false
+    notes:
+      - >
+        app_version 可用于客户端版本分布分析。
+      - >
+        当前没有版本时间字段，不能据此判断最新记录。
+join_keys:
+  - column: user_id
+    references: dim_user.user_id
+    relationship: many_to_one
+    join_condition: dim_user_profile.user_id = dim_user.user_id
+    purpose: >
+      将 profile 记录关联到用户主维表。
+    risk_level: low
+    validation_status: passed
+    note: >
+      user_id 外键覆盖率 100%，unmatched_count = 0。
+derived_join_paths:
+  profile_to_tenant:
+    path:
+      - dim_user_profile.user_id = dim_user.user_id
+      - dim_user.tenant_id = dim_tenant.tenant_id
+    purpose: 将用户 profile 记录关联到租户维度
+    risk_level: medium
+    validation_status: pending_or_passed_if_already_checked
+    note: >
+      一个用户可能有多条 profile 记录。按租户统计用户数时应使用 COUNT(DISTINCT user_id)。
+field_groups:
+  id_columns:
+    - user_id
+  time_columns: []
+  metric_columns: []
+  dimension_columns:
+    - user_id
+    - language
+    - timezone
+    - device_os
+    - app_version
+  enum_columns:
+    - language
+    - timezone
+    - device_os
+  json_columns: []
+  text_columns:
+    - app_version
+recommended_use_cases:
+  - 分析用户语言偏好分布
+  - 分析用户时区分布
+  - 分析设备系统分布与多设备用户
+  - 结合 dim_user / dim_tenant 做租户级画像分析
+preferred_metrics:
+  profile_record_count:
+    expression: COUNT(*)
+    meaning: profile 记录数
+  profile_user_count:
+    expression: COUNT(DISTINCT user_id)
+    meaning: 有 profile 记录的用户数
+  user_count_by_language:
+    expression: COUNT(DISTINCT user_id) GROUP BY language
+    meaning: 按语言分组的用户数
+  user_count_by_timezone:
+    expression: COUNT(DISTINCT user_id) GROUP BY timezone
+    meaning: 按时区分组的用户数
+  user_count_by_device_os:
+    expression: COUNT(DISTINCT user_id) GROUP BY device_os
+    meaning: 按设备系统分组的用户数
+  multi_profile_user_count:
+    expression: COUNT(*) over users where COUNT(*) > 1
+    meaning: 拥有多条 profile 记录的用户数
+known_traps:
+  - trap: >
+      不要把 dim_user_profile 当作一人一行的用户维表。
+    consequence: >
+      会把多 profile / 多设备用户误当成唯一用户画像，导致维度解释错误。
+    prevention: >
+      先确认分析目标是 profile 记录还是用户实体；用户数使用 COUNT(DISTINCT user_id)。
+  - trap: >
+      JOIN dim_user_profile 后直接用 COUNT(*) 当用户数。
+    consequence: >
+      COUNT(*) 是 profile 记录数，不是用户数。
+    prevention: >
+      统计用户数必须 COUNT(DISTINCT user_id)。
+  - trap: >
+      按 device_os 分析时假设一个用户只会出现在一个 device_os 组中。
+    consequence: >
+      多设备用户会同时出现在多个 device_os 组，分组用户数不能简单相加解释为总用户数。
+    prevention: >
+      明确 device_os 口径是“在该设备系统上出现过的用户数”。
+  - trap: >
+      如果需要一人一条画像，直接默认取一条记录。
+    consequence: >
+      当前没有 updated_at 或 is_primary_device，任意选取会导致口径不稳定。
+    prevention: >
+      必须先定义去重策略；当前不能默认取最新或主设备。
+  - trap: >
+      随机使用 ANY_VALUE(device_os) 当用户主设备。
+    consequence: >
+      会构造出不稳定且不可解释的主设备标签。
+    prevention: >
+      除非用户明确接受这种近似，否则不要用 ANY_VALUE(device_os) 代表主设备。
+aggregation_notes:
+  - >
+    profile 记录数使用 COUNT(*)。
+  - >
+    用户数使用 COUNT(DISTINCT user_id)。
+  - >
+    该表不能直接作为唯一用户维表参与一对一 JOIN 假设。
+  - >
+    如果要做一人一条画像分析，必须先定义并执行去重策略。
+validation_summary:
+  validation_file: outputs/knowledge/validation/dim_user_profile_validation.md
+  additional_review_source: user_manual_sql_check
+  profile_filled: true
+  grain_validated: partial
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 52500
+    distinct_user_id_count: 50000
+    duplicate_user_id_count: 2500
+    user_id_fk_unmatched_count: 0
+    language_blank_or_null_count: 0
+    timezone_blank_or_null_count: 0
+    device_os_blank_or_null_count: 0
+  interpretation:
+    - >
+      user_id 外键覆盖率 100%，全部可关联到 dim_user.user_id。
+    - >
+      该表数据质量可用，但 user_id 不唯一，不能作为唯一用户维表。
+    - >
+      重复 user_id 多数表现为 language 和 timezone 相同、device_os 不同，可能表示一人多设备。
+    - >
+      也存在一部分完全重复 profile 行，因此当前 grain 只能验证为 partial。
+    - >
+      language、timezone、device_os 均无空值，可用于偏好与设备分布分析。
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - main_foreign_key_coverage_checks
+  - enum_distribution_checks
+  - main_sql_patterns_execution_checks
+sql_patterns:
+  profile_record_count: |
+    SELECT COUNT(*) AS profile_record_count
+    FROM dim_user_profile;
+  profile_user_count: |
+    SELECT COUNT(DISTINCT user_id) AS profile_user_count
+    FROM dim_user_profile;
+  duplicate_user_profile_summary: |
+    SELECT
+        user_id,
+        COUNT(*) AS row_count,
+        COUNT(DISTINCT language) AS distinct_language_count,
+        COUNT(DISTINCT timezone) AS distinct_timezone_count,
+        COUNT(DISTINCT device_os) AS distinct_device_os_count
+    FROM dim_user_profile
+    GROUP BY user_id
+    HAVING COUNT(*) > 1
+    ORDER BY row_count DESC, user_id
+    LIMIT 100;
+  user_count_by_language: |
+    SELECT
+        language,
+        COUNT(DISTINCT user_id) AS user_count
+    FROM dim_user_profile
+    GROUP BY language
+    ORDER BY user_count DESC, language;
+  user_count_by_timezone: |
+    SELECT
+        timezone,
+        COUNT(DISTINCT user_id) AS user_count
+    FROM dim_user_profile
+    GROUP BY timezone
+    ORDER BY user_count DESC, timezone;
+  user_count_by_device_os: |
+    SELECT
+        device_os,
+        COUNT(DISTINCT user_id) AS user_count
+    FROM dim_user_profile
+    GROUP BY device_os
+    ORDER BY user_count DESC, device_os;
+  multi_device_user_count: |
+    SELECT
+        COUNT(*) AS multi_device_user_count
+    FROM (
+        SELECT user_id
+        FROM dim_user_profile
+        GROUP BY user_id
+        HAVING COUNT(DISTINCT device_os) > 1
+    );
+  profile_by_tenant: |
+    SELECT
+        u.tenant_id,
+        COUNT(*) AS profile_record_count,
+        COUNT(DISTINCT p.user_id) AS profile_user_count
+    FROM dim_user_profile p
+    JOIN dim_user u
+      ON p.user_id = u.user_id
+    GROUP BY u.tenant_id
+    ORDER BY profile_user_count DESC, profile_record_count DESC;
+prompt_summary: >
+  dim_user_profile 是用户 profile / device preference 记录表，不是一人一行的唯一用户维表。
+  user_id 可 JOIN dim_user.user_id，但 user_id 本身不唯一。
+  统计 profile 记录数用 COUNT(*)，统计用户数必须 COUNT(DISTINCT user_id)。
+  多数重复 user_id 体现为 device_os 不同，说明用户可能有多设备记录。
+  当前没有 updated_at 或 is_primary_device，不能默认取“最新”或“主设备”。
+manual_review:
+  required: true
+  reviewed: true
+  review_source: outputs/knowledge/validation/dim_user_profile_validation.md
+  additional_review_source: user_manual_sql_check
+  checklist:
+    - item: user_id 外键覆盖率 100%
+      confirmed: true
+    - item: user_id 存在 2500 条重复
+      confirmed: true
+    - item: language 无空值
+      confirmed: true
+    - item: timezone 无空值
+      confirmed: true
+    - item: device_os 无空值
+      confirmed: true
+    - item: 多数重复用户表现为 device_os 不同，可能表示一人多设备
+      confirmed: true
+    - item: 也存在部分完全重复 profile 行
+      confirmed: true
+    - item: 统计用户数时必须使用 COUNT(DISTINCT user_id)
+      confirmed: true
+agent_usage_policy:
+  table_is_not_unique_user_dimension: true
+  user_id_not_unique: true
+  count_users_with_distinct_user_id: true
+  count_profile_records_with_count_star: true
+  device_os_can_be_multi_valued_per_user: true
+  do_not_assume_primary_device: true
+  require_dedup_strategy_for_one_profile_per_user: true
+status:
+  authoring_status: validated_with_warnings
+  profile_filled: true
+  grain_validated: partial
+  dq_validated: true
+  ready_for_agent: true

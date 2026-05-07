@@ -1,0 +1,276 @@
+table_name: fact_campaign
+card_version: v0.1
+card_type: table_card
+domain:
+  id: G
+  name: 增长与实验
+business_meaning: '营销活动。
+
+  数据字典将该表归入“增长与实验”域。
+
+  数据字典行数说明为：30。'
+grain: 数据字典说明主键：`campaign_id`。
+primary_key:
+- campaign_id
+natural_key_candidate: []
+profile:
+  row_count: 30
+  column_count: 7
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: validated
+  validation_file: outputs/knowledge/validation/fact_campaign_validation.md
+columns:
+  campaign_id:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: 活动 ID（`CMP001` ~ `CMP030`）
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 30
+      distinct_rate: 1.0
+      min: CMP001
+      max: CMP030
+      sample_values:
+      - CMP001
+      - CMP002
+      - CMP003
+      - CMP004
+      - CMP005
+      is_possible_primary_key: true
+    notes: []
+  name:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: 活动名
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 30
+      distinct_rate: 1.0
+      min: Campaign_Fall_3
+      max: Campaign_Winter_7
+      sample_values:
+      - Campaign_Fall_3
+      - Campaign_Launch_11
+      - Campaign_Launch_12
+      - Campaign_Launch_23
+      - Campaign_Launch_4
+      is_possible_primary_key: true
+    notes: []
+  channel:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: 渠道。枚举：google_ads / linkedin / content_marketing / referral / webinar / email_drip
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 6
+      distinct_rate: 0.2
+      min: content_marketing
+      max: webinar
+      sample_values:
+      - content_marketing
+      - email_drip
+      - google_ads
+      - linkedin
+      - referral
+      is_possible_primary_key: false
+    notes: []
+  start_date:
+    type: date
+    semantic_type: event_time
+    business_meaning: 开始日
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 30
+      distinct_rate: 1.0
+      min: '2025-04-03'
+      max: '2026-02-22'
+      sample_values:
+      - '2025-04-03'
+      - '2025-04-09'
+      - '2025-04-15'
+      - '2025-04-16'
+      - '2025-04-19'
+      is_possible_primary_key: true
+    notes: []
+  end_date:
+    type: date
+    semantic_type: event_time
+    business_meaning: 结束日
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 27
+      distinct_rate: 0.9
+      min: '2025-05-09'
+      max: '2026-04-21'
+      sample_values:
+      - '2025-05-09'
+      - '2025-05-11'
+      - '2025-05-24'
+      - '2025-05-25'
+      - '2025-05-28'
+      is_possible_primary_key: false
+    notes: []
+  budget:
+    type: double
+    semantic_type: metric
+    business_meaning: 预算（USD）
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 30
+      distinct_rate: 1.0
+      min: '1726.96'
+      max: '48313.16'
+      sample_values:
+      - '1726.96'
+      - '3012.37'
+      - '4685.48'
+      - '5715.66'
+      - '7367.66'
+      is_possible_primary_key: true
+    notes: []
+  target_segment:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: 目标人群。枚举：new_users / enterprise / dormant / trial / all
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 0.1667
+      min: all
+      max: trial
+      sample_values:
+      - all
+      - dormant
+      - enterprise
+      - new_users
+      - trial
+      is_possible_primary_key: false
+    notes: []
+join_keys: []
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - campaign_id
+  time_columns:
+  - start_date
+  - end_date
+  metric_columns:
+  - budget
+  dimension_columns:
+  - campaign_id
+  - name
+  - channel
+  - start_date
+  - end_date
+  - target_segment
+  enum_columns:
+  - channel
+  - target_segment
+  json_columns: []
+  text_columns:
+  - name
+recommended_use_cases:
+- 基于数据字典理解 fact_campaign 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 按数据字典声明的枚举字段做结构分布分析
+- 按数据字典口径区分金额、收入、付款、发票或预算类指标
+preferred_metrics:
+  entity_count:
+    expression: COUNT(DISTINCT campaign_id)
+    meaning: 实体或记录数量
+    applicable_grain: table_grain
+    note: '按当前正式卡 grain 与 validation 结果解释统计口径。
+
+      对于非单列主键表，应结合 grain 与 distinct 规则解释记录数。'
+  budget_sum:
+    expression: SUM(budget)
+    meaning: budget 的SUM指标
+    applicable_grain: table_grain
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+known_traps:
+- trap: 把数据字典声明的主键直接当作已验证事实。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`campaign_id`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_campaign_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 30
+    column_count: 7
+    validation_checks_total: 14
+    validation_checks_failed: 0
+    validation_checks_warning: 0
+    key_findings:
+    - fact_campaign 行数为 30，字段数为 7。
+    - 主键候选当前唯一。
+    - 主要 SQL patterns 已执行。
+    warnings: []
+  interpretation:
+  - validation 脚本已通过，当前卡已升级为正式 table card。
+  - 主键、粒度、外键覆盖率与主要 SQL pattern 以当前 validation report 为准。
+  - fact_campaign 行数为 30，字段数为 7。
+  - 主键候选当前唯一。
+  - 主要 SQL patterns 已执行。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: "SELECT\n start_date AS time_key,\n COUNT(*) AS row_count\nFROM fact_campaign\nGROUP BY start_date\nORDER BY start_date;"
+  enum_distribution: "SELECT\n channel,\n COUNT(DISTINCT campaign_id) AS entity_count\nFROM fact_campaign\nGROUP BY channel\nORDER BY entity_count DESC, channel;"
+  metric_trend: "SELECT\n start_date AS time_key,\n ROUND(SUM(budget), 2) AS total_budget\nFROM fact_campaign\nGROUP BY start_date\nORDER BY start_date;"
+prompt_summary: 'fact_campaign 是 营销活动。
+
+  数据字典声明 grain 为：待补充。
+
+  数据字典主键说明为：`campaign_id`。'
+manual_review:
+  reviewer: null
+  review_status: validated
+  review_notes:
+  - 当前卡已结合 validation report 完成正式化整理。
+  - 主键、自然键、JOIN 覆盖率与字段口径以当前 validation report 和正式卡内容为准。
+  - 当前卡已结合 validation report 升级为正式版本。
+  checklist:
+  - confirmed: true
+    item: 数据字典声明主键为：`campaign_id`，已结合当前数据完成唯一性核对。
+  - confirmed: true
+    item: 数据字典说明行数约为：30，已与当前 profile 和 DuckDB 数据核对。
+  - confirmed: true
+    item: fact_campaign 行数为 30，字段数为 7。
+  - confirmed: true
+    item: 主键候选当前唯一。
+  - confirmed: true
+    item: 主要 SQL patterns 已执行。
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_campaign_validation.md
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

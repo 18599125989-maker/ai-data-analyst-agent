@@ -23,8 +23,11 @@
 因此，本项目采用“知识增强的多 Agent 数据分析架构”：
 - 用离线 profiling + table card + validation 先把数据库知识结构化
 - 用 retrieval_v2 把表、字段、指标、JOIN、陷阱、策略、recipe 编译成可检索索引
+- 在结构化检索上叠加 embedding，形成 hybrid retrieval
 - 在 SQL 生成前先做 grain / DQ 防护
-- 最终输出不仅有 SQL，还有分析计划、风险提示、结果预览和图表建议
+- 在 SQL 执行后补充引用校验、结果校验与单轮 repair
+- 用 answer memory 记录成功案例，作为后续相似问题的弱参考
+- 最终输出不仅有 SQL，还有分析计划、风险提示、结果预览、图表建议与 lineage
 
 项目定位更接近“可解释的数据分析 Agent”，而不是单纯的“SQL 生成器”。
 
@@ -34,8 +37,11 @@
 
 - 支持中文自然语言提问，自动生成 DuckDB SQL
 - 基于知识库检索相关表、字段、指标、JOIN 路径和参考 recipe
+- 支持 hybrid retrieval：保留关键词检索，并用 embedding 增强 table / field / metric / recipe 的语义召回
 - 在 SQL 生成前自动加入 grain / DQ 约束，降低错误聚合风险
 - 支持 SQL 执行失败后的自动修复
+- 支持 SQL 引用校验与结果校验，减少“能执行但结果明显不合理”的情况
+- 支持 answer memory，将成功分析沉淀为弱参考历史案例
 - 输出分析计划、SQL、结果表、风险提示和图表建议
 - 支持将查询结果保存为日志，便于复盘和评审展示
 - 支持 Streamlit 前端，便于比赛演示
@@ -54,6 +60,7 @@
 
 2. `Agent2: Knowledge Retriever`
    - 从 `outputs/knowledge/retrieval_v2/` 中检索相关表、字段、指标、JOIN、recipe
+   - 对 table / field / metric / recipe 使用 hybrid retrieval
    - 为后续 SQL 生成提供业务上下文，而不是只给 schema
 
 3. `Agent3: Grain & DQ Guard`
@@ -68,22 +75,26 @@
 5. `Agent5: SQL Executor + Repair`
    - 执行 SQL
    - 若失败，则携带错误信息触发一次修复
+   - 若 SQL 引用校验或结果校验未通过，也会进入 repair
 
 6. `Agent6: Answer + Visualization`
    - 输出结果表
    - 根据结果和规则生成图表
-   - 保存 query log 便于展示与复盘
+   - 生成 lineage，保存 query log
+   - 异步写入 answer memory，不阻塞主结果返回
 
 ### 3.2 当前可输出内容
 
 无论在 CLI 还是 Streamlit 前端，当前系统都可以输出：
 - 用户问题的结构化理解结果
 - 候选表 / 候选 recipe
+- 候选历史相似案例（若 answer memory 可用）
 - Grain 与数据质量风险提示
 - 中文分析计划
 - 生成后的 SQL
 - SQL 执行结果预览
 - 图表建议与已生成图表
+- lineage 摘要
 - 查询日志路径
 
 ---
@@ -104,6 +115,8 @@
 - 业务 table card 层
 - validation / audit 层
 - retrieval index 层
+- embedding retrieval 层
+- answer memory 层
 - visualization rule 层
 
 ### 4.2 知识库构建流程
@@ -117,7 +130,9 @@
 5. 编写 / 校验 table card
 6. 对 table card 做审计与 validation
 7. 编译 retrieval_v2 检索索引
-8. 编译 visualization 规则
+8. 生成 embedding index
+9. 编译 visualization 规则
+10. 按需构建 answer memory index
 
 ### 4.3 知识库的组成
 
@@ -156,6 +171,16 @@
     - `policy_index.json`
     - `recipe_index.json`
     - `recipes.json`
+    - `table_embedding_index.json`
+    - `field_embedding_index.json`
+    - `metric_embedding_index.json`
+    - `recipe_embedding_index.json`
+    - `answer_memory_index.json`
+    - `answer_memory_embedding_index.json`
+
+- `memory/answer_memory.jsonl`
+  - 成功查询后异步追加的历史案例记忆
+  - 用于后续相似问题的弱参考检索
 
 - `visualization_rules.json`
   - 可视化推荐规则
@@ -172,6 +197,10 @@
 - `trap_index`：常见误用方式与规避建议
 - `policy_index`：可转化为 prompt 约束的策略标记
 - `recipe_index`：可复用的分析问题模式
+
+当前实现中：
+- `table / field / metric / recipe` 支持 hybrid retrieval
+- `join / trap / policy` 继续保持结构化关键词检索，避免语义相关但结构错误的 JOIN 进入 SQL
 
 这使得 Agent 在回答中文业务问题时，不再是“猜”，而是“先检索、再约束、后生成”。
 
@@ -211,6 +240,12 @@
 - [src/03_6_build_retrieval_indexes_from_cards_v2.py](/Users/zhang/Desktop/飞书比赛/src/03_6_build_retrieval_indexes_from_cards_v2.py)
   - 从正式 table card 编译出 `retrieval_v2`
 
+- [src/03_8_build_embedding_indexes.py](/Users/zhang/Desktop/飞书比赛/src/03_8_build_embedding_indexes.py)
+  - 为 table / field / metric / recipe 构建 embedding index
+
+- [src/03_8_build_recipe_knowledge.py](/Users/zhang/Desktop/飞书比赛/src/03_8_build_recipe_knowledge.py)
+  - 构建结构化 recipe 知识
+
 - [src/03_7_build_visualization_knowledge.py](/Users/zhang/Desktop/飞书比赛/src/03_7_build_visualization_knowledge.py)
   - 生成可视化规则文件
 
@@ -218,11 +253,17 @@
 
 - [src/04_agent_cli.py](/Users/zhang/Desktop/飞书比赛/src/04_agent_cli.py)
   - 主 Agent 流程
-  - 包含多 Agent 编排、SQL 执行、修复、日志保存
+  - 包含多 Agent 编排、hybrid retrieval、SQL 执行、repair、validator、lineage、answer memory 与日志保存
 
 - [src/05_streamlit_app.py](/Users/zhang/Desktop/飞书比赛/src/05_streamlit_app.py)
   - Streamlit 演示前端
   - 用于中文问题输入、结果展示和图表展示
+
+- [src/06_lineage.py](/Users/zhang/Desktop/飞书比赛/src/06_lineage.py)
+  - 查询血缘构建
+
+- [src/08_build_answer_memory_index.py](/Users/zhang/Desktop/飞书比赛/src/08_build_answer_memory_index.py)
+  - 将 answer memory 编译成检索索引
 
 ---
 
@@ -249,6 +290,7 @@
 │   │   ├── validation/
 │   │   ├── recipes.json
 │   │   └── visualization_rules.json
+│   ├── memory/
 │   ├── sample/
 │   └── logs/
 ├── cloudwork.duckdb
@@ -272,20 +314,47 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 7.2 API Key 配置
+### 7.2 环境变量配置
 
 当前 LLM 调用默认接入 SiliconFlow 兼容接口。  
-请在项目根目录创建 `.env` 文件，例如：
+请在项目根目录创建 `.env` 文件。除了 API Key，数据目录和 DuckDB 路径也支持通过环境变量覆盖：
 
 ```bash
 SILICONFLOW_API_KEY=你的APIKey
 SILICONFLOW_API_URL=https://api.siliconflow.cn/v1/chat/completions
 SILICONFLOW_MODEL=Qwen/Qwen2.5-72B-Instruct
+SILICONFLOW_EMBEDDING_API_URL=https://api.siliconflow.cn/v1/embeddings
+SILICONFLOW_EMBEDDING_MODEL=BAAI/bge-m3
+CSV_DIR=for_contestants/csv
+DUCKDB_PATH=cloudwork.duckdb
 ```
 
-### 7.3 从零开始运行
+说明：
 
-建议按以下顺序执行：
+- `SILICONFLOW_API_KEY`：必填，用于调用 LLM 接口
+- `SILICONFLOW_API_URL`、`SILICONFLOW_MODEL`：可选，不填时使用代码中的默认值
+- `SILICONFLOW_EMBEDDING_API_URL`、`SILICONFLOW_EMBEDDING_MODEL`：可选，用于 hybrid retrieval 的 embedding 构建与查询
+- `CSV_DIR`：可选，CSV 数据目录；默认值为项目根目录下的 `for_contestants/csv`
+- `DUCKDB_PATH`：可选，DuckDB 数据库文件路径；默认值为项目根目录下的 `cloudwork.duckdb`
+- `CSV_DIR` 和 `DUCKDB_PATH` 支持相对路径或绝对路径；相对路径会按项目根目录解析
+
+### 7.3 快速启动
+
+如果仓库中的数据库和知识库产物已经存在，可直接启动：
+
+```bash
+python3 src/04_agent_cli.py
+```
+
+或启动 Streamlit 前端：
+
+```bash
+streamlit run src/05_streamlit_app.py
+```
+
+### 7.4 完整复现
+
+如果需要从原始 CSV 全量重建，请按以下顺序执行：
 
 ```bash
 python3 src/00_load_data.py
@@ -293,19 +362,23 @@ python3 src/01_profile_tables.py
 python3 src/02_sample_questions.py
 python3 src/03_build_knowledge_base.py
 python3 src/03_6_build_retrieval_indexes_from_cards_v2.py
+python3 src/03_8_build_recipe_knowledge.py
+python3 src/03_8_build_embedding_indexes.py
 python3 src/03_7_build_visualization_knowledge.py
 ```
 
-### 7.4 启动 CLI
-
-```bash
-python3 src/04_agent_cli.py
-```
-
-### 7.5 启动 Streamlit 前端
+然后再启动：
 
 ```bash
 streamlit run src/05_streamlit_app.py
+```
+
+### 7.5 可选步骤
+
+如果需要提前构建 answer memory 检索索引，可额外执行：
+
+```bash
+python3 src/08_build_answer_memory_index.py
 ```
 
 ---
@@ -314,9 +387,10 @@ streamlit run src/05_streamlit_app.py
 
 - 面向中文业务分析场景设计
 - 采用多 Agent 架构，职责清晰
+- 采用 hybrid retrieval，在结构化检索基础上增强语义召回
 - 强调 grain / DQ / JOIN 风险控制
 - 通过 table card + validation + retrieval_v2 形成可复用知识底座
-- 支持 SQL 修复、结果可视化和前端演示
+- 支持 SQL repair、结果校验、lineage、answer memory 和前端演示
 
 如果只用一句话概括本项目：
 
@@ -382,3 +456,11 @@ streamlit run src/05_streamlit_app.py
   - 维度拆分：按行业、套餐、国家等维度重新分组
   - 时间条件 / 时间维度：只看某个月、按月 / 按天、最近 30 天
 - 第一版只保存上一轮上下文，避免长期历史污染 SQL 生成。
+
+### 4. Answer Memory 持续学习
+
+系统支持轻量的 answer memory：
+- 成功查询后，会异步生成一条保守的历史案例描述，写入 `outputs/memory/answer_memory.jsonl`
+- 后续可编译成 `answer_memory_index.json` 与 `answer_memory_embedding_index.json`
+- Agent2 最多只检索 1 条历史相似案例，作为 SQL Planner 的弱参考
+- answer memory 不会覆盖 table / field / metric / join / trap / policy，也不会覆盖 Agent3 guardrails

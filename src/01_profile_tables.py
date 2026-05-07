@@ -17,10 +17,11 @@ import json
 from pathlib import Path
 import duckdb
 
+try:
+    from config_paths import DB_PATH, PROJECT_ROOT
+except ModuleNotFoundError:
+    from src.config_paths import DB_PATH, PROJECT_ROOT
 
-# 路径配置
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DB_PATH = PROJECT_ROOT / "cloudwork.duckdb"
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "profiles"
 
 # 输出文件路径

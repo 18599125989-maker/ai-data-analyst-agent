@@ -1,0 +1,310 @@
+table_name: dim_plan
+card_version: v0.1
+card_type: table_card
+domain:
+  id: E
+  name: 计费与订阅
+business_meaning: '套餐维度。
+
+  数据字典将该表归入“计费与订阅”域。
+
+  数据字典行数说明为：5。'
+grain: 数据字典说明主键：`plan_tier`。
+primary_key:
+- plan_tier
+natural_key_candidate:
+- plan_name
+natural_key_status:
+  is_unique: true
+  duplicated_group_count: 0
+  note: plan_name 在当前样本中看似唯一，但业务上更推荐使用 plan_tier 做稳定关联键。
+profile:
+  row_count: 5
+  column_count: 6
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  validation_file: outputs/knowledge/validation/dim_plan_validation.md
+  profile_status: validated
+columns:
+  plan_name:
+    type: string
+    semantic_type: dimension
+    business_meaning: 展示名（Free / Starter / Professional / Business / Enterprise）
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 1.0
+      min: Business
+      max: Starter
+      sample_values:
+      - Business
+      - Enterprise
+      - Free
+      - Professional
+      - Starter
+      is_possible_primary_key: true
+    notes:
+    - 当前 profile 显示 plan_name 唯一，但稳定性仍弱于 plan_tier。
+  plan_tier:
+    type: string
+    semantic_type: primary_key
+    business_meaning: 等级 key（free / starter / pro / business / enterprise）
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 1.0
+      min: business
+      max: starter
+      sample_values:
+      - business
+      - enterprise
+      - free
+      - pro
+      - starter
+      is_possible_primary_key: true
+    notes:
+    - 跨表关联优先使用 plan_tier。
+    - 仍需验证脚本确认唯一性和下游覆盖率。
+  monthly_price:
+    type: integer
+    semantic_type: metric
+    business_meaning: 月度标价（USD / seat）
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 1.0
+      min: '0'
+      max: '499'
+      sample_values:
+      - '0'
+      - '29'
+      - '79'
+      - '199'
+      - '499'
+      is_possible_primary_key: true
+    notes:
+    - monthly_price 是标价，不是实际收入。
+  annual_price:
+    type: integer
+    semantic_type: metric
+    business_meaning: 年度标价（USD / seat）
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 1.0
+      min: '0'
+      max: '4990'
+      sample_values:
+      - '0'
+      - '290'
+      - '790'
+      - '1990'
+      - '4990'
+      is_possible_primary_key: true
+    notes:
+    - 是否符合固定年付折扣规则，需验证脚本观察但不应先写死业务结论。
+  seat_limit:
+    type: string
+    semantic_type: dimension
+    business_meaning: 席位上限，数字或字符串 `"unlimited"`
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 1.0
+      min: '100'
+      max: unlimited
+      sample_values:
+      - '100'
+      - '20'
+      - '5'
+      - '500'
+      - unlimited
+      is_possible_primary_key: true
+    notes:
+    - seat_limit 需要作为“文本维度 + 条件解析”处理，不应直接假设可安全 CAST 为整数。
+  features:
+    type: string
+    semantic_type: text
+    business_meaning: 包含功能 key 列表（逗号分隔，或 `"all"`）
+    references: dim_feature.feature_key
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 1.0
+      min: all
+      max: im,docs,sheets,calendar,video_conf,task,base,wiki,approval
+      sample_values:
+      - all
+      - im,docs
+      - im,docs,sheets,calendar
+      - im,docs,sheets,calendar,video_conf,task
+      - im,docs,sheets,calendar,video_conf,task,base,wiki,approval
+      is_possible_primary_key: true
+    notes:
+    - 解析 features 前需确认分隔规则和 all 的业务语义。
+    - 该字段适合展示和轻量规则判断，不建议在首版 Agent 中做复杂拆分。
+join_keys:
+- column: plan_tier
+  references: fact_subscription.plan_tier
+  relationship: one_to_many
+  join_condition: dim_plan.plan_tier = fact_subscription.plan_tier
+  purpose: '数据字典说明中的主关联路径。
+
+    当前正式卡可作为推荐 JOIN 路径使用。'
+  risk_level: low
+  validation_status: passed
+  note: '数据字典 JOIN 参考显示 dim_plan 通过 tier 匹配关联订阅、实收收入和 NPS。
+
+    当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。'
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - plan_tier
+  time_columns: []
+  metric_columns:
+  - monthly_price
+  - annual_price
+  dimension_columns:
+  - plan_name
+  - plan_tier
+  - seat_limit
+  enum_columns:
+  - plan_name
+  - plan_tier
+  - seat_limit
+  json_columns: []
+  text_columns:
+  - features
+recommended_use_cases:
+- 基于数据字典理解 dim_plan 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+preferred_metrics:
+  plan_count:
+    expression: COUNT(DISTINCT plan_tier)
+    meaning: 套餐数
+    applicable_grain: 套餐级
+    note: 当前样本预期为 5。
+  listed_monthly_price:
+    expression: monthly_price
+    meaning: 月标价
+    applicable_grain: 套餐级
+    note: 仅表示价格表中的标价。
+known_traps:
+- trap: 把数据字典声明的主键直接当作已验证事实。
+  consequence: 如果当前 DuckDB 数据与字典存在偏差，可能误判粒度或唯一性。
+  prevention: 将“`plan_tier`”只视为数据字典假设，必须以后续 validation 脚本结果为准。
+- trap: 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: outputs/knowledge/validation/dim_plan_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 5
+    column_count: 6
+    validation_checks_total: 15
+    validation_checks_failed: 0
+    validation_checks_warning: 0
+    key_findings:
+    - dim_plan 行数为 5，字段数为 6。
+    - plan_tier 当前唯一，可支持“一行一个套餐”的粒度判断。
+    - plan_name 重复数为 0。
+    - fact_subscription.plan_tier 全部可以关联到 dim_plan.plan_tier。
+    - seat_limit 中可直接解析为整数的行数为 4.0，unlimited 行数为 1.0。
+    - monthly_price 范围为 0 到 499。
+    - annual_price 与 monthly_price * 10 不一致的行数为 0.0。
+    - 主要 SQL patterns 均可执行。
+    warnings: []
+  interpretation:
+  - validation 脚本已通过，当前卡已升级为正式 table card。
+  - 主键、粒度、外键覆盖率与主要 SQL pattern 以当前 validation report 为准。
+  - dim_plan 行数为 5，字段数为 6。
+  - plan_tier 当前唯一，可支持“一行一个套餐”的粒度判断。
+  - plan_name 重复数为 0。
+  - fact_subscription.plan_tier 全部可以关联到 dim_plan.plan_tier。
+  - seat_limit 中可直接解析为整数的行数为 4.0，unlimited 行数为 1.0。
+  - monthly_price 范围为 0 到 499。
+  - annual_price 与 monthly_price * 10 不一致的行数为 0.0。
+  - 主要 SQL patterns 均可执行。
+validation_checks:
+- basic_table_profile
+- column_count
+- plan_tier_uniqueness
+- duplicated_plan_tier_examples
+- plan_name_uniqueness
+- duplicated_plan_name_examples
+- subscription_join_coverage
+- subscription_unmatched_examples
+- seat_limit_distribution
+- seat_limit_parse_check
+- price_range_check
+- annual_vs_monthly_price_check
+- sql_pattern_plan_price_table
+- sql_pattern_subscription_count_by_plan
+- sql_pattern_mrr_by_plan
+sql_patterns:
+  plan_price_table:
+    description: 展示套餐价格和席位限制。
+    sql: "SELECT\n plan_tier,\n plan_name,\n monthly_price,\n annual_price,\n seat_limit\nFROM dim_plan\nORDER BY monthly_price, plan_tier;"
+  subscription_count_by_plan:
+    description: 统计每个套餐对应的订阅数。
+    sql: "SELECT\n p.plan_tier,\n p.plan_name,\n COUNT(DISTINCT s.sub_id) AS subscription_count\nFROM dim_plan p\nLEFT JOIN fact_subscription s\n ON p.plan_tier = s.plan_tier\nGROUP BY p.plan_tier, p.plan_name\nORDER BY subscription_count DESC, p.plan_tier;"
+  mrr_by_plan:
+    description: 统计每个套餐的订阅 MRR。
+    sql: "SELECT\n p.plan_tier,\n p.plan_name,\n SUM(s.mrr) AS total_mrr\nFROM dim_plan p\nLEFT JOIN fact_subscription s\n ON p.plan_tier = s.plan_tier\nGROUP BY p.plan_tier, p.plan_name\nORDER BY total_mrr DESC NULLS LAST, p.plan_tier;"
+prompt_summary: 'dim_plan 是 套餐维度。
+
+  数据字典声明 grain 为：待补充。
+
+  数据字典主键说明为：`plan_tier`。
+
+  常用 JOIN 假设包括：plan_tier -> fact_subscription.plan_tier。'
+manual_review:
+  reviewer: null
+  review_status: validated
+  review_notes:
+  - 需要人工确认 features 的拆分规则和 all 的精确含义。
+  - 需要人工确认 annual_price 是否仅为 monthly_price * 10 这一价格策略。
+  - 当前卡已结合 validation report 升级为正式版本。
+  checklist:
+  - confirmed: true
+    item: 数据字典声明主键为：`plan_tier`，已结合当前数据完成唯一性核对。
+  - confirmed: true
+    item: 数据字典说明行数约为：5，已与当前 profile 和 DuckDB 数据核对。
+  - confirmed: true
+    item: 数据字典给出的 JOIN 假设：dim_plan.plan_tier -> fact_subscription.plan_tier，已结合当前数据完成覆盖率与口径核对。
+  - confirmed: true
+    item: dim_plan 行数为 5，字段数为 6。
+  - confirmed: true
+    item: plan_tier 当前唯一，可支持“一行一个套餐”的粒度判断。
+  - confirmed: true
+    item: plan_name 重复数为 0。
+  - confirmed: true
+    item: fact_subscription.plan_tier 全部可以关联到 dim_plan.plan_tier。
+  - confirmed: true
+    item: seat_limit 中可直接解析为整数的行数为 4.0，unlimited 行数为 1.0。
+  - confirmed: true
+    item: monthly_price 范围为 0 到 499。
+  - confirmed: true
+    item: annual_price 与 monthly_price * 10 不一致的行数为 0.0。
+  - confirmed: true
+    item: 主要 SQL patterns 均可执行。
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/dim_plan_validation.md
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

@@ -55,5 +55,699 @@
       "total_mrr.png"
     ],
     "source_dir": "outputs/sample/question_3"
+  },
+  {
+    "recipe_id": "monthly_active_users_by_industry",
+    "title": "按行业的月度活跃用户趋势",
+    "analysis_type": "time_trend_with_tenant_profile_join",
+    "intent": "按月、按行业统计活跃用户数趋势",
+    "canonical_question": "按月统计不同行业的活跃用户数趋势，并生成折线图。",
+    "typical_questions": [
+      "按月统计不同行业的活跃用户数趋势，并生成折线图。",
+      "不同行业的月度活跃用户趋势如何？",
+      "请按行业分组展示每月活跃用户数变化。"
+    ],
+    "main_tables": [
+      "fact_daily_usage",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "required_fields": [
+      "fact_daily_usage.user_id",
+      "fact_daily_usage.dt",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.industry"
+    ],
+    "optional_fields": [
+      "dim_tenant.country",
+      "dim_tenant.size_tier",
+      "dim_tenant.name"
+    ],
+    "metrics": [
+      {
+        "name": "monthly_active_users",
+        "expression": "COUNT(DISTINCT fact_daily_usage.user_id)",
+        "meaning": "月度活跃用户数"
+      }
+    ],
+    "dimensions": [
+      "month",
+      "industry"
+    ],
+    "join_paths": [
+      "fact_daily_usage.user_id = dim_user.user_id",
+      "dim_user.tenant_id = dim_tenant.tenant_id"
+    ],
+    "grain": "先按 fact_daily_usage 的 user_id + dt 用户日级粒度识别活跃记录，再按月份和租户行业聚合，活跃用户数使用 COUNT(DISTINCT user_id)。",
+    "query_sql": "SELECT\n    DATE_TRUNC('month', d.dt) AS month,\n    t.industry,\n    COUNT(DISTINCT d.user_id) AS monthly_active_users\nFROM fact_daily_usage d\nJOIN dim_user u\n    ON d.user_id = u.user_id\nJOIN dim_tenant t\n    ON u.tenant_id = t.tenant_id\nGROUP BY month, t.industry\nORDER BY month, t.industry;\n",
+    "insight": "# Monthly Active Users by Industry Insight\n\n## 使用表\n- fact_daily_usage\n- dim_user\n- dim_tenant\n\n## 使用字段\n- fact_daily_usage.user_id\n- fact_daily_usage.dt\n- dim_user.user_id\n- dim_user.tenant_id\n- dim_tenant.tenant_id\n- dim_tenant.industry\n\n## 口径说明\n- fact_daily_usage 的粒度是一行一个 user_id 在一个 dt 的日级使用汇总记录。\n- 统计月度活跃用户数时，应按月份和行业聚合，并使用 COUNT(DISTINCT d.user_id)。\n- fact_daily_usage 没有 tenant_id，如需关联 industry / country / size_tier / tenant name，必须先通过 dim_user 再关联 dim_tenant。\n- 禁止使用 fact_daily_usage.user_id = dim_tenant.user_id。\n",
+    "risks": [
+      "fact_daily_usage 没有 tenant_id，不能直接 JOIN dim_tenant。",
+      "必须通过 dim_user 将 user_id 映射到 tenant_id。",
+      "活跃用户数应使用 COUNT(DISTINCT user_id)，不要使用 COUNT(*)。",
+      "按行业分组时，industry 来自 dim_tenant，不是 fact_daily_usage 字段。"
+    ],
+    "keywords": [
+      "月度",
+      "活跃用户",
+      "行业",
+      "趋势",
+      "折线图",
+      "fact_daily_usage",
+      "dim_user",
+      "dim_tenant",
+      "industry"
+    ],
+    "confidence": "high",
+    "output_files": [
+      "monthly_active_users_by_industry.csv",
+      "monthly_active_users_by_industry.png",
+      "query.sql",
+      "insight.md"
+    ],
+    "source_dir": "manual_recipe_extension"
+  },
+  {
+    "recipe_id": "tenant_count_by_country",
+    "name": "国家客户数量分布",
+    "intent": "按国家统计客户数量并做分布对比",
+    "canonical_question": "不同国家的客户数量是多少？请生成柱状图。",
+    "typical_questions": [
+      "不同国家的客户数量是多少？请生成柱状图。",
+      "按国家看客户数分布是怎样的？",
+      "请统计各国家客户数量，并画一个柱状图。"
+    ],
+    "description": "基于 dim_tenant 按 country 统计去重客户数，用于观察客户地域分布。",
+    "required_tables": [
+      "dim_tenant"
+    ],
+    "optional_tables": [],
+    "required_fields": [
+      "dim_tenant.tenant_id",
+      "dim_tenant.country"
+    ],
+    "optional_fields": [
+      "dim_tenant.name",
+      "dim_tenant.industry",
+      "dim_tenant.size_tier"
+    ],
+    "metrics": [
+      {
+        "name": "tenant_count",
+        "expression": "COUNT(DISTINCT tenant_id)",
+        "meaning": "去重客户数量"
+      }
+    ],
+    "dimensions": [
+      "country"
+    ],
+    "join_paths": [],
+    "grain": "按国家聚合；实体口径为 tenant 去重数。",
+    "sql_skeleton": "SELECT\n    country,\n    COUNT(DISTINCT tenant_id) AS tenant_count\nFROM dim_tenant\nGROUP BY country\nORDER BY tenant_count DESC\nLIMIT 30;",
+    "risks": [
+      "统计客户数量时应使用 COUNT(DISTINCT tenant_id)，不要直接用 COUNT(*) 替代实体数。",
+      "country 为空或标准不一致时，可能影响分布解读。"
+    ],
+    "visualization": {
+      "chart_type": "bar",
+      "x": "country",
+      "y": "tenant_count",
+      "reason": "适合做国家间类别对比。"
+    },
+    "confidence": "high",
+    "keywords": [
+      "国家",
+      "客户数量",
+      "tenant",
+      "country",
+      "柱状图",
+      "分布"
+    ]
+  },
+  {
+    "recipe_id": "monthly_new_user_trend",
+    "name": "月度新注册用户趋势",
+    "intent": "按月统计新注册用户趋势",
+    "canonical_question": "每月新注册用户趋势如何？请生成折线图。",
+    "typical_questions": [
+      "每月新注册用户趋势如何？请生成折线图。",
+      "新注册用户按月变化趋势怎么样？",
+      "请按月统计新增注册用户，并画折线图。"
+    ],
+    "description": "基于 dim_user.register_at 统计每月新注册用户数量，用于观察新增趋势。",
+    "required_tables": [
+      "dim_user"
+    ],
+    "optional_tables": [],
+    "required_fields": [
+      "dim_user.user_id",
+      "dim_user.register_at"
+    ],
+    "optional_fields": [
+      "dim_user.status",
+      "dim_user.tenant_id"
+    ],
+    "metrics": [
+      {
+        "name": "new_user_count",
+        "expression": "COUNT(DISTINCT user_id)",
+        "meaning": "每月新增注册用户数"
+      }
+    ],
+    "dimensions": [
+      "register_month"
+    ],
+    "join_paths": [],
+    "grain": "按月份聚合；实体口径为 user 去重数。",
+    "sql_skeleton": "SELECT\n    DATE_TRUNC('month', register_at) AS register_month,\n    COUNT(DISTINCT user_id) AS new_user_count\nFROM dim_user\nGROUP BY register_month\nORDER BY register_month;",
+    "risks": [
+      "register_at 是注册时间，不代表激活时间或活跃时间。",
+      "如需自然月口径，应注意时区与时间字段截断方式。"
+    ],
+    "visualization": {
+      "chart_type": "line",
+      "x": "register_month",
+      "y": "new_user_count",
+      "reason": "适合展示时间趋势。"
+    },
+    "confidence": "high",
+    "keywords": [
+      "月度",
+      "新增用户",
+      "注册",
+      "趋势",
+      "折线图"
+    ]
+  },
+  {
+    "recipe_id": "mrr_by_plan_tier",
+    "name": "套餐 MRR 对比",
+    "intent": "按套餐统计活跃订阅 MRR",
+    "canonical_question": "不同套餐的月度 MRR 对比如何？",
+    "typical_questions": [
+      "不同套餐的月度 MRR 对比如何？",
+      "各套餐的 MRR 分布是怎样的？",
+      "请统计活跃订阅在不同套餐下的 MRR 对比。"
+    ],
+    "description": "基于 fact_subscription 统计 active 订阅的订阅数与 MRR。",
+    "required_tables": [
+      "fact_subscription"
+    ],
+    "optional_tables": [
+      "dim_plan"
+    ],
+    "required_fields": [
+      "fact_subscription.sub_id",
+      "fact_subscription.plan_tier",
+      "fact_subscription.status",
+      "fact_subscription.mrr"
+    ],
+    "optional_fields": [
+      "dim_plan.plan_tier",
+      "dim_plan.monthly_price"
+    ],
+    "metrics": [
+      {
+        "name": "active_subscription_count",
+        "expression": "COUNT(DISTINCT sub_id)",
+        "meaning": "活跃订阅数"
+      },
+      {
+        "name": "total_mrr",
+        "expression": "SUM(mrr)",
+        "meaning": "月度经常性收入"
+      }
+    ],
+    "dimensions": [
+      "plan_tier"
+    ],
+    "join_paths": [],
+    "grain": "按套餐聚合；订阅实体口径为 sub_id 去重数。",
+    "sql_skeleton": "SELECT\n    plan_tier,\n    COUNT(DISTINCT sub_id) AS active_subscription_count,\n    SUM(mrr) AS total_mrr\nFROM fact_subscription\nWHERE status = 'active'\nGROUP BY plan_tier\nORDER BY total_mrr DESC;",
+    "risks": [
+      "MRR 是订阅口径，不等于实际回款或实收收入。",
+      "只筛选 status='active' 时，要注意是否符合当前业务定义的有效订阅。",
+      "不要把 COUNT(*) 误解为活跃订阅实体数，应使用 COUNT(DISTINCT sub_id)。"
+    ],
+    "visualization": {
+      "chart_type": "bar",
+      "x": "plan_tier",
+      "y": "total_mrr",
+      "reason": "适合做套餐间收入对比。"
+    },
+    "confidence": "high",
+    "keywords": [
+      "MRR",
+      "套餐",
+      "订阅",
+      "plan_tier",
+      "收入对比"
+    ]
+  },
+  {
+    "recipe_id": "top_tenants_by_revenue",
+    "name": "高收入客户 Top10",
+    "intent": "按客户汇总实际收入并做排名",
+    "canonical_question": "收入最高的前 10 个客户是谁？",
+    "typical_questions": [
+      "收入最高的前 10 个客户是谁？",
+      "请找出总收入最高的 10 个客户。",
+      "按实际收入排名，Top10 客户有哪些？"
+    ],
+    "description": "基于 fact_actual_revenue 按 tenant_id 聚合 actual_revenue 并排序。",
+    "required_tables": [
+      "fact_actual_revenue"
+    ],
+    "optional_tables": [
+      "dim_tenant"
+    ],
+    "required_fields": [
+      "fact_actual_revenue.tenant_id",
+      "fact_actual_revenue.actual_revenue"
+    ],
+    "optional_fields": [
+      "dim_tenant.tenant_id",
+      "dim_tenant.name",
+      "fact_actual_revenue.currency"
+    ],
+    "metrics": [
+      {
+        "name": "total_revenue",
+        "expression": "SUM(actual_revenue)",
+        "meaning": "客户累计实际收入"
+      }
+    ],
+    "dimensions": [
+      "tenant_id"
+    ],
+    "join_paths": [],
+    "grain": "按 tenant_id 聚合收入。",
+    "sql_skeleton": "SELECT\n    tenant_id,\n    SUM(actual_revenue) AS total_revenue\nFROM fact_actual_revenue\nGROUP BY tenant_id\nORDER BY total_revenue DESC\nLIMIT 10;",
+    "risks": [
+      "actual_revenue 与 MRR、发票金额、付款金额不是同一口径。",
+      "如存在多币种，应确认 currency 是否需要统一换算。",
+      "按 tenant_id 排名不等于按客户名称去重，名称展示需要额外确认字段可用性。"
+    ],
+    "visualization": {
+      "chart_type": "bar",
+      "x": "tenant_id",
+      "y": "total_revenue",
+      "reason": "适合做 TopN 排名对比。"
+    },
+    "confidence": "high",
+    "keywords": [
+      "收入",
+      "客户",
+      "top10",
+      "revenue",
+      "tenant_id",
+      "排名"
+    ]
+  },
+  {
+    "recipe_id": "daily_active_user_trend",
+    "name": "每日活跃用户趋势",
+    "intent": "按日统计活跃用户趋势",
+    "canonical_question": "最近一段时间每日活跃用户数趋势如何？",
+    "typical_questions": [
+      "最近一段时间每日活跃用户数趋势如何？",
+      "请看一下 DAU 的每日变化趋势。",
+      "按天统计活跃用户数，并画趋势图。"
+    ],
+    "description": "基于 fact_daily_usage 按 dt 统计每日活跃用户数。",
+    "required_tables": [
+      "fact_daily_usage"
+    ],
+    "optional_tables": [],
+    "required_fields": [
+      "fact_daily_usage.dt",
+      "fact_daily_usage.user_id"
+    ],
+    "optional_fields": [
+      "fact_daily_usage.session_count",
+      "fact_daily_usage.active_duration_sec"
+    ],
+    "metrics": [
+      {
+        "name": "dau",
+        "expression": "COUNT(DISTINCT user_id)",
+        "meaning": "每日活跃用户数"
+      }
+    ],
+    "dimensions": [
+      "dt"
+    ],
+    "join_paths": [],
+    "grain": "按 dt 聚合；实体口径为 user_id 去重数。",
+    "sql_skeleton": "SELECT\n    dt,\n    COUNT(DISTINCT user_id) AS dau\nFROM fact_daily_usage\nGROUP BY dt\nORDER BY dt;",
+    "risks": [
+      "fact_daily_usage 是日汇总行为表，活跃口径依赖其上游定义。",
+      "如果要限定最近一段时间，应在使用时补充时间过滤条件。"
+    ],
+    "visualization": {
+      "chart_type": "line",
+      "x": "dt",
+      "y": "dau",
+      "reason": "适合展示按天趋势。"
+    },
+    "confidence": "high",
+    "keywords": [
+      "DAU",
+      "每日活跃",
+      "趋势",
+      "dt",
+      "折线图"
+    ]
+  },
+  {
+    "recipe_id": "ai_credit_operation_distribution",
+    "name": "AI Credits 操作类型分布",
+    "intent": "分析 AI credits 不同操作类型的事件数与额度分布",
+    "canonical_question": "AI credits 的 Deduct、Earn 和 Refund 分布如何？",
+    "typical_questions": [
+      "AI credits 的 Deduct、Earn 和 Refund 分布如何？",
+      "不同 operation_type 下的 AI credits 事件分布是怎样的？",
+      "请统计 AI credits 操作类型分布，并做柱状图对比。"
+    ],
+    "description": "基于 fact_ai_usage_log 按 operation_type 统计事件数与额度总量。",
+    "required_tables": [
+      "fact_ai_usage_log"
+    ],
+    "optional_tables": [],
+    "required_fields": [
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount"
+    ],
+    "optional_fields": [
+      "fact_ai_usage_log.created_at",
+      "fact_ai_usage_log.model_name"
+    ],
+    "metrics": [
+      {
+        "name": "event_count",
+        "expression": "COUNT(*)",
+        "meaning": "事件条数"
+      },
+      {
+        "name": "total_credits",
+        "expression": "SUM(credits_amount)",
+        "meaning": "credits 额度总和"
+      }
+    ],
+    "dimensions": [
+      "operation_type"
+    ],
+    "join_paths": [],
+    "grain": "按操作类型聚合；记录口径为日志事件。",
+    "sql_skeleton": "SELECT\n    operation_type,\n    COUNT(*) AS event_count,\n    SUM(credits_amount) AS total_credits\nFROM fact_ai_usage_log\nGROUP BY operation_type\nORDER BY event_count DESC;",
+    "risks": [
+      "Deduct、Earn、Refund 不能简单混为净消耗，必须结合 operation_type 单独解释。",
+      "COUNT(*) 统计的是日志事件数，不等于用户数或客户数。",
+      "credits_amount 的正负方向需结合业务定义解释。"
+    ],
+    "visualization": {
+      "chart_type": "bar",
+      "x": "operation_type",
+      "y": "event_count",
+      "reason": "适合做操作类型分布对比。"
+    },
+    "confidence": "high",
+    "keywords": [
+      "AI credits",
+      "Deduct",
+      "Earn",
+      "Refund",
+      "operation_type",
+      "分布"
+    ]
+  },
+  {
+    "recipe_id": "feature_usage_ranking",
+    "name": "功能使用排行",
+    "intent": "按功能统计使用量并做 TopN 排名",
+    "canonical_question": "使用最多的功能有哪些？",
+    "typical_questions": [
+      "使用最多的功能有哪些？",
+      "功能使用量排名是怎样的？",
+      "请统计 feature usage 排行，并展示 Top30。"
+    ],
+    "description": "基于 fact_feature_usage 按 feature_key 统计使用事件量。",
+    "required_tables": [
+      "fact_feature_usage"
+    ],
+    "optional_tables": [
+      "dim_feature"
+    ],
+    "required_fields": [
+      "fact_feature_usage.feature_key"
+    ],
+    "optional_fields": [
+      "fact_feature_usage.action_count",
+      "fact_feature_usage.duration_sec",
+      "dim_feature.feature_key"
+    ],
+    "metrics": [
+      {
+        "name": "usage_count",
+        "expression": "COUNT(*)",
+        "meaning": "功能使用记录数"
+      }
+    ],
+    "dimensions": [
+      "feature_key"
+    ],
+    "join_paths": [],
+    "grain": "按 feature_key 聚合；记录口径为功能使用事件。",
+    "sql_skeleton": "SELECT\n    feature_key,\n    COUNT(*) AS usage_count\nFROM fact_feature_usage\nGROUP BY feature_key\nORDER BY usage_count DESC\nLIMIT 30;",
+    "risks": [
+      "COUNT(*) 统计的是使用事件，不一定等于使用用户数。",
+      "如果不同功能事件上报频率不同，直接比较次数可能有偏差。"
+    ],
+    "visualization": {
+      "chart_type": "bar",
+      "x": "feature_key",
+      "y": "usage_count",
+      "reason": "适合做功能 TopN 排名。"
+    },
+    "confidence": "high",
+    "keywords": [
+      "功能",
+      "使用量",
+      "feature_key",
+      "ranking",
+      "Top30"
+    ]
+  },
+  {
+    "recipe_id": "active_subscription_by_plan",
+    "name": "套餐活跃订阅数",
+    "intent": "按套餐统计活跃订阅数量",
+    "canonical_question": "不同套餐的活跃订阅数量是多少？",
+    "typical_questions": [
+      "不同套餐的活跃订阅数量是多少？",
+      "各套餐当前 active subscription 数量如何？",
+      "请统计不同 plan_tier 的活跃订阅数。"
+    ],
+    "description": "基于 fact_subscription 按 plan_tier 统计 active 订阅数。",
+    "required_tables": [
+      "fact_subscription"
+    ],
+    "optional_tables": [
+      "dim_plan"
+    ],
+    "required_fields": [
+      "fact_subscription.sub_id",
+      "fact_subscription.plan_tier",
+      "fact_subscription.status"
+    ],
+    "optional_fields": [
+      "dim_plan.plan_tier"
+    ],
+    "metrics": [
+      {
+        "name": "active_subscription_count",
+        "expression": "COUNT(DISTINCT sub_id)",
+        "meaning": "活跃订阅数量"
+      }
+    ],
+    "dimensions": [
+      "plan_tier"
+    ],
+    "join_paths": [],
+    "grain": "按套餐聚合；订阅实体口径为 sub_id 去重数。",
+    "sql_skeleton": "SELECT\n    plan_tier,\n    COUNT(DISTINCT sub_id) AS active_subscription_count\nFROM fact_subscription\nWHERE status = 'active'\nGROUP BY plan_tier\nORDER BY active_subscription_count DESC;",
+    "risks": [
+      "COUNT(DISTINCT sub_id) 才是订阅实体口径，不能用 COUNT(*) 代替。",
+      "status='active' 是否等同业务上的有效订阅，需要结合业务定义确认。"
+    ],
+    "visualization": {
+      "chart_type": "bar",
+      "x": "plan_tier",
+      "y": "active_subscription_count",
+      "reason": "适合做套餐间订阅数对比。"
+    },
+    "confidence": "high",
+    "keywords": [
+      "活跃订阅",
+      "套餐",
+      "plan_tier",
+      "subscription",
+      "数量"
+    ]
+  },
+  {
+    "recipe_id": "ai_credit_usage_by_country_via_user_mapping",
+    "name": "通过用户映射的国家维度 AI Credits 使用量",
+    "intent": "通过 user_id_hash 映射链路，将 AI usage log 归属到国家维度后统计 credits 使用量",
+    "canonical_question": "不同国家的 AI credits 使用量是多少？",
+    "typical_questions": [
+      "不同国家的 AI credits 使用量是多少？",
+      "如果通过用户映射到客户国家，各国家的 AI credits 使用量如何？",
+      "请基于 user mapping 统计各国家 AI credits 使用量，并做柱状图。"
+    ],
+    "description": "使用 fact_ai_usage_log -> dim_user_id_mapping -> dim_user -> dim_tenant 的映射路径，将日志归属到国家后汇总 AI credits 使用量。",
+    "required_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user",
+      "dim_tenant"
+    ],
+    "optional_tables": [],
+    "required_fields": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id",
+      "dim_tenant.tenant_id",
+      "dim_tenant.country"
+    ],
+    "optional_fields": [
+      "fact_ai_usage_log.created_at",
+      "dim_tenant.name"
+    ],
+    "metrics": [
+      {
+        "name": "total_credit_amount",
+        "expression": "SUM(a.credits_amount)",
+        "meaning": "国家维度 AI credits 总量"
+      }
+    ],
+    "dimensions": [
+      "country"
+    ],
+    "join_paths": [
+      "fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id = dim_user.user_id",
+      "dim_user.tenant_id = dim_tenant.tenant_id"
+    ],
+    "grain": "先通过 user_id_hash 找到 user_id，再找到 tenant_id，最后按国家聚合 AI credits 使用量。",
+    "sql_skeleton": "SELECT\n    t.country,\n    SUM(a.credits_amount) AS total_credit_amount\nFROM fact_ai_usage_log a\nJOIN dim_user_id_mapping m\n    ON a.user_id_hash = m.user_id_hash\nJOIN dim_user u\n    ON m.user_id = u.user_id\nJOIN dim_tenant t\n    ON u.tenant_id = t.tenant_id\nGROUP BY t.country\nORDER BY total_credit_amount DESC\nLIMIT 30;",
+    "risks": [
+      "fact_ai_usage_log 没有 tenant_id，不能直接按 tenant 或 country 聚合。",
+      "必须通过 dim_user_id_mapping 和 dim_user 建立 usage log 到 tenant 的映射。",
+      "映射表可能有缺失，导致部分日志无法归属到客户或国家。",
+      "credits_amount 需要结合 operation_type 解释，Deduct / Earn / Refund 不能简单混为净消耗。"
+    ],
+    "visualization": {
+      "chart_type": "bar",
+      "x": "country",
+      "y": "total_credit_amount",
+      "reason": "适合做国家维度使用量对比。"
+    },
+    "confidence": "medium",
+    "keywords": [
+      "AI credits",
+      "国家",
+      "country",
+      "user mapping",
+      "credits_amount",
+      "使用量"
+    ],
+    "validation_mode": "manual_approved",
+    "validation_note": "Manually verified and appended back to the formal recipe source."
+  },
+  {
+    "recipe_id": "ai_usage_outlier_tenants_via_user_mapping",
+    "name": "通过用户映射的 AI Credits 异常客户识别",
+    "intent": "通过 user_id_hash 映射到 tenant 后识别 AI credits 使用量异常高的客户",
+    "canonical_question": "哪些客户的 AI credits 使用量异常偏高？",
+    "typical_questions": [
+      "哪些客户的 AI credits 使用量异常偏高？",
+      "如果通过 user mapping 归属到客户，哪些 tenant 的 AI credits 使用异常高？",
+      "请基于用户映射识别 AI credits 使用量明显高于平均水平的客户。"
+    ],
+    "description": "先通过 user mapping 找到 tenant_id，再按 tenant 聚合 AI credits 总量，并使用均值 + 2 倍标准差识别异常高使用客户。",
+    "required_tables": [
+      "fact_ai_usage_log",
+      "dim_user_id_mapping",
+      "dim_user"
+    ],
+    "optional_tables": [
+      "dim_tenant"
+    ],
+    "required_fields": [
+      "fact_ai_usage_log.user_id_hash",
+      "fact_ai_usage_log.operation_type",
+      "fact_ai_usage_log.credits_amount",
+      "dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id",
+      "dim_user.user_id",
+      "dim_user.tenant_id"
+    ],
+    "optional_fields": [
+      "dim_tenant.tenant_id",
+      "dim_tenant.country",
+      "fact_ai_usage_log.created_at"
+    ],
+    "metrics": [
+      {
+        "name": "total_credit_amount",
+        "expression": "SUM(a.credits_amount)",
+        "meaning": "客户累计 AI credits 使用量"
+      },
+      {
+        "name": "avg_credit_amount",
+        "expression": "AVG(total_credit_amount)",
+        "meaning": "客户级平均 AI credits 使用量"
+      }
+    ],
+    "dimensions": [
+      "tenant_id"
+    ],
+    "join_paths": [
+      "fact_ai_usage_log.user_id_hash = dim_user_id_mapping.user_id_hash",
+      "dim_user_id_mapping.user_id = dim_user.user_id"
+    ],
+    "grain": "先按 tenant_id 聚合 credits 总量，再基于整体分布识别异常高使用客户。",
+    "sql_skeleton": "WITH tenant_usage AS (\n    SELECT\n        u.tenant_id,\n        SUM(a.credits_amount) AS total_credit_amount\n    FROM fact_ai_usage_log a\n    JOIN dim_user_id_mapping m\n        ON a.user_id_hash = m.user_id_hash\n    JOIN dim_user u\n        ON m.user_id = u.user_id\n    GROUP BY u.tenant_id\n),\nstats AS (\n    SELECT\n        AVG(total_credit_amount) AS avg_credit_amount,\n        STDDEV_SAMP(total_credit_amount) AS std_credit_amount\n    FROM tenant_usage\n)\nSELECT\n    u.tenant_id,\n    u.total_credit_amount,\n    s.avg_credit_amount,\n    s.std_credit_amount\nFROM tenant_usage u\nCROSS JOIN stats s\nWHERE u.total_credit_amount > s.avg_credit_amount + 2 * s.std_credit_amount\nORDER BY u.total_credit_amount DESC\nLIMIT 30;",
+    "risks": [
+      "fact_ai_usage_log 没有 tenant_id，不能直接按 tenant 或 country 聚合。",
+      "必须通过 dim_user_id_mapping 和 dim_user 建立 usage log 到 tenant 的映射。",
+      "映射表可能有缺失，导致部分日志无法归属到客户或国家。",
+      "credits_amount 需要结合 operation_type 解释，Deduct / Earn / Refund 不能简单混为净消耗。",
+      "outlier 只是统计异常，不代表真实业务风险，需要结合时间窗口、客户规模和操作类型进一步判断。"
+    ],
+    "visualization": {
+      "chart_type": "table_only",
+      "x": "",
+      "y": "",
+      "reason": "异常客户列表更适合表格和阈值说明一起展示。"
+    },
+    "confidence": "medium",
+    "keywords": [
+      "AI credits",
+      "outlier",
+      "tenant",
+      "user mapping",
+      "异常客户",
+      "credits_amount"
+    ],
+    "validation_mode": "manual_approved",
+    "validation_note": "Manually verified and appended back to the formal recipe source."
   }
 ]

@@ -1,0 +1,328 @@
+table_name: fact_experiment_metric
+card_version: v0.1
+card_type: table_card
+domain:
+  id: G
+  name: 增长与实验
+business_meaning: '实验指标日度。
+
+  数据字典将该表归入“增长与实验”域。
+
+  数据字典行数说明为：~8k。'
+grain: 数据字典说明粒度：一行 = 一个实验的一个分组一个指标在某天的值。
+primary_key: []
+natural_key_candidate:
+- exp_id
+- variant
+- metric_name
+- dt
+natural_key_status:
+  is_unique: true
+  note: '该候选自然键用于表达业务粒度或替代性唯一键，使用前应结合本卡 validation 结果理解。
+
+    当前卡已升级为正式版本，唯一性与使用规则以本卡和 validation report 为准。'
+profile:
+  row_count: 8071
+  column_count: 8
+  source_profile_file: outputs/profiles/table_profiles.json
+  source_column_profile_file: outputs/profiles/column_profiles.json
+  profile_status: validated
+  validation_file: outputs/knowledge/validation/fact_experiment_metric_validation.md
+columns:
+  exp_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: 实验
+    references: fact_experiment.exp_id
+    profile:
+      null_rate: 0.0
+      distinct_count: 50
+      distinct_rate: 0.0062
+      min: EXP001
+      max: EXP050
+      sample_values:
+      - EXP001
+      - EXP002
+      - EXP003
+      - EXP004
+      - EXP005
+      is_possible_primary_key: false
+    notes: []
+  variant:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: 分组
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3
+      distinct_rate: 0.0004
+      min: control
+      max: treatment_b
+      sample_values:
+      - control
+      - treatment_a
+      - treatment_b
+      is_possible_primary_key: false
+    notes: []
+  metric_name:
+    type: varchar
+    semantic_type: dimension
+    business_meaning: 指标名。枚举：retention_d7 / session_duration / feature_adoption / nps_score / conversion_rate
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 5
+      distinct_rate: 0.0006
+      min: conversion_rate
+      max: session_duration
+      sample_values:
+      - conversion_rate
+      - feature_adoption
+      - nps_score
+      - retention_d7
+      - session_duration
+      is_possible_primary_key: false
+    notes: []
+  dt:
+    type: date
+    semantic_type: event_time
+    business_meaning: 日期
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 340
+      distinct_rate: 0.0421
+      min: '2025-04-07'
+      max: '2026-03-20'
+      sample_values:
+      - '2025-04-07'
+      - '2025-04-08'
+      - '2025-04-09'
+      - '2025-04-10'
+      - '2025-04-11'
+      is_possible_primary_key: false
+    notes: []
+  sample_size:
+    type: bigint
+    semantic_type: metric
+    business_meaning: 样本量
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 3966
+      distinct_rate: 0.4914
+      min: '100'
+      max: '5000'
+      sample_values:
+      - '100'
+      - '101'
+      - '103'
+      - '105'
+      - '106'
+      is_possible_primary_key: false
+    notes: []
+  metric_value:
+    type: double
+    semantic_type: metric
+    business_meaning: 指标值
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 8041
+      distinct_rate: 0.9963
+      min: '0.1116'
+      max: '99.9847'
+      sample_values:
+      - '0.1116'
+      - '0.1162'
+      - '0.1176'
+      - '0.1274'
+      - '0.1411'
+      is_possible_primary_key: false
+    notes: []
+  ci_lower:
+    type: double
+    semantic_type: metric
+    business_meaning: 95% 置信区间下界
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 8033
+      distinct_rate: 0.9953
+      min: '0.0975'
+      max: '94.6679'
+      sample_values:
+      - '0.0975'
+      - '0.102'
+      - '0.1076'
+      - '0.109'
+      - '0.1256'
+      is_possible_primary_key: false
+    notes: []
+  ci_upper:
+    type: double
+    semantic_type: metric
+    business_meaning: 95% 置信区间上界
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 8043
+      distinct_rate: 0.9965
+      min: '0.1234'
+      max: '119.6663'
+      sample_values:
+      - '0.1234'
+      - '0.1257'
+      - '0.1332'
+      - '0.1472'
+      - '0.1514'
+      is_possible_primary_key: false
+    notes: []
+join_keys:
+- column: exp_id
+  references: fact_experiment.exp_id
+  relationship: many_to_one
+  join_condition: fact_experiment_metric.exp_id = fact_experiment.exp_id
+  purpose: '数据字典说明中的主关联路径。
+
+    当前正式卡可作为推荐 JOIN 路径使用。'
+  risk_level: low
+  validation_status: passed
+  note: '字段说明写明 exp_id 表示实验。
+
+    当前正式卡已通过对应 validation 检查，使用时仍需遵守本卡 grain 与 known_traps 规则。'
+derived_join_paths: {}
+field_groups:
+  id_columns:
+  - exp_id
+  time_columns:
+  - dt
+  metric_columns:
+  - sample_size
+  - metric_value
+  - ci_lower
+  - ci_upper
+  dimension_columns:
+  - exp_id
+  - variant
+  - metric_name
+  - dt
+  enum_columns:
+  - variant
+  - metric_name
+  json_columns: []
+  text_columns: []
+recommended_use_cases:
+- 基于数据字典理解 fact_experiment_metric 的表级业务含义与字段语义
+- 在运行 validation 脚本前做主键、粒度、时间口径与枚举口径假设梳理
+- 按数据字典声明的枚举字段做结构分布分析
+- 基于数据字典说明的时间字段做趋势或窗口分析
+preferred_metrics:
+  row_count:
+    expression: COUNT(*)
+    meaning: 记录数
+    applicable_grain: table_grain
+    note: 当前表未确认稳定主键，COUNT(*) 只能先解释为记录数。
+  sample_size_sum:
+    expression: SUM(sample_size)
+    meaning: sample_size 的SUM指标
+    applicable_grain: table_grain
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+  metric_value_sum:
+    expression: SUM(metric_value)
+    meaning: metric_value 的SUM指标
+    applicable_grain: table_grain
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+  ci_lower_sum:
+    expression: SUM(ci_lower)
+    meaning: ci_lower 的SUM指标
+    applicable_grain: table_grain
+    note: 当前为自动草稿，需要人工确认该数值字段是否适合直接聚合。
+known_traps:
+- trap: 将 COUNT(*) 与 COUNT(DISTINCT 实体键) 混用。
+  consequence: 在一对多 JOIN 或非唯一粒度表中，可能把记录数误读成实体数。
+  prevention: 先依据数据字典粒度说明和 validation 结果确认使用哪个计数口径。
+aggregation_notes:
+- 数据字典说明该表粒度为：一行 = 一个实验的一个分组一个指标在某天的值。聚合前必须先验证这一粒度在当前数据中是否成立。
+- 当前所有聚合说明都仅基于数据字典，不代表已经通过验证。
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_experiment_metric_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 8071
+    column_count: 8
+    validation_checks_total: 19
+    validation_checks_failed: 0
+    validation_checks_warning: 0
+    key_findings:
+    - fact_experiment_metric 行数为 8071，字段数为 8。
+    - 主键候选当前唯一。
+    - exp_id 当前全部可关联到 fact_experiment.exp_id。
+    - 主要 SQL patterns 已执行。
+    warnings: []
+  interpretation:
+  - validation 脚本已通过，当前卡已升级为正式 table card。
+  - 主键、粒度、外键覆盖率与主要 SQL pattern 以当前 validation report 为准。
+  - fact_experiment_metric 行数为 8071，字段数为 8。
+  - 主键候选当前唯一。
+  - exp_id 当前全部可关联到 fact_experiment.exp_id。
+  - 主要 SQL patterns 已执行。
+validation_checks:
+- basic_table_profile
+- column_count
+- primary_key_uniqueness
+- duplicated_primary_key_examples
+- candidate_natural_key_uniqueness
+- main_foreign_key_coverage_checks
+- enum_distribution_checks
+- time_date_parse_checks
+- numeric_range_checks
+- json_parse_checks
+- main_sql_patterns_execution_checks
+sql_patterns:
+  time_distribution: "SELECT\n dt AS time_key,\n COUNT(*) AS row_count\nFROM fact_experiment_metric\nGROUP BY dt\nORDER BY dt;"
+  enum_distribution: "SELECT\n variant,\n COUNT(DISTINCT exp_id) AS entity_count\nFROM fact_experiment_metric\nGROUP BY variant\nORDER BY entity_count DESC, variant;"
+  metric_trend: "SELECT\n dt AS time_key,\n ROUND(SUM(sample_size), 2) AS total_sample_size\nFROM fact_experiment_metric\nGROUP BY dt\nORDER BY dt;"
+  join_coverage_sample: "SELECT\n COUNT(*) AS row_count\nFROM fact_experiment_metric base\nLEFT JOIN fact_experiment ref\n ON base.exp_id = ref.exp_id;"
+prompt_summary: 'fact_experiment_metric 是 实验指标日度。
+
+  数据字典声明 grain 为：一行 = 一个实验的一个分组一个指标在某天的值。
+
+  数据字典主键说明为：待补充。
+
+  常用 JOIN 假设包括：exp_id -> fact_experiment.exp_id。'
+manual_review:
+  reviewer: null
+  review_status: validated
+  review_notes:
+  - 当前卡已结合 validation report 完成正式化整理。
+  - 主键、自然键、JOIN 覆盖率与字段口径以当前 validation report 和正式卡内容为准。
+  - 当前卡已结合 validation report 升级为正式版本。
+  checklist:
+  - confirmed: true
+    item: 数据字典声明粒度为：一行 = 一个实验的一个分组一个指标在某天的值，已结合当前数据完成 grain 核对。
+  - confirmed: true
+    item: 数据字典说明行数约为：~8k，已与当前 profile 和 DuckDB 数据核对。
+  - confirmed: true
+    item: 数据字典给出的 JOIN 假设：fact_experiment_metric.exp_id -> fact_experiment.exp_id，已结合当前数据完成覆盖率与口径核对。
+  - confirmed: true
+    item: fact_experiment_metric 行数为 8071，字段数为 8。
+  - confirmed: true
+    item: 主键候选当前唯一。
+  - confirmed: true
+    item: exp_id 当前全部可关联到 fact_experiment.exp_id。
+  - confirmed: true
+    item: 主要 SQL patterns 已执行。
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_experiment_metric_validation.md
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

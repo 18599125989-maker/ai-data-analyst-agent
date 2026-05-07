@@ -1122,6 +1122,25 @@
   },
   {
     "table_name": "fact_daily_usage",
+    "trap": "将 fact_daily_usage.user_id 直接与 dim_tenant.user_id 关联。\n",
+    "consequence": "dim_tenant 没有 user_id。直接这样 JOIN 会导致 SQL 错误或幻觉字段问题。\n",
+    "prevention": "关联租户画像字段时必须先 JOIN dim_user，再用 dim_user.tenant_id JOIN dim_tenant.tenant_id。\n",
+    "related_fields": [],
+    "severity": "high",
+    "keywords": [
+      "ai",
+      "dim_tenant",
+      "dim_user",
+      "fact_daily_usage",
+      "join",
+      "sql",
+      "tenant_id",
+      "user_id",
+      "租户"
+    ]
+  },
+  {
+    "table_name": "fact_daily_usage",
     "trap": "把 user_id 单独当作主键。\n",
     "consequence": "同一个 user_id 可以出现在多个 dt，单独 user_id 不唯一。\n",
     "prevention": "该表业务自然键是 user_id + dt。\n",

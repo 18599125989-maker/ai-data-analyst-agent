@@ -440,8 +440,8 @@
 - grain_validated: `True`
 - dq_validated: `True`
 - warning_level: `low`
-- business_meaning: 用户日级使用汇总事实表，记录用户在某一天的 session 数、活跃时长和功能使用摘要。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。 当前验证显示该表可作为正式用户日活分析事实表使用。
-- grain: 一行代表一个 user_id 在一个 dt 的日级使用汇总记录。 user_id + dt 已验证唯一，可以作为该表的业务自然键 / grain key。 该表没有单列物理主键；不要把 user_id 单独当主键。 同一个 user_id 可以在多个 dt 出现。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。
+- business_meaning: 用户日级使用汇总事实表，记录用户在某一天的 session 数、活跃时长和功能使用摘要。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。 该表只有 user_id，没有 tenant_id。 如需关联租户画像字段，例如 tenant name、industry、country、size_tier， 必须先通过 dim_user 将 user_id 映射到 tenant_id，再关联 dim_tenant。 当前验证显示该表可作为正式用户日活分析事实表使用。
+- grain: 一行代表一个 user_id 在一个 dt 的日级使用汇总记录。 user_id + dt 已验证唯一，可以作为该表的业务自然键 / grain key。 该表没有单列物理主键；不要把 user_id 单独当主键。 同一个 user_id 可以在多个 dt 出现。 该表没有 tenant_id。 该表适合分析 DAU、session_count、active_duration_sec、用户日活跃趋势和租户级日使用情况。
 - primary_key: `[]`
 - natural_key_candidate: `['user_id', 'dt']`
 - metrics:
@@ -458,9 +458,9 @@
   - fact_feature_usage.dt | ["fact_daily_usage.user_id = fact_feature_usage.user_id", "fact_daily_usage.dt = fact_feature_usage.dt"]
 - known_traps:
   - 直接 COUNT(*) 当作用户数。
+  - 将 fact_daily_usage.user_id 直接与 dim_tenant.user_id 关联。
   - 把 user_id 单独当作主键。
   - 和 fact_ai_usage_log 只按 user_id JOIN。
-  - 和 fact_feature_usage 只按 user_id JOIN。
 - policy_flags:
   - table_grain_is_user_day: True
   - natural_key_is_user_id_dt: True

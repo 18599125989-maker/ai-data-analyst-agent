@@ -1,0 +1,508 @@
+table_name: fact_credit_usage
+card_version: v1.0
+card_type: table_card
+
+domain:
+  id: E
+  name: 计费与订阅
+
+business_meaning: >
+  资源消耗与信用使用事实表，记录租户在某一天对某类资源的使用数量及其单位成本。
+  该表适合分析资源消耗、信用额度使用、资源成本和租户级资源使用趋势。
+  当前验证显示该表可作为正式资源消耗分析事实表使用。
+
+grain: >
+  一行代表一个 tenant 在某个 dt 对某类 resource_type 的资源用量或计费记录。
+  当前验证显示主键候选 usage_id 唯一：row_count = 64456，
+  distinct_primary_key_count = 64456，duplicate_primary_key_count = 0。
+  同一个 tenant_id 可以在多个 dt、多个 resource_type 下出现。
+  该表适合分析资源消耗、信用额度使用、资源成本和租户级资源使用趋势。
+
+primary_key:
+  - usage_id
+
+natural_key_candidate:
+  - usage_id
+
+natural_key_status:
+  is_unique: true
+  tested_key:
+    - usage_id
+  duplicated_group_count: 0
+  note: >
+    当前验证显示 usage_id 唯一，可作为本表的物理主键与记录级唯一标识。
+
+profile:
+  row_count: 64456
+  column_count: 6
+  source_profile_file: outputs/profiles/table_profile.json
+  source_column_profile_file: outputs/profiles/column_profile.json
+  validation_file: outputs/knowledge/validation/fact_credit_usage_validation.md
+  profile_status: validated
+
+columns:
+  usage_id:
+    type: varchar
+    semantic_type: primary_key
+    business_meaning: >
+      资源使用记录 ID。
+      用于唯一标识一条租户资源使用记录。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 64456
+      distinct_rate: 1.0
+      min: CU00000fbab5a7
+      max: CUfffe97ccfec1
+      sample_values:
+        - CU00000fbab5a7
+        - CU0000857f43bd
+        - CU0000ed89be4e
+        - CU00012f06438f
+        - CU000149b64f56
+      is_possible_primary_key: true
+    notes:
+      - >
+        usage_id 已验证唯一，可直接用于统计资源使用记录数。
+
+  tenant_id:
+    type: varchar
+    semantic_type: foreign_key
+    business_meaning: >
+      租户 ID。
+      用于将资源消耗记录关联到租户维度，并进一步补充国家、行业、规模等租户画像信息。
+    references: dim_tenant.tenant_id
+    validation_status: passed
+    profile:
+      null_rate: 0.0
+      distinct_count: 249
+      distinct_rate: 0.0039
+      min: T00001
+      max: T00500
+      sample_values:
+        - T00001
+        - T00003
+        - T00005
+        - T00008
+        - T00010
+      is_possible_primary_key: false
+    notes:
+      - >
+        tenant_id 外键覆盖率已验证通过，unmatched_count = 0。
+      - >
+        统计企业数时应使用 COUNT(DISTINCT tenant_id)。
+
+  resource_type:
+    type: varchar
+    semantic_type: enum_dimension
+    business_meaning: >
+      资源类型枚举。
+      用于区分 storage_gb、ai_token、video_minutes、api_calls 等不同资源单位。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 4
+      distinct_rate: 0.0001
+      min: ai_token
+      max: video_minutes
+      sample_values:
+        - storage_gb
+        - ai_token
+        - video_minutes
+        - api_calls
+      is_possible_primary_key: false
+    notes:
+      - >
+        resource_type 无空值。
+      - >
+        resource_type 是资源类型枚举，不是数值指标。
+
+  quantity:
+    type: double
+    semantic_type: metric
+    business_meaning: >
+      资源使用数量。
+      该字段的单位取决于 resource_type。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 47494
+      distinct_rate: 0.7368
+      min: 0.1
+      max: 999.99
+      sample_values:
+        - 0.1
+        - 0.11
+        - 0.14
+        - 0.17
+        - 0.18
+      is_possible_primary_key: false
+    notes:
+      - >
+        quantity 是资源使用数量。
+      - >
+        quantity 的单位取决于 resource_type。
+      - >
+        storage_gb、ai_token、video_minutes、api_calls 的 quantity 不应直接混合相加后解释为单一业务指标。
+      - >
+        如果跨 resource_type 汇总，应按 resource_type 分组或转换为成本。
+
+  unit_cost:
+    type: double
+    semantic_type: metric
+    business_meaning: >
+      单位资源成本。
+      可与 quantity 相乘计算资源成本。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 4991
+      distinct_rate: 0.0774
+      min: 0.001
+      max: 0.5
+      sample_values:
+        - 0.001
+        - 0.0011
+        - 0.0012
+        - 0.0013
+        - 0.0014
+      is_possible_primary_key: false
+    notes:
+      - >
+        unit_cost 是单位资源成本，可与 quantity 相乘计算成本。
+      - >
+        当前验证范围为 0.001 到 0.5，未发现负值或 0 值。
+
+  dt:
+    type: date
+    semantic_type: date
+    business_meaning: >
+      资源使用日期。
+      适合做日/月资源使用趋势分析。
+    references: null
+    profile:
+      null_rate: 0.0
+      distinct_count: 365
+      distinct_rate: 0.0057
+      min: "2025-04-01"
+      max: "2026-03-31"
+      sample_values:
+        - "2025-04-01"
+        - "2025-04-02"
+        - "2025-04-03"
+        - "2025-04-04"
+        - "2025-04-05"
+      is_possible_primary_key: false
+    notes:
+      - >
+        dt 是资源使用日期，适合做日/月资源使用趋势分析。
+      - >
+        时间趋势分析应按 dt 或月份聚合。
+
+join_keys:
+  - column: tenant_id
+    references: dim_tenant.tenant_id
+    relationship: many_to_one
+    join_condition: fact_credit_usage.tenant_id = dim_tenant.tenant_id
+    purpose: 将资源消耗记录关联到租户维度。
+    risk_level: low
+    validation_status: passed
+    note: >
+      tenant_id 外键覆盖率已验证通过，unmatched_count = 0。
+
+derived_join_paths:
+  credit_usage_to_tenant_profile:
+    path:
+      - fact_credit_usage.tenant_id = dim_tenant.tenant_id
+    purpose: 将资源消耗记录关联到租户国家、行业、规模等画像维度
+    risk_level: low
+    validation_status: passed
+
+field_groups:
+  id_columns:
+    - usage_id
+    - tenant_id
+  time_columns:
+    - dt
+  metric_columns:
+    - quantity
+    - unit_cost
+  dimension_columns:
+    - tenant_id
+    - resource_type
+  enum_columns:
+    - resource_type
+  json_columns: []
+  text_columns: []
+
+recommended_use_cases:
+  - 按资源类型分析资源消耗和成本结构。
+  - 按日或按月分析资源使用趋势和成本趋势。
+  - 统计产生资源使用记录的企业规模。
+  - 结合 dim_tenant 分析不同国家、行业、规模租户的资源消耗差异。
+
+preferred_metrics:
+  credit_usage_record_count:
+    expression: COUNT(DISTINCT usage_id)
+    meaning: 资源使用记录数
+    applicable_grain: 任意分析层级
+    note: >
+      usage_id 已验证唯一，可直接用于记录去重统计。
+  tenant_count:
+    expression: COUNT(DISTINCT tenant_id)
+    meaning: 产生资源使用记录的企业数
+    applicable_grain: 任意分析层级
+    note: >
+      企业数与资源使用记录数不能混用。
+  resource_type_count:
+    expression: COUNT(DISTINCT resource_type)
+    meaning: 资源类型数
+    applicable_grain: 任意分析层级
+    note: >
+      用于统计资源种类覆盖范围。
+  total_quantity_by_resource_type:
+    expression: SUM(quantity)
+    meaning: 按资源类型统计使用数量
+    applicable_grain: 必须按 resource_type 分组
+    note: >
+      不同 resource_type 的 quantity 不能直接混合解释。
+  total_cost:
+    expression: SUM(quantity * unit_cost)
+    meaning: 资源使用成本
+    applicable_grain: 任意分析层级
+    note: >
+      跨 resource_type 汇总时优先比较成本而不是原始数量。
+  avg_unit_cost:
+    expression: AVG(unit_cost)
+    meaning: 平均单位资源成本
+    applicable_grain: 任意分析层级
+    note: >
+      更适合在相同 resource_type 内做比较。
+
+known_traps:
+  - trap: >
+      直接 SUM(quantity) 并解释为总资源使用量。
+    consequence: >
+      quantity 的单位取决于 resource_type。storage_gb、ai_token、video_minutes、api_calls 是不同单位，直接混合求和没有统一业务含义。
+    prevention: >
+      按 resource_type 分组统计 quantity，或先计算 quantity * unit_cost 得到成本后再汇总。
+  - trap: >
+      把 resource_type 当作数值指标。
+    consequence: >
+      resource_type 是资源类型枚举，不能 SUM 或 AVG。
+    prevention: >
+      resource_type 只能作为分组或筛选维度。
+  - trap: >
+      忽略 unit_cost 直接比较不同 resource_type 的 quantity。
+    consequence: >
+      不同资源单位不可比，可能导致错误判断哪个资源消耗更高。
+    prevention: >
+      如果要比较总体资源消耗价值，使用 SUM(quantity * unit_cost) 计算成本。
+  - trap: >
+      JOIN dim_tenant 后直接 COUNT(*) 当作企业数。
+    consequence: >
+      COUNT(*) 是资源使用记录数，不是企业数。
+    prevention: >
+      统计企业数使用 COUNT(DISTINCT tenant_id)。
+  - trap: >
+      把 dt 忽略后直接汇总长期记录。
+    consequence: >
+      会丢失时间趋势，也可能把长期资源使用混成一个总量。
+    prevention: >
+      趋势分析应按 dt 或月份聚合；总量分析需明确时间范围。
+
+aggregation_notes:
+  - >
+    按资源量分析时必须 GROUP BY resource_type。
+  - >
+    跨 resource_type 汇总建议使用 SUM(quantity * unit_cost)。
+  - >
+    统计企业数用 COUNT(DISTINCT tenant_id)。
+  - >
+    时间趋势分析应基于 dt。
+
+validation_summary:
+  validation_file: outputs/knowledge/validation/fact_credit_usage_validation.md
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent_recommendation: true
+  key_results:
+    row_count: 64456
+    column_count: 6
+    primary_key_unique: true
+    duplicate_primary_key_count: 0
+    tenant_id_fk_unmatched_count: 0
+    resource_type_blank_or_null_count: 0
+    resource_type_values:
+      - storage_gb
+      - ai_token
+      - video_minutes
+      - api_calls
+    dt_null_count: 0
+    dt_min: "2025-04-01"
+    dt_max: "2026-03-31"
+    quantity_min: 0.1
+    quantity_max: 999.99
+    quantity_negative_count: 0
+    quantity_zero_count: 0
+    unit_cost_min: 0.001
+    unit_cost_max: 0.5
+    unit_cost_negative_count: 0
+    unit_cost_zero_count: 0
+  interpretation:
+    - >
+      主键候选唯一，资源使用记录粒度成立。
+    - >
+      tenant_id 全部可以关联到 dim_tenant.tenant_id。
+    - >
+      resource_type 无空值，可作为资源类型分组维度。
+    - >
+      quantity 和 unit_cost 均未发现负值或 0。
+    - >
+      quantity 的单位依赖 resource_type，不同资源类型的 quantity 不应直接混合相加解释。
+    - >
+      跨资源类型比较时，建议使用 quantity * unit_cost 计算成本。
+
+validation_checks:
+  - basic_table_profile
+  - column_count
+  - primary_key_uniqueness
+  - duplicated_primary_key_examples
+  - tenant_id_fk_coverage
+  - tenant_id_fk_unmatched_examples
+  - resource_type_distribution
+  - resource_type_null_check
+  - dt_time_range_check
+  - quantity_numeric_range_check
+  - unit_cost_numeric_range_check
+  - sql_pattern_time_distribution
+  - sql_pattern_enum_distribution
+  - sql_pattern_metric_trend
+  - sql_pattern_join_coverage_sample
+
+sql_patterns:
+  credit_usage_by_resource_type: |
+    SELECT
+        resource_type,
+        SUM(quantity) AS total_quantity,
+        COUNT(DISTINCT usage_id) AS credit_usage_record_count
+    FROM fact_credit_usage
+    GROUP BY resource_type
+    ORDER BY total_quantity DESC, resource_type;
+  credit_cost_by_resource_type: |
+    SELECT
+        resource_type,
+        SUM(quantity * unit_cost) AS total_cost
+    FROM fact_credit_usage
+    GROUP BY resource_type
+    ORDER BY total_cost DESC, resource_type;
+  credit_usage_trend_by_day: |
+    SELECT
+        dt,
+        resource_type,
+        SUM(quantity) AS total_quantity,
+        SUM(quantity * unit_cost) AS total_cost
+    FROM fact_credit_usage
+    GROUP BY dt, resource_type
+    ORDER BY dt, resource_type;
+  credit_usage_trend_by_month: |
+    SELECT
+        STRFTIME(dt, '%Y-%m') AS month_key,
+        resource_type,
+        SUM(quantity) AS total_quantity
+    FROM fact_credit_usage
+    GROUP BY STRFTIME(dt, '%Y-%m'), resource_type
+    ORDER BY month_key, resource_type;
+  credit_cost_trend_by_month: |
+    SELECT
+        STRFTIME(dt, '%Y-%m') AS month_key,
+        SUM(quantity * unit_cost) AS total_cost
+    FROM fact_credit_usage
+    GROUP BY STRFTIME(dt, '%Y-%m')
+    ORDER BY month_key;
+  credit_usage_by_tenant: |
+    SELECT
+        tenant_id,
+        resource_type,
+        SUM(quantity) AS total_quantity,
+        SUM(quantity * unit_cost) AS total_cost
+    FROM fact_credit_usage
+    GROUP BY tenant_id, resource_type
+    ORDER BY total_cost DESC, tenant_id, resource_type;
+  credit_cost_by_tenant: |
+    SELECT
+        tenant_id,
+        SUM(quantity * unit_cost) AS total_cost
+    FROM fact_credit_usage
+    GROUP BY tenant_id
+    ORDER BY total_cost DESC, tenant_id;
+  credit_usage_by_tenant_profile: |
+    SELECT
+        t.country,
+        t.industry,
+        t.size_tier,
+        c.resource_type,
+        COUNT(DISTINCT c.tenant_id) AS tenant_count,
+        SUM(c.quantity) AS total_quantity,
+        SUM(c.quantity * c.unit_cost) AS total_cost
+    FROM fact_credit_usage c
+    JOIN dim_tenant t
+      ON c.tenant_id = t.tenant_id
+    GROUP BY t.country, t.industry, t.size_tier, c.resource_type
+    ORDER BY total_cost DESC, t.country, t.industry, t.size_tier, c.resource_type;
+
+manual_review:
+  required: false
+  reviewed: true
+  review_source: outputs/knowledge/validation/fact_credit_usage_validation.md
+  checklist:
+    - confirmed: true
+      item: >
+        主键候选唯一已验证。
+    - confirmed: true
+      item: >
+        tenant_id 外键覆盖率 100%。
+    - confirmed: true
+      item: >
+        resource_type 枚举正常且无空值。
+    - confirmed: true
+      item: >
+        dt 时间范围已验证。
+    - confirmed: true
+      item: >
+        quantity 数值范围正常。
+    - confirmed: true
+      item: >
+        unit_cost 数值范围正常。
+    - confirmed: true
+      item: >
+        quantity 的单位取决于 resource_type，不能跨资源类型直接混合解释。
+    - confirmed: true
+      item: >
+        成本应使用 quantity * unit_cost。
+
+agent_usage_policy:
+  count_records_with_primary_key: true
+  count_tenants_with_distinct_tenant_id: true
+  resource_type_is_enum_not_metric: true
+  quantity_unit_depends_on_resource_type: true
+  do_not_sum_quantity_across_resource_types_without_grouping: true
+  use_quantity_times_unit_cost_for_cost: true
+  use_dt_for_usage_trends: true
+  join_to_tenant_for_tenant_profile: true
+
+prompt_summary: >
+  fact_credit_usage 是资源消耗与信用使用事实表，一行代表一个 tenant 在某个 dt 对某类 resource_type 的使用记录，
+  主键 usage_id 已验证唯一。
+  常用路径是 tenant_id -> dim_tenant。
+  关键指标包括资源使用记录数、企业数、按资源类型的使用量和按 quantity * unit_cost 计算的成本。
+  关键陷阱是 quantity 的单位依赖 resource_type，不同资源类型不能直接混合求和解释；
+  跨资源类型比较时优先比较成本，并且趋势分析应基于 dt。
+
+status:
+  authoring_status: validated
+  profile_filled: true
+  grain_validated: true
+  dq_validated: true
+  ready_for_agent: true

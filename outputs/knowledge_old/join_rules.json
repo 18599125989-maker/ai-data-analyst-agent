@@ -1,0 +1,215 @@
+{
+  "description": "CloudWork 主要表关系与 JOIN 规则。Agent 生成多表 SQL 前应优先参考。",
+  "rules": [
+    {
+      "left_table": "dim_tenant",
+      "right_table": "dim_user",
+      "join_condition": "dim_tenant.tenant_id = dim_user.tenant_id",
+      "relationship": "one_to_many",
+      "note": "一个企业对应多个用户。统计企业数时 JOIN 后要 COUNT(DISTINCT tenant_id)。"
+    },
+    {
+      "left_table": "dim_tenant",
+      "right_table": "dim_department",
+      "join_condition": "dim_tenant.tenant_id = dim_department.tenant_id",
+      "relationship": "one_to_many",
+      "note": "一个企业对应多个部门。"
+    },
+    {
+      "left_table": "dim_department",
+      "right_table": "dim_user",
+      "join_condition": "dim_department.dept_id = dim_user.dept_id",
+      "relationship": "one_to_many",
+      "note": "一个部门对应多个用户；dim_user.dept_id 可能为空。"
+    },
+    {
+      "left_table": "dim_tenant",
+      "right_table": "fact_subscription",
+      "join_condition": "dim_tenant.tenant_id = fact_subscription.tenant_id",
+      "relationship": "one_to_many",
+      "note": "一个企业可能有多个订阅周期。"
+    },
+    {
+      "left_table": "fact_subscription",
+      "right_table": "dim_plan",
+      "join_condition": "fact_subscription.plan_tier = dim_plan.plan_tier",
+      "relationship": "many_to_one",
+      "note": "订阅表通过套餐等级关联套餐维度表。"
+    },
+    {
+      "left_table": "fact_subscription",
+      "right_table": "fact_actual_revenue",
+      "join_condition": "fact_subscription.sub_id = fact_actual_revenue.sub_id",
+      "relationship": "one_to_many",
+      "note": "一个订阅周期可能对应多个月实收收入。"
+    },
+    {
+      "left_table": "fact_subscription",
+      "right_table": "fact_invoice",
+      "join_condition": "fact_subscription.sub_id = fact_invoice.sub_id",
+      "relationship": "one_to_many",
+      "note": "一个订阅可能对应多张发票。"
+    },
+    {
+      "left_table": "fact_invoice",
+      "right_table": "fact_payment",
+      "join_condition": "fact_invoice.invoice_id = fact_payment.invoice_id",
+      "relationship": "one_to_many",
+      "note": "一张发票可能对应多次付款尝试，聚合金额时要小心重复计算。"
+    },
+    {
+      "left_table": "dim_user",
+      "right_table": "fact_daily_usage",
+      "join_condition": "dim_user.user_id = fact_daily_usage.user_id",
+      "relationship": "one_to_many",
+      "note": "一个用户对应多天使用记录。"
+    },
+    {
+      "left_table": "dim_user",
+      "right_table": "fact_feature_usage",
+      "join_condition": "dim_user.user_id = fact_feature_usage.user_id",
+      "relationship": "one_to_many",
+      "note": "一个用户对应多个功能、多天使用记录。"
+    },
+    {
+      "left_table": "fact_feature_usage",
+      "right_table": "dim_feature",
+      "join_condition": "fact_feature_usage.feature_key = dim_feature.feature_key",
+      "relationship": "many_to_one",
+      "note": "功能使用明细通过 feature_key 关联功能维度。"
+    },
+    {
+      "left_table": "dim_user",
+      "right_table": "dim_user_id_mapping",
+      "join_condition": "dim_user.user_id = dim_user_id_mapping.user_id",
+      "relationship": "one_to_one_or_partial",
+      "note": "用户明文 ID 与哈希 ID 映射，可能不是所有用户都有映射。"
+    },
+    {
+      "left_table": "dim_user_id_mapping",
+      "right_table": "fact_ai_usage_log",
+      "join_condition": "dim_user_id_mapping.user_id_hash = fact_ai_usage_log.user_id_hash",
+      "relationship": "one_to_many",
+      "note": "AI 使用日志只有哈希 user_id，需要通过 mapping 表关联。"
+    },
+    {
+      "left_table": "dim_user",
+      "right_table": "fact_session",
+      "join_condition": "dim_user.user_id = fact_session.user_id",
+      "relationship": "one_to_many",
+      "note": "一个用户对应多次会话。"
+    },
+    {
+      "left_table": "fact_session",
+      "right_table": "fact_page_view",
+      "join_condition": "fact_session.session_id = fact_page_view.session_id",
+      "relationship": "one_to_many",
+      "note": "一次会话可以包含多次页面浏览。"
+    },
+    {
+      "left_table": "dim_user",
+      "right_table": "fact_event_log",
+      "join_condition": "dim_user.user_id = fact_event_log.user_id",
+      "relationship": "one_to_many",
+      "note": "一个用户对应多条埋点事件。"
+    },
+    {
+      "left_table": "dim_tenant",
+      "right_table": "fact_document",
+      "join_condition": "dim_tenant.tenant_id = fact_document.tenant_id",
+      "relationship": "one_to_many",
+      "note": "一个企业对应多个文档。"
+    },
+    {
+      "left_table": "dim_user",
+      "right_table": "fact_document",
+      "join_condition": "dim_user.user_id = fact_document.creator_id",
+      "relationship": "one_to_many",
+      "note": "用户作为文档创建者关联文档表。"
+    },
+    {
+      "left_table": "fact_document",
+      "right_table": "fact_doc_collaboration",
+      "join_condition": "fact_document.doc_id = fact_doc_collaboration.doc_id",
+      "relationship": "one_to_many",
+      "note": "一个文档可能有多个用户、多天协作记录。"
+    },
+    {
+      "left_table": "dim_channel",
+      "right_table": "fact_message",
+      "join_condition": "dim_channel.channel_id = fact_message.channel_id",
+      "relationship": "one_to_many",
+      "note": "一个频道对应多条消息。"
+    },
+    {
+      "left_table": "dim_user",
+      "right_table": "fact_message",
+      "join_condition": "dim_user.user_id = fact_message.sender_id",
+      "relationship": "one_to_many",
+      "note": "用户作为消息发送者关联消息表。"
+    },
+    {
+      "left_table": "dim_tenant",
+      "right_table": "fact_ticket",
+      "join_condition": "dim_tenant.tenant_id = fact_ticket.tenant_id",
+      "relationship": "one_to_many",
+      "note": "一个企业对应多个客服工单。"
+    },
+    {
+      "left_table": "fact_ticket",
+      "right_table": "dim_ticket_category",
+      "join_condition": "fact_ticket.category = dim_ticket_category.category_id",
+      "relationship": "many_to_one",
+      "note": "工单通过 category 关联工单分类。"
+    },
+    {
+      "left_table": "fact_ticket",
+      "right_table": "fact_ticket_reply",
+      "join_condition": "fact_ticket.ticket_id = fact_ticket_reply.ticket_id",
+      "relationship": "one_to_many",
+      "note": "一个工单对应多条回复。"
+    },
+    {
+      "left_table": "fact_campaign",
+      "right_table": "fact_campaign_attribution",
+      "join_condition": "fact_campaign.campaign_id = fact_campaign_attribution.campaign_id",
+      "relationship": "one_to_many",
+      "note": "一个营销活动对应多个触点。"
+    },
+    {
+      "left_table": "dim_user",
+      "right_table": "fact_campaign_attribution",
+      "join_condition": "dim_user.user_id = fact_campaign_attribution.user_id",
+      "relationship": "one_to_many",
+      "note": "一个用户可能有多个营销触点。"
+    },
+    {
+      "left_table": "fact_experiment",
+      "right_table": "fact_experiment_assignment",
+      "join_condition": "fact_experiment.exp_id = fact_experiment_assignment.exp_id",
+      "relationship": "one_to_many",
+      "note": "一个实验对应多个用户分流记录。"
+    },
+    {
+      "left_table": "fact_experiment",
+      "right_table": "fact_experiment_metric",
+      "join_condition": "fact_experiment.exp_id = fact_experiment_metric.exp_id",
+      "relationship": "one_to_many",
+      "note": "一个实验对应多个分组、指标和日期的聚合指标。"
+    },
+    {
+      "left_table": "dim_user",
+      "right_table": "fact_nps_survey",
+      "join_condition": "dim_user.user_id = fact_nps_survey.user_id",
+      "relationship": "one_to_many",
+      "note": "一个用户可能对应多条 NPS 调研。"
+    },
+    {
+      "left_table": "dim_tenant",
+      "right_table": "fact_nps_survey",
+      "join_condition": "dim_tenant.tenant_id = fact_nps_survey.tenant_id",
+      "relationship": "one_to_many",
+      "note": "一个企业对应多条 NPS 调研。"
+    }
+  ]
+}

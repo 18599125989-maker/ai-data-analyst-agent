@@ -1076,10 +1076,10 @@
       "fact_daily_usage.user_id = dim_user.user_id",
       "dim_user.tenant_id = dim_tenant.tenant_id"
     ],
-    "purpose": "将用户日级使用记录关联到租户维度",
+    "purpose": "将用户日级使用记录关联到租户维度，用于按行业、国家、企业规模、企业名称等租户画像维度分析活跃用户趋势。",
     "risk_level": "low",
     "validation_status": "passed",
-    "note": "同一用户有多天记录。按租户统计用户数时应 COUNT(DISTINCT user_id)，统计用户日记录数时才 COUNT(*)。\n",
+    "note": "fact_daily_usage 没有 tenant_id，不能直接 JOIN dim_tenant。 必须先通过 dim_user 将 user_id 映射到 tenant_id，再关联 dim_tenant。 禁止使用 fact_daily_usage.user_id = dim_tenant.user_id。 同一用户有多天记录。按租户统计用户数时应 COUNT(DISTINCT user_id)，统计用户日记录数时才 COUNT(*)。\n",
     "keywords": [
       "ai",
       "count",
@@ -1087,13 +1087,18 @@
       "dim_user",
       "distinct",
       "fact_daily_usage",
+      "join",
       "low",
       "passed",
       "tenant_id",
       "user_id",
+      "企业",
       "使用",
+      "国家",
+      "活跃",
       "用户",
-      "租户"
+      "租户",
+      "趋势"
     ]
   },
   {
