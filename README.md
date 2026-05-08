@@ -190,16 +190,35 @@ pip install -r requirements.txt
 ### 6.2 环境变量配置
 
 当前 LLM 调用默认接入 SiliconFlow 兼容接口。  
-请在项目根目录创建 `.env` 文件。除了 API Key，数据目录和 DuckDB 路径也支持通过环境变量覆盖：
+进入项目根目录后，可直接在终端执行以下环境变量配置：
 
 ```bash
-SILICONFLOW_API_KEY=你的APIKey
-SILICONFLOW_API_URL=https://api.siliconflow.cn/v1/chat/completions
-SILICONFLOW_MODEL=Qwen/Qwen2.5-72B-Instruct
-SILICONFLOW_EMBEDDING_API_URL=https://api.siliconflow.cn/v1/embeddings
-SILICONFLOW_EMBEDDING_MODEL=BAAI/bge-m3
-CSV_DIR=for_contestants/csv
-DUCKDB_PATH=cloudwork.duckdb
+# 进入项目根目录后执行
+# 必填：SiliconFlow API Key，用于调用 LLM
+export SILICONFLOW_API_KEY="你的_API_Key"
+
+# 可选：LLM 调用地址
+export SILICONFLOW_API_URL="https://api.siliconflow.cn/v1/chat/completions"
+
+# 可选：LLM 模型名称
+export SILICONFLOW_MODEL="Qwen/Qwen2.5-72B-Instruct"
+
+# 可选：Embedding 调用地址
+export SILICONFLOW_EMBEDDING_API_URL="https://api.siliconflow.cn/v1/embeddings"
+
+# 可选：Embedding 模型名称
+export SILICONFLOW_EMBEDDING_MODEL="BAAI/bge-m3"
+
+# 必填：CSV 数据目录
+# 方式一：将 for_contestants/csv 文件夹放在项目根目录下
+export CSV_DIR="for_contestants/csv"
+
+# 方式二：如果 CSV 文件夹在其他位置，改成你的实际绝对路径
+# export CSV_DIR="/Users/your_name/Desktop/for_contestants/csv"
+
+# 必填：DuckDB 数据库路径
+# 如果还没有 cloudwork.duckdb，先保留这个路径，然后运行 python3 src/00_load_data.py 生成
+export DUCKDB_PATH="cloudwork.duckdb"
 ```
 
 说明：
