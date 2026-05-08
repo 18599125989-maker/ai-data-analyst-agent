@@ -84,3 +84,19 @@ __pycache__/
 cloudwork.duckdb
 outputs/logs/
 outputs/knowledge/validation/
+
+# runtime / temporary outputs
+outputs/logs/
+outputs/sample/
+outputs/profiles/
+outputs/memory/
+outputs/knowledge_old/
+outputs/knowledge/_pvis_test.html
+outputs/knowledge/retrieval_v2/*.bak_test
+
+# environment / cache
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+.DS_Store
