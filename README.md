@@ -207,7 +207,7 @@ DUCKDB_PATH=cloudwork.duckdb
 - `SILICONFLOW_API_KEY`：必填，用于调用 LLM 接口
 - `SILICONFLOW_API_URL`、`SILICONFLOW_MODEL`：可选，不填时使用代码中的默认值
 - `SILICONFLOW_EMBEDDING_API_URL`、`SILICONFLOW_EMBEDDING_MODEL`：可选，用于 hybrid retrieval 的 embedding 构建与查询
-- `CSV_DIR`：可选，CSV 数据目录；默认值为项目根目录下的 `for_contestants/csv`
+- `CSV_DIR`：可选，37 张原始 CSV 表所在的目录；默认值为项目根目录下的 `for_contestants/csv`
 - `DUCKDB_PATH`：可选，DuckDB 数据库文件路径；默认值为项目根目录下的 `cloudwork.duckdb`
 - `CSV_DIR` 和 `DUCKDB_PATH` 支持相对路径或绝对路径；相对路径会按项目根目录解析
 
@@ -224,6 +224,14 @@ python3 src/04_agent_cli.py
 ```bash
 streamlit run src/05_streamlit_app.py
 ```
+
+如果本地还没有 `DUCKDB_PATH` 对应的数据库文件，可以先运行：
+
+```bash
+python3 src/00_load_data.py
+```
+
+该脚本会从 `CSV_DIR` 指向的 37 张原始表目录中读取数据，并生成 DuckDB 数据库文件。
 
 ### 6.4 完整复现
 
